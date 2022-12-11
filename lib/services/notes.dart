@@ -6,6 +6,8 @@ class Notes {
   ];
   static const int minPitch = 33;
   static const int maxPitch = 96;
+  static final String minNote = pitchToNote(minPitch);
+  static final String maxNote = pitchToNote(maxPitch);
   static const int Fs = 44100;
 
 

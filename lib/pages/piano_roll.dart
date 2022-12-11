@@ -106,14 +106,15 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-  late double lowestPitch;
-  late double highestPitch;
+  late int lowestPitch;
+  late int highestPitch;
+  late int prevPitch;
 
   @override
   void initState() {
     super.initState();
-    lowestPitch = Notes.minPitch.toDouble();
-    highestPitch = Notes.maxPitch.toDouble();
+    lowestPitch = Notes.minPitch;
+    highestPitch = Notes.maxPitch;
   }
 
   @override
@@ -129,6 +130,8 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
             child: Text("Drawer Header"),
           ),
+
+          // Lowest note.
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
             child: Text(
@@ -138,16 +141,85 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ),
           ),
-          Slider(
-            min: Notes.minPitch.toDouble(),
-            max: Notes.maxPitch.toDouble(),
-            divisions: 64,
-            value: lowestPitch,
-            onChanged: (value) {
-              setState(() {
-                lowestPitch = value;
-              });
-            },
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Text(Notes.minNote),
+              ),
+              Expanded(
+                child: Slider(
+                  min: Notes.minPitch.toDouble(),
+                  max: Notes.maxPitch.toDouble(),
+                  divisions: 64,
+                  value: lowestPitch.toDouble(),
+                  label: Notes.pitchToNote(lowestPitch),
+                  onChanged: (value) {
+                    setState(() {
+                      prevPitch = lowestPitch;
+                      lowestPitch = value.round();
+                      if (Notes.pitchToNote(lowestPitch).length == 3) {
+                        lowestPitch += (lowestPitch > prevPitch) ? 1 : -1;
+                      }
+                      if (value > highestPitch) {
+                        highestPitch = value.round();
+                      }
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(Notes.maxNote),
+              ),
+            ],
+          ),
+          Divider(
+            height: 1,
+          ),
+
+          // Highest note.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+            child: Text(
+              "Set the highest note:",
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Text(Notes.minNote),
+              ),
+              Expanded(
+                child: Slider(
+                  min: Notes.minPitch.toDouble(),
+                  max: Notes.maxPitch.toDouble(),
+                  divisions: 64,
+                  value: highestPitch.toDouble(),
+                  label: Notes.pitchToNote(highestPitch),
+                  onChanged: (value) {
+                    setState(() {
+                      prevPitch = highestPitch;
+                      highestPitch = value.round();
+                      if (Notes.pitchToNote(highestPitch).length == 3) {
+                        highestPitch += (highestPitch > prevPitch) ? 1 : -1;
+                      }
+                      if (value < lowestPitch) {
+                        lowestPitch = value.round();
+                      }
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(Notes.maxNote),
+              ),
+            ],
           ),
         ],
       ),
