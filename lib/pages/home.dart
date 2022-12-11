@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import "package:flutter/material.dart";
 
 
@@ -26,13 +28,26 @@ class _HomeState extends State<Home> {
               },
               child: Text(
                 "Piano Roll",
-                style: TextStyle(
-                  letterSpacing: 1.0,
-                ),
               ),
             ),
 
-            // Next button location.
+            // Function in C++ testing.
+            ElevatedButton(
+              onPressed: () {},
+              child: Text(
+                "Functions in C++",
+              ),
+            ),
+
+            // Exit the app.
+            ElevatedButton(
+              onPressed: () {
+                exit(0);
+              },
+              child: Text(
+                "Exit",
+              ),
+            ),
 
           ],
         ),

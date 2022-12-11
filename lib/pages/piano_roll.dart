@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 import "package:flutter_experimentation/services/white_piano_tile.dart";
 import "package:flutter_experimentation/services/black_piano_tile.dart";
 import "package:flutter_experimentation/services/notes.dart";
@@ -23,26 +24,27 @@ class _PianoRollState extends State<PianoRoll> {
       blackTiles: blackTiles,
     );
 
+    // Make fullscreen.
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: <Widget>[
+      body: Stack(
+        children: <Widget>[
 
-            // White tiles.
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: whiteTiles,
-            ),
+          // White tiles.
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: whiteTiles,
+          ),
 
-            // Black tiles.
-            Column(
-              // crossAxisAlignment: CrossAxisAlignment.start,
-              // mainAxisAlignment: MainAxisAlignment.center,
-              children: blackTiles,
-            ),
-          ],
-        ),
+          // Black tiles.
+          Column(
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: blackTiles,
+          ),
+        ],
       ),
     );
   }
@@ -73,7 +75,6 @@ class _PianoRollState extends State<PianoRoll> {
         blackTiles.insert(0, BlackPianoTile(note: note));
         prevNote = note;
       }
-      print(prevNote);
     }
     blackTiles.insert(0, blankSpace(flex: 3));
   }

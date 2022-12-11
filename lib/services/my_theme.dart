@@ -18,6 +18,10 @@ class MyTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue,
+        textStyle: TextStyle(
+          letterSpacing: 1.0,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     ),
   );
@@ -35,6 +39,10 @@ class MyTheme {
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue[700],
+        textStyle: TextStyle(
+          letterSpacing: 1.0,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     ),
   );
