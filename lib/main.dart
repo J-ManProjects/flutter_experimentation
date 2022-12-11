@@ -1,4 +1,6 @@
 import "package:flutter/material.dart";
+import "services/themes.dart";
+import "pages/piano_roll.dart";
 
 
 // Run the app here.
@@ -20,23 +22,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Flutter Experimentation",
-
-      // Light mode.
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.blue,
-      ),
-
-      // Dark mode.
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primarySwatch: Colors.indigo,
-      ),
-
-      // Configure routes.
+      theme: MyTheme.light,
+      darkTheme: MyTheme.dark,
       initialRoute: "/home",
       routes: {
         "/home": (context) => Home(),
+        "/piano": (context) => PianoRoll(),
       },
     );
   }
@@ -56,7 +47,28 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("Hello world"),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+
+            // Piano roll button.
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, "/piano");
+              },
+              child: Text(
+                "Piano Roll",
+                style: TextStyle(
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ),
+
+            // Next button location.
+
+          ],
+        ),
       ),
     );
   }
