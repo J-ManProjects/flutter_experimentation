@@ -10,6 +10,7 @@ class MyTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.blue,
       elevation: 0,
+      centerTitle: true,
     ),
     brightness: Brightness.light,
     primarySwatch: Colors.blue,
@@ -32,6 +33,7 @@ class MyTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: Colors.blue[700],
       elevation: 0,
+      centerTitle: true,
     ),
     brightness: Brightness.dark,
 
@@ -46,6 +48,13 @@ class MyTheme {
       ),
     ),
   );
+
+
+  // Returns the dark mode state.
+  static bool isDarkMode(context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    return brightness == Brightness.dark;
+  }
 
 
 }

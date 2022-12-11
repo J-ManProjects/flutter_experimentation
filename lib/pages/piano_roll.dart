@@ -3,6 +3,7 @@ import "package:flutter/services.dart";
 import "package:flutter_experimentation/services/white_piano_tile.dart";
 import "package:flutter_experimentation/services/black_piano_tile.dart";
 import "package:flutter_experimentation/services/notes.dart";
+import "package:flutter_experimentation/services/my_theme.dart";
 
 
 class PianoRoll extends StatefulWidget {
@@ -28,6 +29,10 @@ class _PianoRollState extends State<PianoRoll> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Piano roll"),
+      ),
+      drawer: AppDrawer(),
       body: Stack(
         children: <Widget>[
 
@@ -72,7 +77,7 @@ class _PianoRollState extends State<PianoRoll> {
             blackTiles.insert(0, blankSpace(flex: 2));
           }
         }
-        blackTiles.insert(0, BlackPianoTile(note: note));
+        blackTiles.insert(0, BlackPianoTile());
         prevNote = note;
       }
     }
@@ -86,6 +91,65 @@ class _PianoRollState extends State<PianoRoll> {
       flex: flex,
       child: SizedBox(
         height: 1,
+      ),
+    );
+  }
+}
+
+
+// The complete app drawer layout and functionality.
+class AppDrawer extends StatefulWidget {
+  const AppDrawer({Key? key}) : super(key: key);
+
+  @override
+  State<AppDrawer> createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  late double lowestPitch;
+  late double highestPitch;
+
+  @override
+  void initState() {
+    super.initState();
+    lowestPitch = Notes.minPitch.toDouble();
+    highestPitch = Notes.maxPitch.toDouble();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: <Widget>[
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: MyTheme.isDarkMode(context)
+                ? Colors.blue[700]
+                : Colors.blue,
+            ),
+            child: Text("Drawer Header"),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+            child: Text(
+              "Set the lowest note:",
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Slider(
+            min: Notes.minPitch.toDouble(),
+            max: Notes.maxPitch.toDouble(),
+            divisions: 64,
+            value: lowestPitch,
+            onChanged: (value) {
+              setState(() {
+                lowestPitch = value;
+              });
+            },
+          ),
+        ],
       ),
     );
   }
