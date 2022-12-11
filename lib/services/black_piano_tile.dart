@@ -10,34 +10,19 @@ class BlackPianoTile extends StatefulWidget {
 }
 
 class _BlackPianoTileState extends State<BlackPianoTile> {
-  late double opacity;
-
   @override
   Widget build(BuildContext context) {
-    opacity = (widget.note == "") ? 0 : 0.6;
-
     return Expanded(
+      flex: 2,
       child: Container(
+        width: 200,
         decoration: BoxDecoration(
           border: Border.all(
-            width: 2,
-            color: Colors.red,
+            width: 1,
+            color: Colors.black54,
           ),
           borderRadius: BorderRadius.circular(2),
-          color:  Colors.black.withOpacity(opacity),
-        ),
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Text(
-              widget.note,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-              ),
-            ),
-          ),
+          color:  Colors.black,
         ),
       ),
     );

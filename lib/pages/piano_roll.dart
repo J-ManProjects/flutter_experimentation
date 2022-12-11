@@ -37,8 +37,8 @@ class _PianoRollState extends State<PianoRoll> {
 
             // Black tiles.
             Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisAlignment: MainAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.start,
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: blackTiles,
             ),
           ],
@@ -58,22 +58,34 @@ class _PianoRollState extends State<PianoRoll> {
     String note;
     String prevNote = "";
 
-    for (int p = 48; p <= 48+12; p++) {
+    blackTiles.insert(0, blankSpace(flex: 1));
+    for (int p = Notes.minPitch; p <= Notes.maxPitch; p++) {
       note = Notes.pitchToNote(p);
       if (note.length == 2) {
-        whiteTiles.add(WhitePianoTile(note: note));
-        blackTiles.add(BlackPianoTile(note: ""));
+        whiteTiles.insert(0, WhitePianoTile(note: note));
+        blackTiles.insert(0, blankSpace(flex: 2));
       } else {
         if (prevNote != "") {
           if (Notes.noteToPitch(note) - Notes.noteToPitch(prevNote) > 2) {
-            blackTiles.add(BlackPianoTile(note: ""));
+            blackTiles.insert(0, blankSpace(flex: 2));
           }
         }
-        blackTiles.add(BlackPianoTile(note: note));
+        blackTiles.insert(0, BlackPianoTile(note: note));
         prevNote = note;
       }
       print(prevNote);
     }
-    blackTiles.add(BlackPianoTile(note: ""));
+    blackTiles.insert(0, blankSpace(flex: 3));
+  }
+
+
+  // Add a blank space in between black piano tiles.
+  Widget blankSpace({required int flex}) {
+    return Expanded(
+      flex: flex,
+      child: SizedBox(
+        height: 1,
+      ),
+    );
   }
 }

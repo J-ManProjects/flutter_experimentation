@@ -23,9 +23,9 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
           color: Colors.white,
         ),
         child: Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.centerRight,
           child: Padding(
-            padding: const EdgeInsets.only(left: 8),
+            padding: const EdgeInsets.only(right: 8),
             child: Text(
               widget.note,
               style: TextStyle(

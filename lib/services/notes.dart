@@ -5,7 +5,7 @@ class Notes {
     "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"
   ];
   static const int minPitch = 33;
-  static const int maxPitch = 97;
+  static const int maxPitch = 96;
   static const int Fs = 44100;
 
 
