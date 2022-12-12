@@ -6,6 +6,10 @@ import "package:flutter_experimentation/services/notes.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 
 
+int lowestPitch = Notes.minPitch;
+int highestPitch = Notes.maxPitch;
+
+
 class PianoRoll extends StatefulWidget {
   const PianoRoll({Key? key}) : super(key: key);
 
@@ -17,9 +21,9 @@ class _PianoRollState extends State<PianoRoll> {
   List<Widget> whiteTiles = [];
   List<Widget> blackTiles = [];
 
-
   @override
   Widget build(BuildContext context) {
+    print("Building piano roll state");
     populatePianoTiles(
       whiteTiles: whiteTiles,
       blackTiles: blackTiles,
@@ -66,7 +70,7 @@ class _PianoRollState extends State<PianoRoll> {
     String prevNote = "";
 
     blackTiles.insert(0, blankSpace(flex: 1));
-    for (int p = Notes.minPitch; p <= Notes.maxPitch; p++) {
+    for (int p = lowestPitch; p <= highestPitch; p++) {
       note = Notes.pitchToNote(p);
       if (note.length == 2) {
         whiteTiles.insert(0, WhitePianoTile(note: note));
@@ -81,7 +85,7 @@ class _PianoRollState extends State<PianoRoll> {
         prevNote = note;
       }
     }
-    blackTiles.insert(0, blankSpace(flex: 3));
+    blackTiles.insert(0, blankSpace(flex: 1));
   }
 
 
@@ -106,16 +110,7 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-  late int lowestPitch;
-  late int highestPitch;
   late int prevPitch;
-
-  @override
-  void initState() {
-    super.initState();
-    lowestPitch = Notes.minPitch;
-    highestPitch = Notes.maxPitch;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,8 +156,8 @@ class _AppDrawerState extends State<AppDrawer> {
                       if (Notes.pitchToNote(lowestPitch).length == 3) {
                         lowestPitch += (lowestPitch > prevPitch) ? 1 : -1;
                       }
-                      if (value > highestPitch) {
-                        highestPitch = value.round();
+                      if (lowestPitch > highestPitch) {
+                        highestPitch = lowestPitch;
                       }
                     });
                   },
@@ -174,8 +169,20 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ],
           ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Center(
+              child: Text(
+                Notes.pitchToNote(lowestPitch),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
           Divider(
-            height: 1,
+            height: 2,
           ),
 
           // Highest note.
@@ -208,8 +215,8 @@ class _AppDrawerState extends State<AppDrawer> {
                       if (Notes.pitchToNote(highestPitch).length == 3) {
                         highestPitch += (highestPitch > prevPitch) ? 1 : -1;
                       }
-                      if (value < lowestPitch) {
-                        lowestPitch = value.round();
+                      if (highestPitch < lowestPitch) {
+                        lowestPitch = highestPitch;
                       }
                     });
                   },
@@ -220,6 +227,18 @@ class _AppDrawerState extends State<AppDrawer> {
                 child: Text(Notes.maxNote),
               ),
             ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Center(
+              child: Text(
+                Notes.pitchToNote(highestPitch),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
           ),
         ],
       ),
