@@ -113,11 +113,8 @@ class _PianoRollState extends State<PianoRoll> {
   }
 
 
-
   // The complete left drawer layout and functionality.
   Widget leftDrawer() {
-    int prevPitch;
-
     return Drawer(
       child: ListView(
         children: <Widget>[
@@ -154,17 +151,8 @@ class _PianoRollState extends State<PianoRoll> {
                   value: lowestPitch.toDouble(),
                   label: Notes.pitchToNote(lowestPitch),
                   onChanged: (value) {
-                    setState(() {
-                      prevPitch = lowestPitch;
-                      lowestPitch = value.round();
-                      if (Notes.pitchToNote(lowestPitch).length == 3) {
-                        lowestPitch += (lowestPitch > prevPitch) ? 1 : -1;
-                      }
-                      if (lowestPitch > highestPitch) {
-                        highestPitch = lowestPitch;
-                      }
-                    });
-                  },
+                    updateLowestPitch(value);
+                  }
                 ),
               ),
               Padding(
@@ -213,16 +201,7 @@ class _PianoRollState extends State<PianoRoll> {
                   value: highestPitch.toDouble(),
                   label: Notes.pitchToNote(highestPitch),
                   onChanged: (value) {
-                    setState(() {
-                      prevPitch = highestPitch;
-                      highestPitch = value.round();
-                      if (Notes.pitchToNote(highestPitch).length == 3) {
-                        highestPitch += (highestPitch > prevPitch) ? 1 : -1;
-                      }
-                      if (highestPitch < lowestPitch) {
-                        lowestPitch = highestPitch;
-                      }
-                    });
+                    updateHighestPitch(value);
                   },
                 ),
               ),
@@ -248,4 +227,36 @@ class _PianoRollState extends State<PianoRoll> {
       ),
     );
   }
+
+
+  // Update the lowest pitch value.
+  void updateLowestPitch(double value) {
+    int prevPitch = lowestPitch;
+    setState(() {
+      lowestPitch = value.round();
+      if (Notes.pitchToNote(lowestPitch).length == 3) {
+        lowestPitch += (lowestPitch > prevPitch) ? 1 : -1;
+      }
+      if (lowestPitch > highestPitch) {
+        highestPitch = lowestPitch;
+      }
+    });
+  }
+
+
+  // Update the highest pitch value.
+  void updateHighestPitch(double value) {
+    int prevPitch = highestPitch;
+    setState(() {
+      highestPitch = value.round();
+      if (Notes.pitchToNote(highestPitch).length == 3) {
+        highestPitch += (highestPitch > prevPitch) ? 1 : -1;
+      }
+      if (highestPitch < lowestPitch) {
+        lowestPitch = highestPitch;
+      }
+    });
+  }
+
+
 }
