@@ -161,7 +161,7 @@ class _PianoRollState extends State<PianoRoll> {
           Row(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding: const EdgeInsets.only(left: 16),
                 child: Text(Notes.minNote),
               ),
               Expanded(
@@ -177,7 +177,7 @@ class _PianoRollState extends State<PianoRoll> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 16),
                 child: Text(Notes.maxNote),
               ),
             ],
@@ -227,7 +227,7 @@ class _PianoRollState extends State<PianoRoll> {
           Row(
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding: const EdgeInsets.only(left: 16),
                 child: Text(Notes.minNote),
               ),
               Expanded(
@@ -243,7 +243,7 @@ class _PianoRollState extends State<PianoRoll> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.only(right: 16),
                 child: Text(Notes.maxNote),
               ),
             ],
