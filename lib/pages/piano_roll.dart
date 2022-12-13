@@ -83,7 +83,13 @@ class _PianoRollState extends State<PianoRoll> {
     String note;
     String prevNote = "";
 
-    blackTiles.insert(0, blankSpace(flex: 1));
+    // Add the necessary blank space at the bottom.
+    note = Notes.pitchToNote(lowestPitch)[0];
+    print(note);
+    int flex = (note == "B" || note == "E") ? 3 : 1;
+    blackTiles.insert(0, blankSpace(flex: flex));
+
+    // Add all notes in between.
     for (int p = lowestPitch; p <= highestPitch; p++) {
       note = Notes.pitchToNote(p);
       if (note.length == 2) {
@@ -99,7 +105,11 @@ class _PianoRollState extends State<PianoRoll> {
         prevNote = note;
       }
     }
-    blackTiles.insert(0, blankSpace(flex: 3));
+
+    // Add the necessary blank space on top.
+    note = Notes.pitchToNote(highestPitch)[0];
+    flex = (note == "C" || note == "F") ? 3 : 1;
+    blackTiles.insert(0, blankSpace(flex: flex));
   }
 
 
@@ -125,7 +135,17 @@ class _PianoRollState extends State<PianoRoll> {
                   ? Colors.blue[700]
                   : Colors.blue,
             ),
-            child: Text("Drawer Header"),
+            child: Center(
+              child: Text(
+                "Layout settings",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  fontFamily: "san-serif",
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
           ),
 
           // Highest note.
