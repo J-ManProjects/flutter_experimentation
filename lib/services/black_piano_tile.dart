@@ -9,6 +9,14 @@ class BlackPianoTile extends StatefulWidget {
 }
 
 class _BlackPianoTileState extends State<BlackPianoTile> {
+  late bool highlight;
+
+  @override
+  void initState() {
+    super.initState();
+    highlight = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -21,7 +29,15 @@ class _BlackPianoTileState extends State<BlackPianoTile> {
             color: Colors.black54,
           ),
           borderRadius: BorderRadius.circular(2),
-          color:  Colors.black,
+          color: highlight ? Colors.red[900] : Colors.black,
+        ),
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              highlight = !highlight;
+            });
+            print("highlight black tile = $highlight");
+          },
         ),
       ),
     );

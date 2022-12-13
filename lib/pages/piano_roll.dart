@@ -80,12 +80,11 @@ class _PianoRollState extends State<PianoRoll> {
   }) {
     whiteTiles.clear();
     blackTiles.clear();
-    String note;
     String prevNote = "";
 
     // Add the necessary blank space at the bottom.
-    note = Notes.pitchToNote(lowestPitch)[0];
-    print(note);
+    String note = Notes.pitchToNote(lowestPitch)[0];
+    print("Bottom note:  $note");
     int flex = (note == "B" || note == "E") ? 3 : 1;
     blackTiles.insert(0, blankSpace(flex: flex));
 
@@ -108,6 +107,7 @@ class _PianoRollState extends State<PianoRoll> {
 
     // Add the necessary blank space on top.
     note = Notes.pitchToNote(highestPitch)[0];
+    print("Top note:  $note");
     flex = (note == "C" || note == "F") ? 3 : 1;
     blackTiles.insert(0, blankSpace(flex: flex));
   }

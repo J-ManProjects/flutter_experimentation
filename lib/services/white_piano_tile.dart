@@ -10,6 +10,14 @@ class WhitePianoTile extends StatefulWidget {
 }
 
 class _WhitePianoTileState extends State<WhitePianoTile> {
+  late bool highlight;
+
+  @override
+  void initState() {
+    super.initState();
+    highlight = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -20,17 +28,25 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
             color: Colors.black54,
           ),
           borderRadius: BorderRadius.circular(2),
-          color: Colors.white,
+          color: highlight ? Colors.red[700] : Colors.white,
         ),
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text(
-              widget.note,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 10,
+        child: InkWell(
+          onTap: () {
+            setState(() {
+              highlight = !highlight;
+            });
+            print("highlight white tile = $highlight");
+          },
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Text(
+                widget.note,
+                style: TextStyle(
+                  color: highlight ? Colors.white : Colors.black,
+                  fontSize: 10,
+                ),
               ),
             ),
           ),
