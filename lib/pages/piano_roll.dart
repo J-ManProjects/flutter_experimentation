@@ -6,8 +6,8 @@ import "package:flutter_experimentation/services/notes.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 
 
-int lowestPitch = Notes.minPitch;
-int highestPitch = Notes.maxPitch;
+// int lowestPitch = Notes.minPitch;
+// int highestPitch = Notes.maxPitch;
 
 
 class PianoRoll extends StatefulWidget {
@@ -20,10 +20,23 @@ class PianoRoll extends StatefulWidget {
 class _PianoRollState extends State<PianoRoll> {
   List<Widget> whiteTiles = [];
   List<Widget> blackTiles = [];
+  int lowestPitch = 0;
+  int highestPitch = 0;
+
+
+  @override
+  void initState() {
+    super.initState();
+    lowestPitch = Notes.minPitch;
+    highestPitch = Notes.maxPitch;
+  }
+
 
   @override
   Widget build(BuildContext context) {
     print("Building piano roll state");
+
+    // Create all piano tiles.
     populatePianoTiles(
       whiteTiles: whiteTiles,
       blackTiles: blackTiles,
@@ -36,7 +49,7 @@ class _PianoRollState extends State<PianoRoll> {
       appBar: AppBar(
         title: Text("Piano roll"),
       ),
-      drawer: AppDrawer(),
+      drawer: leftDrawer(),
       body: Stack(
         children: <Widget>[
 
@@ -85,7 +98,7 @@ class _PianoRollState extends State<PianoRoll> {
         prevNote = note;
       }
     }
-    blackTiles.insert(0, blankSpace(flex: 1));
+    blackTiles.insert(0, blankSpace(flex: 3));
   }
 
 
@@ -98,30 +111,21 @@ class _PianoRollState extends State<PianoRoll> {
       ),
     );
   }
-}
 
 
-// The complete app drawer layout and functionality.
-class AppDrawer extends StatefulWidget {
-  const AppDrawer({Key? key}) : super(key: key);
 
-  @override
-  State<AppDrawer> createState() => _AppDrawerState();
-}
+  // The complete left drawer layout and functionality.
+  Widget leftDrawer() {
+    int prevPitch;
 
-class _AppDrawerState extends State<AppDrawer> {
-  late int prevPitch;
-
-  @override
-  Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         children: <Widget>[
           DrawerHeader(
             decoration: BoxDecoration(
               color: MyTheme.isDarkMode(context)
-                ? Colors.blue[700]
-                : Colors.blue,
+                  ? Colors.blue[700]
+                  : Colors.blue,
             ),
             child: Text("Drawer Header"),
           ),

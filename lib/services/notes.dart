@@ -14,7 +14,7 @@ class Notes {
   // Determine the note of the given pitch.
   static String pitchToNote(int pitch) {
     String note = NOTES[pitch % 12];
-    int octave = pitch ~/ 12;
+    int octave = pitch ~/ 12 - 1;
     return "$note$octave";
   }
 
