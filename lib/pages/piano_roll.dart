@@ -1,3 +1,4 @@
+import "dart:math";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_experimentation/services/white_piano_tile.dart";
@@ -127,56 +128,6 @@ class _PianoRollState extends State<PianoRoll> {
             child: Text("Drawer Header"),
           ),
 
-          // Lowest note.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
-            child: Text(
-              "Set the lowest note:",
-              style: TextStyle(
-                fontSize: 16,
-              ),
-            ),
-          ),
-          Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Text(Notes.minNote),
-              ),
-              Expanded(
-                child: Slider(
-                  min: Notes.minPitch.toDouble(),
-                  max: Notes.maxPitch.toDouble(),
-                  divisions: 64,
-                  value: lowestPitch.toDouble(),
-                  label: Notes.pitchToNote(lowestPitch),
-                  onChanged: (value) {
-                    updateLowestPitch(value);
-                  }
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Text(Notes.maxNote),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Center(
-              child: Text(
-                Notes.pitchToNote(lowestPitch),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-          Divider(
-            height: 2,
-          ),
-
           // Highest note.
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
@@ -211,18 +162,100 @@ class _PianoRollState extends State<PianoRoll> {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16.0),
-            child: Center(
-              child: Text(
-                Notes.pitchToNote(highestPitch),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+          Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.remove),
+                onPressed: () {
+                  updateHighestPitch(highestPitch-1);
+                },
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    Notes.pitchToNote(highestPitch),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
+              ),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  updateHighestPitch(highestPitch+1);
+                },
+              ),
+            ],
+          ),
+
+          Divider(
+            height: 3,
+          ),
+
+          // Lowest note.
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+            child: Text(
+              "Set the lowest note:",
+              style: TextStyle(
+                fontSize: 16,
               ),
             ),
           ),
+          Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Text(Notes.minNote),
+              ),
+              Expanded(
+                child: Slider(
+                    min: Notes.minPitch.toDouble(),
+                    max: Notes.maxPitch.toDouble(),
+                    divisions: 64,
+                    value: lowestPitch.toDouble(),
+                    label: Notes.pitchToNote(lowestPitch),
+                    onChanged: (value) {
+                      updateLowestPitch(value);
+                    }
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Text(Notes.maxNote),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.remove),
+                onPressed: () {
+                  updateLowestPitch(lowestPitch-1);
+                },
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    Notes.pitchToNote(lowestPitch),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.add),
+                onPressed: () {
+                  updateLowestPitch(lowestPitch+1);
+                },
+              ),
+            ],
+          ),
+
         ],
       ),
     );
@@ -231,31 +264,37 @@ class _PianoRollState extends State<PianoRoll> {
 
   // Update the lowest pitch value.
   void updateLowestPitch(double value) {
-    int prevPitch = lowestPitch;
-    setState(() {
-      lowestPitch = value.round();
-      if (Notes.pitchToNote(lowestPitch).length == 3) {
-        lowestPitch += (lowestPitch > prevPitch) ? 1 : -1;
-      }
-      if (lowestPitch > highestPitch) {
-        highestPitch = lowestPitch;
-      }
-    });
+    if (value >= Notes.minPitch && value <= Notes.maxPitch) {
+      int prevPitch = lowestPitch;
+      setState(() {
+        lowestPitch = max(value.round(), Notes.minPitch);
+        if (Notes.pitchToNote(lowestPitch).length == 3) {
+          lowestPitch += (lowestPitch > prevPitch) ? 1 : -1;
+        }
+        if (lowestPitch > highestPitch) {
+          highestPitch = lowestPitch;
+        }
+      });
+    }
   }
 
 
   // Update the highest pitch value.
   void updateHighestPitch(double value) {
-    int prevPitch = highestPitch;
-    setState(() {
-      highestPitch = value.round();
-      if (Notes.pitchToNote(highestPitch).length == 3) {
-        highestPitch += (highestPitch > prevPitch) ? 1 : -1;
-      }
-      if (highestPitch < lowestPitch) {
-        lowestPitch = highestPitch;
-      }
-    });
+    if (value >= Notes.minPitch && value <= Notes.maxPitch) {
+      int prevPitch = highestPitch;
+      setState(() {
+        highestPitch = value.round();
+        if (Notes
+            .pitchToNote(highestPitch)
+            .length == 3) {
+          highestPitch += (highestPitch > prevPitch) ? 1 : -1;
+        }
+        if (highestPitch < lowestPitch) {
+          lowestPitch = highestPitch;
+        }
+      });
+    }
   }
 
 
