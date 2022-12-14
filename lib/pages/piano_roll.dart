@@ -26,6 +26,9 @@ class _PianoRollState extends State<PianoRoll> {
     super.initState();
     lowestPitch = Notes.minPitch;
     highestPitch = Notes.maxPitch;
+
+    // Make fullscreen.
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
 
@@ -38,9 +41,6 @@ class _PianoRollState extends State<PianoRoll> {
       whiteTiles: whiteTiles,
       blackTiles: blackTiles,
     );
-
-    // Make fullscreen.
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
     return Scaffold(
       appBar: AppBar(

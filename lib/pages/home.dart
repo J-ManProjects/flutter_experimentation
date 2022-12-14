@@ -1,6 +1,6 @@
-import 'dart:io';
-
+import "dart:io";
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
 
 
 // Setup the home page.
@@ -23,20 +23,25 @@ class _HomeState extends State<Home> {
 
             // Piano roll button.
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, "/piano");
+              onPressed: () async {
+                await Navigator.pushNamed(context, "/piano");
+
+                // Exit fullscreen.
+                SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
               },
-              child: Text(
-                "Piano Roll",
-              ),
+              child: Text("Piano Roll"),
+            ),
+
+            // Generate sounds.
+            ElevatedButton(
+              onPressed: () {},
+              child: Text("Sound Generator"),
             ),
 
             // Function in C++ testing.
             ElevatedButton(
               onPressed: () {},
-              child: Text(
-                "Functions in C++",
-              ),
+              child: Text("Functions in C++"),
             ),
 
             // Exit the app.
@@ -44,9 +49,7 @@ class _HomeState extends State<Home> {
               onPressed: () {
                 exit(0);
               },
-              child: Text(
-                "Exit",
-              ),
+              child: Text("Exit"),
             ),
 
           ],

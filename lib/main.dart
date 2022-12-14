@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
       title: "Flutter Experimentation",
       theme: MyTheme.light,
       darkTheme: MyTheme.dark,
-      initialRoute: "/piano",
+      initialRoute: "/home",
       routes: {
         "/home": (context) => Home(),
         "/piano": (context) => PianoRoll(),
