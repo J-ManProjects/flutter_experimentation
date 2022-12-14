@@ -7,10 +7,6 @@ import "package:flutter_experimentation/services/notes.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 
 
-// int lowestPitch = Notes.minPitch;
-// int highestPitch = Notes.maxPitch;
-
-
 class PianoRoll extends StatefulWidget {
   const PianoRoll({Key? key}) : super(key: key);
 
@@ -63,10 +59,9 @@ class _PianoRollState extends State<PianoRoll> {
 
           // Black tiles.
           Column(
-            // crossAxisAlignment: CrossAxisAlignment.start,
-            // mainAxisAlignment: MainAxisAlignment.center,
             children: blackTiles,
           ),
+
         ],
       ),
     );
@@ -232,14 +227,14 @@ class _PianoRollState extends State<PianoRoll> {
               ),
               Expanded(
                 child: Slider(
-                    min: Notes.minPitch.toDouble(),
-                    max: Notes.maxPitch.toDouble(),
-                    divisions: 64,
-                    value: lowestPitch.toDouble(),
-                    label: Notes.pitchToNote(lowestPitch),
-                    onChanged: (value) {
-                      updateLowestPitch(value);
-                    }
+                  min: Notes.minPitch.toDouble(),
+                  max: Notes.maxPitch.toDouble(),
+                  divisions: 64,
+                  value: lowestPitch.toDouble(),
+                  label: Notes.pitchToNote(lowestPitch),
+                  onChanged: (value) {
+                    updateLowestPitch(value);
+                  }
                 ),
               ),
               Padding(
@@ -305,9 +300,7 @@ class _PianoRollState extends State<PianoRoll> {
       int prevPitch = highestPitch;
       setState(() {
         highestPitch = value.round();
-        if (Notes
-            .pitchToNote(highestPitch)
-            .length == 3) {
+        if (Notes.pitchToNote(highestPitch).length == 3) {
           highestPitch += (highestPitch > prevPitch) ? 1 : -1;
         }
         if (highestPitch < lowestPitch) {
