@@ -3,7 +3,7 @@ import "package:flutter/services.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 import "package:flutter_midi/flutter_midi.dart";
 
-import '../services/notes.dart';
+import "../services/notes.dart";
 
 
 class SoundGenerator extends StatefulWidget {
@@ -19,20 +19,47 @@ class _SoundGeneratorState extends State<SoundGenerator> {
   late int note;
   dynamic stopColor;
   dynamic playColor;
+  late String soundFont;
+  late List<String> soundFonts;
 
   @override
   void initState() {
     super.initState();
-    isPlaying = false;
+
+    // The sound font list and selection.
+    soundFonts = [
+      "AI-APiano02trans.SF2",
+      "Florestan_Piano.sf2",
+      "Full Grand.sf2",
+      "Grand Piano.sf2",
+      "HipHopKeyz1.sf2",
+      "KAWAI good piano.sf2",
+      "Korg_Triton_Piano.sf2",
+      "Motif ES6 Concert Piano(12Mb).SF2",
+      "Motif Piano.SF2",
+      "Piano Korg Triton.SF2",
+      "Piano_1.sf2",
+      "Piano.sf2",
+      "Porter Grand Piano.sf2",
+      "Roland_64VoicePiano.sf2",
+      "SC55 Piano_V2.sf2",
+    ];
+    soundFont = soundFonts[11];
+
+    // The note and playing status.
     note = 69;
+    isPlaying = false;
+
+    // Configure the midi playback.
     midi = FlutterMidi();
-    prepareMidi("assets/sf2/Piano.sf2");
+    prepareMidi(soundFont);
   }
 
 
   // Prepare the midi sound font.
-  void prepareMidi(String asset) async {
+  void prepareMidi(String soundFont) async {
     midi.unmute();
+    String asset = "assets/sf2/$soundFont";
     ByteData data = await rootBundle.load(asset);
     midi.prepare(sf2: data);
   }
@@ -51,6 +78,38 @@ class _SoundGeneratorState extends State<SoundGenerator> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+
+            // Select sound font.
+            Text(
+              "Select sound font",
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
+            DropdownButton(
+              value: soundFont,
+              items: soundFonts.map((String font) {
+                return DropdownMenuItem(
+                  value: font,
+                  child: Text(
+                    font,
+                    textAlign: TextAlign.right,
+                  ),
+                );
+              }).toList(),
+              onChanged: (newSoundFont) {
+                setState(() {
+                  soundFont = newSoundFont!;
+                });
+                prepareMidi(soundFont);
+              },
+            ),
+            Divider(
+              height: 60,
+              thickness: 1,
+            ),
+
+            // Play C scale.
             Text(
               "Play C scale",
               style: TextStyle(
@@ -58,7 +117,7 @@ class _SoundGeneratorState extends State<SoundGenerator> {
               ),
             ),
             SizedBox(
-              height: 60,
+              height: 40,
             ),
             ElevatedButton(
               onPressed: () {
@@ -77,10 +136,19 @@ class _SoundGeneratorState extends State<SoundGenerator> {
                 size: 30,
               ),
             ),
+
           ],
         ),
       ),
     );
+  }
+
+
+  // Play the given midi pitch.
+  Future<void> playMidiNote({required int pitch, int duration = 1000}) async {
+    midi.playMidiNote(midi: pitch);
+    await Future.delayed(Duration(milliseconds: duration));
+    midi.stopMidiNote(midi: pitch);
   }
 
 
@@ -92,9 +160,7 @@ class _SoundGeneratorState extends State<SoundGenerator> {
         stopAllNotes();
         return;
       }
-      midi.playMidiNote(midi: pitch);
-      await Future.delayed(Duration(milliseconds: milliseconds));
-      midi.stopMidiNote(midi: pitch);
+      await playMidiNote(pitch: pitch, duration: milliseconds);
     }
     await Future.delayed(Duration(milliseconds: milliseconds));
     setState(() {
