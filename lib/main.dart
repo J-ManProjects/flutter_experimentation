@@ -1,7 +1,8 @@
 import "package:flutter/material.dart";
+import "package:flutter_experimentation/pages/home.dart";
+import "package:flutter_experimentation/pages/piano_roll.dart";
+import "package:flutter_experimentation/pages/sound_generator.dart";
 import "services/my_theme.dart";
-import "pages/home.dart";
-import "pages/piano_roll.dart";
 
 
 // Run the app here.
@@ -29,6 +30,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         "/home": (context) => Home(),
         "/piano": (context) => PianoRoll(),
+        "/sound": (context) => SoundGenerator(),
       },
     );
   }

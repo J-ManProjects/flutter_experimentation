@@ -46,9 +46,7 @@ class _HomeState extends State<Home> {
             // Generate sounds.
             ElevatedButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                final snackBar = customSnackBar("Sound Generator");
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                Navigator.pushNamed(context, "/sound");
               },
               child: Text("Sound Generator"),
             ),
