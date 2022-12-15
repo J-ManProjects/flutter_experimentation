@@ -46,6 +46,7 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
                 style: TextStyle(
                   color: highlight ? Colors.white : Colors.black,
                   fontSize: 10,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),

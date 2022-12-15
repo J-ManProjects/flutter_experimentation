@@ -52,8 +52,6 @@ class _PianoRollState extends State<PianoRoll> {
 
           // White tiles.
           Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
             children: whiteTiles,
           ),
 
@@ -75,7 +73,7 @@ class _PianoRollState extends State<PianoRoll> {
   }) {
     whiteTiles.clear();
     blackTiles.clear();
-    String prevNote = "";
+    int prevPitch = 0;
 
     // Add the necessary blank space at the bottom.
     String note = Notes.pitchToNote(lowestPitch)[0];
@@ -84,19 +82,23 @@ class _PianoRollState extends State<PianoRoll> {
     blackTiles.insert(0, blankSpace(flex: flex));
 
     // Add all notes in between.
-    for (int p = lowestPitch; p <= highestPitch; p++) {
-      note = Notes.pitchToNote(p);
+    for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
+      note = Notes.pitchToNote(pitch);
+
+      // Add white piano tile.
       if (note.length == 2) {
         whiteTiles.insert(0, WhitePianoTile(note: note));
         blackTiles.insert(0, blankSpace(flex: 2));
       } else {
-        if (prevNote != "") {
-          if (Notes.noteToPitch(note) - Notes.noteToPitch(prevNote) > 2) {
-            blackTiles.insert(0, blankSpace(flex: 2));
-          }
+
+        // Add blank space for two semitones.
+        if (prevPitch != 0 && pitch - prevPitch > 2) {
+          blackTiles.insert(0, blankSpace(flex: 2));
         }
+
+        // Add black piano tile.
         blackTiles.insert(0, BlackPianoTile());
-        prevNote = note;
+        prevPitch = pitch;
       }
     }
 
@@ -124,6 +126,8 @@ class _PianoRollState extends State<PianoRoll> {
     return Drawer(
       child: ListView(
         children: <Widget>[
+
+          // Drawer heading.
           DrawerHeader(
             decoration: BoxDecoration(
               color: MyTheme.isDarkMode(context)
@@ -134,9 +138,9 @@ class _PianoRollState extends State<PianoRoll> {
               child: Text(
                 "Layout settings",
                 style: TextStyle(
-                  fontSize: 24,
+                  color: Colors.white,
+                  fontSize: 24,       
                   fontWeight: FontWeight.w900,
-                  fontFamily: "san-serif",
                   letterSpacing: 1,
                 ),
               ),
@@ -145,9 +149,10 @@ class _PianoRollState extends State<PianoRoll> {
 
           // Highest note.
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+            padding: const EdgeInsets.only(top: 16, bottom: 8),
             child: Text(
               "Set the highest note:",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
               ),
@@ -205,15 +210,15 @@ class _PianoRollState extends State<PianoRoll> {
             ],
           ),
 
-          Divider(
-            height: 3,
-          ),
+          // Slider divider.
+          Divider(height: 3),
 
           // Lowest note.
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+            padding: const EdgeInsets.only(top: 16, bottom: 8),
             child: Text(
               "Set the lowest note:",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
               ),
@@ -286,9 +291,7 @@ class _PianoRollState extends State<PianoRoll> {
         if (Notes.pitchToNote(lowestPitch).length == 3) {
           lowestPitch += (lowestPitch > prevPitch) ? 1 : -1;
         }
-        if (lowestPitch > highestPitch) {
-          highestPitch = lowestPitch;
-        }
+        highestPitch = max(lowestPitch, highestPitch);
       });
     }
   }
@@ -303,9 +306,7 @@ class _PianoRollState extends State<PianoRoll> {
         if (Notes.pitchToNote(highestPitch).length == 3) {
           highestPitch += (highestPitch > prevPitch) ? 1 : -1;
         }
-        if (highestPitch < lowestPitch) {
-          lowestPitch = highestPitch;
-        }
+        lowestPitch = min(lowestPitch, highestPitch);
       });
     }
   }
