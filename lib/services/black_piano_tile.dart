@@ -21,24 +21,33 @@ class _BlackPianoTileState extends State<BlackPianoTile> {
   Widget build(BuildContext context) {
     return Expanded(
       flex: 2,
-      child: Container(
-        width: 200,
-        decoration: BoxDecoration(
-          border: Border.all(
-            width: 1,
-            color: Colors.black54,
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 2,
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 1,
+                  color: Colors.black54,
+                ),
+                borderRadius: BorderRadius.circular(2),
+                color: highlight ? Colors.red[900] : Colors.black,
+              ),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    highlight = !highlight;
+                  });
+                  print("highlight black tile = $highlight");
+                },
+              ),
+            ),
           ),
-          borderRadius: BorderRadius.circular(2),
-          color: highlight ? Colors.red[900] : Colors.black,
-        ),
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              highlight = !highlight;
-            });
-            print("highlight black tile = $highlight");
-          },
-        ),
+          Expanded(
+            child: SizedBox(),
+          ),
+        ],
       ),
     );
   }

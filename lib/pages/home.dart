@@ -12,6 +12,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Exit fullscreen.
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    // Force portrait mode.
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,11 +37,8 @@ class _HomeState extends State<Home> {
 
             // Piano roll button.
             ElevatedButton(
-              onPressed: () async {
-                await Navigator.pushNamed(context, "/piano");
-
-                // Exit fullscreen.
-                SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+              onPressed: () {
+                Navigator.pushNamed(context, "/piano");
               },
               child: Text("Piano Roll"),
             ),

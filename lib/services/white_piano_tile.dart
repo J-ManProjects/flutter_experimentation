@@ -20,6 +20,13 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
 
   @override
   Widget build(BuildContext context) {
+    Color? noteColor;
+    if (widget.note[0] == "C") {
+      noteColor = (highlight) ? Colors.white : Colors.black;
+    } else {
+      noteColor = (highlight) ? Colors.grey[300] : Colors.grey[600];
+    }
+
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -38,15 +45,17 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
             print("highlight white tile = $highlight");
           },
           child: Align(
-            alignment: Alignment.centerRight,
+            alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.only(bottom: 8),
               child: Text(
                 widget.note,
                 style: TextStyle(
-                  color: highlight ? Colors.white : Colors.black,
+                  color: noteColor,
                   fontSize: 10,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: (widget.note[0] == "C")
+                      ? FontWeight.bold
+                      : FontWeight.normal,
                 ),
               ),
             ),

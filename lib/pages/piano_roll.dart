@@ -4,7 +4,6 @@ import "package:flutter/services.dart";
 import "package:flutter_experimentation/services/white_piano_tile.dart";
 import "package:flutter_experimentation/services/black_piano_tile.dart";
 import "package:flutter_experimentation/services/notes.dart";
-import "package:flutter_experimentation/services/my_theme.dart";
 
 
 class PianoRoll extends StatefulWidget {
@@ -29,6 +28,11 @@ class _PianoRollState extends State<PianoRoll> {
 
     // Make fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+
+    // Force landscape mode.
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+    ]);
   }
 
 
@@ -43,26 +47,36 @@ class _PianoRollState extends State<PianoRoll> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Piano roll"),
-      ),
       drawer: leftDrawer(),
       body: Stack(
         children: <Widget>[
 
           // White tiles.
-          Column(
+          Row(
             children: whiteTiles,
           ),
 
           // Black tiles.
-          Column(
+          Row(
             children: blackTiles,
           ),
 
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    // Exit fullscreen.
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+    // Force portrait mode.
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
   }
 
 
@@ -79,7 +93,7 @@ class _PianoRollState extends State<PianoRoll> {
     String note = Notes.pitchToNote(lowestPitch)[0];
     print("Bottom note:  $note");
     int flex = (note == "B" || note == "E") ? 3 : 1;
-    blackTiles.insert(0, blankSpace(flex: flex));
+    blackTiles.add(blankSpace(flex: flex));
 
     // Add all notes in between.
     for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
@@ -87,17 +101,17 @@ class _PianoRollState extends State<PianoRoll> {
 
       // Add white piano tile.
       if (note.length == 2) {
-        whiteTiles.insert(0, WhitePianoTile(note: note));
-        blackTiles.insert(0, blankSpace(flex: 2));
+        whiteTiles.add(WhitePianoTile(note: note));
+        blackTiles.add(blankSpace(flex: 2));
       } else {
 
         // Add blank space for two semitones.
         if (prevPitch != 0 && pitch - prevPitch > 2) {
-          blackTiles.insert(0, blankSpace(flex: 2));
+          blackTiles.add(blankSpace(flex: 2));
         }
 
         // Add black piano tile.
-        blackTiles.insert(0, BlackPianoTile());
+        blackTiles.add(BlackPianoTile());
         prevPitch = pitch;
       }
     }
@@ -106,7 +120,7 @@ class _PianoRollState extends State<PianoRoll> {
     note = Notes.pitchToNote(highestPitch)[0];
     print("Top note:  $note");
     flex = (note == "C" || note == "F") ? 3 : 1;
-    blackTiles.insert(0, blankSpace(flex: flex));
+    blackTiles.add(blankSpace(flex: flex));
   }
 
 
@@ -114,9 +128,7 @@ class _PianoRollState extends State<PianoRoll> {
   Widget blankSpace({required int flex}) {
     return Expanded(
       flex: flex,
-      child: SizedBox(
-        height: 1,
-      ),
+      child: SizedBox(),
     );
   }
 
@@ -126,26 +138,6 @@ class _PianoRollState extends State<PianoRoll> {
     return Drawer(
       child: ListView(
         children: <Widget>[
-
-          // Drawer heading.
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: MyTheme.isDarkMode(context)
-                  ? Colors.blue[700]
-                  : Colors.blue,
-            ),
-            child: Center(
-              child: Text(
-                "Layout settings",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,       
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          ),
 
           // Highest note.
           Padding(
