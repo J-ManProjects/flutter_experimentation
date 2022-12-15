@@ -48,19 +48,32 @@ class _PianoRollState extends State<PianoRoll> {
 
     return Scaffold(
       drawer: leftDrawer(),
-      body: Stack(
+      body: Column(
         children: <Widget>[
-
-          // White tiles.
-          Row(
-            children: whiteTiles,
+          Expanded(
+            flex: 3,
+            child: Container(
+              color: Colors.grey[900],
+            ),
           ),
+          Expanded(
+            flex: 1,
+            child: Stack(
+              children: <Widget>[
 
-          // Black tiles.
-          Row(
-            children: blackTiles,
+                // White tiles.
+                Row(
+                  children: whiteTiles,
+                ),
+
+                // Black tiles.
+                Row(
+                  children: blackTiles,
+                ),
+
+              ],
+            ),
           ),
-
         ],
       ),
     );

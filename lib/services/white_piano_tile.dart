@@ -31,7 +31,7 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            width: 1,
+            width: 0.75,
             color: Colors.black54,
           ),
           borderRadius: BorderRadius.circular(2),
@@ -44,21 +44,28 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
             });
             print("highlight white tile = $highlight");
           },
-          child: Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                widget.note,
-                style: TextStyle(
-                  color: noteColor,
-                  fontSize: 10,
-                  fontWeight: (widget.note[0] == "C")
-                      ? FontWeight.bold
-                      : FontWeight.normal,
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: SizedBox(),
+              ),
+              Expanded(
+                flex: 1,
+                child: Center(
+                  child: Text(
+                    widget.note,
+                    style: TextStyle(
+                      color: noteColor,
+                      fontSize: 10,
+                      fontWeight: (widget.note[0] == "C")
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
