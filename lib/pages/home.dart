@@ -34,13 +34,21 @@ class _HomeState extends State<Home> {
 
             // Generate sounds.
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                final snackBar = customSnackBar("Sound Generator");
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
               child: Text("Sound Generator"),
             ),
 
             // Function in C++ testing.
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                final snackBar = customSnackBar("Functions in C++");
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              },
               child: Text("Functions in C++"),
             ),
 
@@ -54,6 +62,20 @@ class _HomeState extends State<Home> {
 
           ],
         ),
+      ),
+    );
+  }
+
+
+  // The snack bar with not implemented message.
+  SnackBar customSnackBar(String title) {
+    return SnackBar(
+      content: Text("'$title' not implemented yet"),
+      action: SnackBarAction(
+        label: "OK",
+        onPressed: () {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        },
       ),
     );
   }
