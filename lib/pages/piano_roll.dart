@@ -4,6 +4,7 @@ import "package:flutter/services.dart";
 import "package:flutter_experimentation/services/white_piano_tile.dart";
 import "package:flutter_experimentation/services/black_piano_tile.dart";
 import "package:flutter_experimentation/services/notes.dart";
+import "package:flutter_experimentation/services/my_theme.dart";
 
 
 class PianoRoll extends StatefulWidget {
@@ -19,12 +20,18 @@ class _PianoRollState extends State<PianoRoll> {
   int lowestPitch = 0;
   int highestPitch = 0;
 
+  late Map colors;
+  late String selectedColor;
+
 
   @override
   void initState() {
     super.initState();
     lowestPitch = Notes.minPitch;
     highestPitch = Notes.maxPitch;
+
+    // Populate the list of highlight colours.
+    selectedColor = MyTheme.colorNames[0];
 
     // Make fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -39,6 +46,9 @@ class _PianoRollState extends State<PianoRoll> {
   @override
   Widget build(BuildContext context) {
     print("Building piano roll state");
+
+    // Populate the colours map.
+    colors = MyTheme.getHighlightColors(context);
 
     // Create all piano tiles.
     populatePianoTiles(
@@ -114,7 +124,10 @@ class _PianoRollState extends State<PianoRoll> {
 
       // Add white piano tile.
       if (note.length == 2) {
-        whiteTiles.add(WhitePianoTile(note: note));
+        whiteTiles.add(WhitePianoTile(
+          note: note,
+          color: selectedColor,
+        ));
         blackTiles.add(blankSpace(flex: 2));
       } else {
 
@@ -124,7 +137,7 @@ class _PianoRollState extends State<PianoRoll> {
         }
 
         // Add black piano tile.
-        blackTiles.add(BlackPianoTile());
+        blackTiles.add(BlackPianoTile(color: selectedColor));
         prevPitch = pitch;
       }
     }
@@ -216,7 +229,10 @@ class _PianoRollState extends State<PianoRoll> {
           ),
 
           // Slider divider.
-          Divider(height: 3),
+          Divider(
+            height: 3,
+            thickness: 1,
+          ),
 
           // Lowest note.
           Padding(
@@ -279,6 +295,52 @@ class _PianoRollState extends State<PianoRoll> {
                 },
               ),
             ],
+          ),
+
+          // Slider divider.
+          Divider(
+            height: 4,
+            thickness: 1,
+          ),
+
+          // Highlight color selection.
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text(
+              "Select key highlight color:",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+          Center(
+            child: DropdownButton(
+              value: selectedColor,
+              items: MyTheme.colorNames.map((String color) {
+                return DropdownMenuItem(
+                  value: color,
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: 16,
+                        height: 16,
+                        color: colors[color],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8),
+                        child: Text(color),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (newColor) {
+                setState(() {
+                  selectedColor = newColor!;
+                });
+              },
+            ),
           ),
 
         ],

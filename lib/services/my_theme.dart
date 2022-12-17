@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 
 // This class sets the theme of the app.
 class MyTheme {
-
+  static List<String> colorNames = ["Red", "Green", "Blue"];
 
   // Light mode.
   static ThemeData light = ThemeData(
@@ -50,10 +50,31 @@ class MyTheme {
   );
 
 
-  // Returns the dark mode state.
+  // Returns the dark mode status.
   static bool isDarkMode(context) {
     var brightness = MediaQuery.of(context).platformBrightness;
     return brightness == Brightness.dark;
+  }
+
+
+  // Returns the light mode status.
+  static bool isLightMode(context) {
+    var brightness = MediaQuery.of(context).platformBrightness;
+    return brightness == Brightness.light;
+  }
+
+
+  // Returns the possible piano tile highlighting colours.
+  static Map getHighlightColors(context) {
+    return MyTheme.isDarkMode(context) ? {
+      MyTheme.colorNames[0]: Colors.red[700],
+      MyTheme.colorNames[1]: Colors.green[700],
+      MyTheme.colorNames[2]: Colors.blue[700],
+    } : {
+      MyTheme.colorNames[0]: Colors.red,
+      MyTheme.colorNames[1]: Colors.green,
+      MyTheme.colorNames[2]: Colors.blue,
+    };
   }
 
 

@@ -1,9 +1,13 @@
 import "package:flutter/material.dart";
+import 'package:flutter_experimentation/services/my_theme.dart';
 
 
 class WhitePianoTile extends StatefulWidget {
   final String note;
-  const WhitePianoTile({required this.note, Key? key}) : super(key: key);
+  final String color;
+  const WhitePianoTile({
+    required this.note, required this.color, Key? key,
+  }) : super(key: key);
 
   @override
   State<WhitePianoTile> createState() => _WhitePianoTileState();
@@ -11,6 +15,8 @@ class WhitePianoTile extends StatefulWidget {
 
 class _WhitePianoTileState extends State<WhitePianoTile> {
   late bool highlight;
+  late String highlightColor;
+  late Map colors;
 
   @override
   void initState() {
@@ -20,6 +26,9 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
 
   @override
   Widget build(BuildContext context) {
+    highlightColor = widget.color;
+    colors = MyTheme.getHighlightColors(context);
+
     Color? noteColor;
     if (widget.note[0] == "C") {
       noteColor = (highlight) ? Colors.white : Colors.black;
@@ -35,7 +44,7 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
             color: Colors.black54,
           ),
           borderRadius: BorderRadius.circular(2),
-          color: highlight ? Colors.red[700] : Colors.white,
+          color: highlight ? colors[highlightColor] : Colors.white,
         ),
         child: InkWell(
           onTap: () {

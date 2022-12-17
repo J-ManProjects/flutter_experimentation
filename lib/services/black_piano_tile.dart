@@ -1,8 +1,12 @@
 import "package:flutter/material.dart";
+import "my_theme.dart";
 
 
 class BlackPianoTile extends StatefulWidget {
-  const BlackPianoTile({Key? key}) : super(key: key);
+  final String color;
+  const BlackPianoTile({
+    required this.color, Key? key,
+  }) : super(key: key);
 
   @override
   State<BlackPianoTile> createState() => _BlackPianoTileState();
@@ -10,6 +14,8 @@ class BlackPianoTile extends StatefulWidget {
 
 class _BlackPianoTileState extends State<BlackPianoTile> {
   late bool highlight;
+  late String highlightColor;
+  late Map colors;
 
   @override
   void initState() {
@@ -19,6 +25,9 @@ class _BlackPianoTileState extends State<BlackPianoTile> {
 
   @override
   Widget build(BuildContext context) {
+    highlightColor = widget.color;
+    colors = MyTheme.getHighlightColors(context);
+
     return Expanded(
       flex: 2,
       child: Column(
@@ -32,7 +41,7 @@ class _BlackPianoTileState extends State<BlackPianoTile> {
                   color: Colors.black54,
                 ),
                 borderRadius: BorderRadius.circular(2),
-                color: highlight ? Colors.red[900] : Colors.black,
+                color: highlight ? colors[highlightColor] : Colors.black,
               ),
               child: InkWell(
                 onTap: () {
