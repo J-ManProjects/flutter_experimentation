@@ -26,7 +26,7 @@ class _BlackPianoTileState extends State<BlackPianoTile> {
   @override
   Widget build(BuildContext context) {
     highlightColor = widget.color;
-    colors = MyTheme.getHighlightColors(context);
+    colors = MyTheme.getHighlightColors(isWhiteTile: false);
 
     return Expanded(
       flex: 2,

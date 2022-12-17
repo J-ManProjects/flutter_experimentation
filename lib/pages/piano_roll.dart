@@ -20,7 +20,7 @@ class _PianoRollState extends State<PianoRoll> {
   int lowestPitch = 0;
   int highestPitch = 0;
 
-  late Map colors;
+  late Map whiteColors, blackColors;
   late String selectedColor;
 
 
@@ -48,7 +48,8 @@ class _PianoRollState extends State<PianoRoll> {
     print("Building piano roll state");
 
     // Populate the colours map.
-    colors = MyTheme.getHighlightColors(context);
+    whiteColors = MyTheme.getHighlightColors();
+    blackColors = MyTheme.getHighlightColors(isWhiteTile: false);
 
     // Create all piano tiles.
     populatePianoTiles(
@@ -325,7 +326,9 @@ class _PianoRollState extends State<PianoRoll> {
                       Container(
                         width: 16,
                         height: 16,
-                        color: colors[color],
+                        color: MyTheme.isDarkMode(context)
+                            ? blackColors[color]
+                            : whiteColors[color],
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 8),
