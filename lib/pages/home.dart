@@ -40,14 +40,16 @@ class _HomeState extends State<Home> {
               // Interactive piano button.
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, "/piano");
+                  Navigator.pushNamed(context, "/piano_touch");
                 },
-                child: Text("Interactive Piano"),
+                child: Text("Piano Touch"),
               ),
 
               // Piano roll button.
               ElevatedButton(
-                onPressed: null,
+                onPressed: () {
+                  Navigator.pushNamed(context, "/piano_roll");
+                },
                 child: Text("Piano Roll"),
               ),
 

@@ -2,18 +2,18 @@ import "package:flutter/material.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 
 
-class WhitePianoTile extends StatefulWidget {
+class WhitePianoTouchTile extends StatefulWidget {
   final String note;
   final String color;
-  const WhitePianoTile({
+  const WhitePianoTouchTile({
     required this.note, required this.color, Key? key,
   }) : super(key: key);
 
   @override
-  State<WhitePianoTile> createState() => _WhitePianoTileState();
+  State<WhitePianoTouchTile> createState() => _WhitePianoTouchTileState();
 }
 
-class _WhitePianoTileState extends State<WhitePianoTile> {
+class _WhitePianoTouchTileState extends State<WhitePianoTouchTile> {
   late bool highlight;
   late String highlightColor;
   late Map colors;

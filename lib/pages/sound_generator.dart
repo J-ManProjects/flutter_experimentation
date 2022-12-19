@@ -1,9 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
+import "package:flutter_experimentation/services/notes.dart";
 import "package:flutter_midi/flutter_midi.dart";
-
-import "../services/notes.dart";
 
 
 class SoundGenerator extends StatefulWidget {
