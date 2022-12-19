@@ -67,17 +67,17 @@ class MyTheme {
 
 
   // Returns the possible piano tile highlighting colours.
-  static Map getHighlightColors({bool isWhiteTile = true}) {
-    return isWhiteTile ? {
-      MyTheme.colorNames[0]: Colors.red,
-      MyTheme.colorNames[1]: Colors.green,
-      MyTheme.colorNames[2]: Colors.blue,
-      MyTheme.colorNames[3]: Colors.purple,
-    } : {
+  static Map getHighlightColors({bool isBlackTile = false}) {
+    return isBlackTile ? {
       MyTheme.colorNames[0]: Colors.red[700],
       MyTheme.colorNames[1]: Colors.green[700],
       MyTheme.colorNames[2]: Colors.blue[700],
       MyTheme.colorNames[3]: Colors.purple[700],
+    } : {
+      MyTheme.colorNames[0]: Colors.red,
+      MyTheme.colorNames[1]: Colors.green,
+      MyTheme.colorNames[2]: Colors.blue,
+      MyTheme.colorNames[3]: Colors.purple,
     };
   }
 

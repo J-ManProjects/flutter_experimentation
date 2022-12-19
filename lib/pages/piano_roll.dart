@@ -49,7 +49,7 @@ class _PianoRollState extends State<PianoRoll> {
 
     // Populate the colours map.
     whiteColors = MyTheme.getHighlightColors();
-    blackColors = MyTheme.getHighlightColors(isWhiteTile: false);
+    blackColors = MyTheme.getHighlightColors(isBlackTile: true);
 
     // Create all piano tiles.
     populatePianoTiles(
