@@ -30,46 +30,67 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 96),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
 
-            // Piano roll button.
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, "/piano");
-              },
-              child: Text("Piano Roll"),
-            ),
+              // Interactive piano button.
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/piano");
+                },
+                child: Text("Interactive Piano"),
+              ),
 
-            // Generate sounds.
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, "/sound");
-              },
-              child: Text("Sound Generator"),
-            ),
+              // Piano roll button.
+              ElevatedButton(
+                onPressed: null,
+                child: Text("Piano Roll"),
+              ),
 
-            // Function in C++ testing.
-            ElevatedButton(
-              onPressed: () {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                final snackBar = customSnackBar("Functions in C++");
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              },
-              child: Text("Functions in C++"),
-            ),
+              // Generate sounds.
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/sound");
+                },
+                child: Text("Sound Generator"),
+              ),
 
-            // Exit the app.
-            ElevatedButton(
-              onPressed: () {
-                exit(0);
-              },
-              child: Text("Exit"),
-            ),
+              // File manager (read and write storage).
+              ElevatedButton(
+                onPressed: null,
+                child: Text("File Reading/Writing"),
+              ),
 
-          ],
+              // Simple audio recorder and audio playback.
+              ElevatedButton(
+                onPressed: null,
+                child: Text("Record/Playback Audio"),
+              ),
+
+              // Function in C++ testing.
+              ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  final snackBar = customSnackBar("Functions in C++");
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+                child: Text("Functions in C++"),
+              ),
+
+              // Exit the app.
+              ElevatedButton(
+                onPressed: () {
+                  exit(0);
+                },
+                child: Text("Exit"),
+              ),
+
+            ],
+          ),
         ),
       ),
     );
