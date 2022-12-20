@@ -5,9 +5,9 @@ import "package:flutter_experimentation/services/black_piano_tile.dart";
 
 
 class Piano extends StatefulWidget {
-  final String selectedNote;
+  final int selectedPitch;
   const Piano({
-    this.selectedNote = "",
+    this.selectedPitch = 0,
     Key? key,
   }) : super(key: key);
 
@@ -20,7 +20,7 @@ class _PianoState extends State<Piano> {
   List<Widget> blackTiles = [];
   int lowestPitch = 0;
   int highestPitch = 0;
-  late String selectedNote;
+  late int selectedPitch;
 
 
   @override
@@ -33,30 +33,21 @@ class _PianoState extends State<Piano> {
 
   @override
   Widget build(BuildContext context) {
-    selectedNote = widget.selectedNote;
+    selectedPitch = widget.selectedPitch;
 
     // Create all piano tiles.
     populatePianoTiles(
       whiteTiles: whiteTiles,
       blackTiles: blackTiles,
-      selectedNote: selectedNote,
+      selectedPitch: selectedPitch,
     );
 
     return Expanded(
       flex: 1,
       child: Stack(
         children: <Widget>[
-
-          // White tiles.
-          Row(
-            children: whiteTiles,
-          ),
-
-          // Black tiles.
-          Row(
-            children: blackTiles,
-          ),
-
+          Row(children: whiteTiles),
+          Row(children: blackTiles),
         ],
       ),
     );
@@ -67,7 +58,7 @@ class _PianoState extends State<Piano> {
   void populatePianoTiles({
     required List<Widget> whiteTiles,
     required List<Widget> blackTiles,
-    String selectedNote = "",
+    int selectedPitch = 0,
   }) {
     whiteTiles.clear();
     blackTiles.clear();
@@ -75,7 +66,6 @@ class _PianoState extends State<Piano> {
 
     // Add the necessary blank space at the bottom.
     String note = Notes.pitchToNote(lowestPitch)[0];
-    print("Bottom note:  $note");
     int flex = (note == "B" || note == "E") ? 3 : 1;
     blackTiles.add(blankSpace(flex: flex));
 
@@ -87,7 +77,7 @@ class _PianoState extends State<Piano> {
       if (note.length == 2) {
         whiteTiles.add(WhitePianoTile(
           note: note,
-          highlight: (note == selectedNote),
+          highlight: (pitch == selectedPitch),
         ));
         blackTiles.add(blankSpace(flex: 2));
       } else {
@@ -100,7 +90,7 @@ class _PianoState extends State<Piano> {
         // Add black piano tile.
         blackTiles.add(BlackPianoTile(
           note: note,
-          highlight: (note == selectedNote),
+          highlight: (pitch == selectedPitch),
         ));
         prevPitch = pitch;
       }
@@ -108,7 +98,6 @@ class _PianoState extends State<Piano> {
 
     // Add the necessary blank space on top.
     note = Notes.pitchToNote(highestPitch)[0];
-    print("Top note:  $note");
     flex = (note == "C" || note == "F") ? 3 : 1;
     blackTiles.add(blankSpace(flex: flex));
   }

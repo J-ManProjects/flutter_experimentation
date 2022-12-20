@@ -1,6 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_experimentation/services/notes.dart";
 import "package:flutter_experimentation/services/piano.dart";
+import "package:flutter_experimentation/services/roll.dart";
 
 
 class PianoRoll extends StatefulWidget {
@@ -11,10 +13,12 @@ class PianoRoll extends StatefulWidget {
 }
 
 class _PianoRollState extends State<PianoRoll> {
+  late int selectedPitch;
 
   @override
   void initState() {
     super.initState();
+    selectedPitch = Notes.minPitch;
 
     // Make fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -27,16 +31,23 @@ class _PianoRollState extends State<PianoRoll> {
 
   @override
   Widget build(BuildContext context) {
+
+    // Cycle through selected pitches.
+    Future.delayed(Duration(milliseconds: 250), () {
+      setState(() {
+        if (selectedPitch < Notes.maxPitch) {
+          selectedPitch++;
+        } else {
+          selectedPitch = Notes.minPitch;
+        }
+      });
+    });
+
     return Scaffold(
       body: Column(
         children: <Widget>[
-          Expanded(
-            flex: 3,
-            child: Container(
-              color: Colors.grey[900],
-            ),
-          ),
-          Piano(selectedNote: "A4"),
+          Roll(selectedPitch: selectedPitch),
+          Piano(selectedPitch: selectedPitch),
         ],
       ),
     );
