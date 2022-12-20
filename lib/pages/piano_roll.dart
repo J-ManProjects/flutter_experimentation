@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_experimentation/services/piano.dart";
 
 
 class PianoRoll extends StatefulWidget {
@@ -26,7 +27,19 @@ class _PianoRollState extends State<PianoRoll> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 3,
+            child: Container(
+              color: Colors.grey[900],
+            ),
+          ),
+          Piano(selectedNote: "A4"),
+        ],
+      ),
+    );
   }
 
   @override
