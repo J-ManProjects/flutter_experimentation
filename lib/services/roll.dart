@@ -64,71 +64,94 @@ class _RollState extends State<Roll> {
 
     // Align for natural notes.
     if (naturals.contains(selectedPitch % 12)) {
-      for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
-        if (sharps.contains(pitch % 12)) {
-          continue;
-        }
-        if (pitch == selectedPitch) {
-          rolls.add(Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 0.75,
-                  color: Colors.black54,
-                ),
-                borderRadius: BorderRadius.circular(2),
-                color: Colors.green,
-              ),
-            ),
-          ));
-        } else {
-          rolls.add(blankSpace(flex: 1));
-        }
-      }
+      alignNaturalNotes(rolls: rolls, selectedPitch: selectedPitch);
     }
 
     // Align for sharps.
     else {
-      int prevPitch = 0;
+      alignSharps(rolls: rolls, selectedPitch: selectedPitch);
+    }
+  }
 
-      int note = lowestPitch % 12;
-      int flex = (note == 11 || note == 4) ? 3 : 1;
-      rolls.add(blankSpace(flex: flex));
 
-      for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
-        if (naturals.contains(pitch % 12)) {
-          rolls.add(blankSpace(flex: 2));
-          continue;
-        }
+  // Align the roll for natural notes.
+  void alignNaturalNotes({
+    required List<Widget> rolls,
+    required int selectedPitch,
+  }) {
+    for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
 
-        if (prevPitch != 0 && pitch - prevPitch > 2) {
-          rolls.add(blankSpace(flex: 2));
-        }
-        if (pitch == selectedPitch) {
-          rolls.add(Expanded(
-            flex: 2,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 0.75,
-                  color: Colors.black54,
-                ),
-                borderRadius: BorderRadius.circular(2),
-                color: Colors.green[700],
-              ),
-            ),
-          ));
-        } else {
-          rolls.add(blankSpace(flex: 2));
-        }
-        prevPitch = pitch;
+      // Skip sharps.
+      if (sharps.contains(pitch % 12)) {
+        continue;
       }
 
-      note = highestPitch % 12;
-      flex = (note == 0 || note == 5) ? 3 : 1;
-      rolls.add(blankSpace(flex: flex));
+      // Highlight selected pitch, add blank space otherwise.
+      if (pitch == selectedPitch) {
+        rolls.add(selectedRoll(isNatural: true));
+      } else {
+        rolls.add(blankSpace(flex: 1));
+      }
+    }
+  }
+
+
+  // Align the roll for sharps.
+  void alignSharps({
+    required List<Widget> rolls,
+    required int selectedPitch,
+  }) {
+
+    // Add the necessary blank space at the bottom.
+    int note = lowestPitch % 12;
+    int flex = (note == 11 || note == 4) ? 3 : 1;
+    rolls.add(blankSpace(flex: flex));
+
+    int prevPitch = lowestPitch;
+    for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
+
+      // Skip natural notes, but add blank space.
+      if (naturals.contains(pitch % 12)) {
+        rolls.add(blankSpace(flex: 2));
+        continue;
+      }
+
+      // Add additional blank space.
+      if (pitch - prevPitch > 2) {
+        rolls.add(blankSpace(flex: 2));
+      }
+
+      // Highlight selected pitch, add blank space otherwise.
+      if (pitch == selectedPitch) {
+        rolls.add(selectedRoll(isNatural: false));
+      } else {
+        rolls.add(blankSpace(flex: 2));
+      }
+      prevPitch = pitch;
     }
 
+    // Add the necessary blank space on top.
+    note = highestPitch % 12;
+    flex = (note == 0 || note == 5) ? 3 : 1;
+    rolls.add(blankSpace(flex: flex));
+  }
+
+
+  // Similar to a highlighted piano tile, but for the roll.
+  Widget selectedRoll({required bool isNatural}) {
+    return Expanded(
+      flex: isNatural ? 1 : 2,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            width: 0.75,
+            color: Colors.black54,
+          ),
+          borderRadius: BorderRadius.circular(2),
+          color: isNatural ? Colors.green : Colors.green[700],
+        ),
+      ),
+    );
   }
 
 
