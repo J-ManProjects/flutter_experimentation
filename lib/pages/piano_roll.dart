@@ -34,13 +34,18 @@ class _PianoRollState extends State<PianoRoll> {
 
     // Cycle through selected pitches.
     Future.delayed(Duration(milliseconds: 250), () {
-      setState(() {
-        if (selectedPitch < Notes.maxPitch) {
-          selectedPitch++;
-        } else {
-          selectedPitch = Notes.minPitch;
-        }
-      });
+      try {
+        setState(() {
+          if (selectedPitch < Notes.maxPitch) {
+            selectedPitch++;
+          } else {
+            selectedPitch = Notes.minPitch;
+          }
+        });
+      } catch (e) {
+        print(e);
+      }
+
     });
 
     return Scaffold(

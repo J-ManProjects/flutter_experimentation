@@ -53,6 +53,14 @@ class _HomeState extends State<Home> {
                 child: Text("Piano Roll"),
               ),
 
+              // Animations button.
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/animations");
+                },
+                child: Text("Animations"),
+              ),
+
               // Generate sounds.
               ElevatedButton(
                 onPressed: () {
