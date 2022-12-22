@@ -80,17 +80,27 @@ class _RollState extends State<Roll> {
     required int selectedPitch,
   }) {
     for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
+      int flex = 0;
 
       // Skip sharps.
       if (sharps.contains(pitch % 12)) {
         continue;
       }
 
-      // Highlight selected pitch, add blank space otherwise.
+      // Highlight selected pitch, increment the flex otherwise.
       if (pitch == selectedPitch) {
+        if (flex > 0) {
+          rolls.add(blankSpace(flex: flex));
+        }
         rolls.add(selectedRoll(isNatural: true));
+        flex = 0;
       } else {
-        rolls.add(blankSpace(flex: 1));
+        flex++;
+      }
+
+      // Add final blank space.
+      if (flex > 0) {
+        rolls.add(blankSpace(flex: flex));
       }
     }
   }
@@ -102,37 +112,40 @@ class _RollState extends State<Roll> {
     required int selectedPitch,
   }) {
 
-    // Add the necessary blank space at the bottom.
+    // Calculate the necessary initial flex.
     int note = lowestPitch % 12;
     int flex = (note == 11 || note == 4) ? 3 : 1;
-    rolls.add(blankSpace(flex: flex));
 
+    // Iterate through all pitches.
     int prevPitch = lowestPitch;
     for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
 
-      // Skip natural notes, but add blank space.
+      // Skip natural notes, but add to the flex.
       if (naturals.contains(pitch % 12)) {
-        rolls.add(blankSpace(flex: 2));
+        flex += 2;
         continue;
       }
 
-      // Add additional blank space.
+      // Add additional flex.
       if (pitch - prevPitch > 2) {
-        rolls.add(blankSpace(flex: 2));
+        flex += 2;
       }
 
-      // Highlight selected pitch, add blank space otherwise.
+      // Highlight selected pitch and add blank space beforehand.
+      // Increase the flex otherwise.
       if (pitch == selectedPitch) {
+        rolls.add(blankSpace(flex: flex));
         rolls.add(selectedRoll(isNatural: false));
+        flex = 0;
       } else {
-        rolls.add(blankSpace(flex: 2));
+        flex += 2;
       }
       prevPitch = pitch;
     }
 
-    // Add the necessary blank space on top.
+    // Add the necessary final blank space.
     note = highestPitch % 12;
-    flex = (note == 0 || note == 5) ? 3 : 1;
+    flex += (note == 0 || note == 5) ? 3 : 1;
     rolls.add(blankSpace(flex: flex));
   }
 
@@ -155,7 +168,7 @@ class _RollState extends State<Roll> {
   }
 
 
-  // Add a blank space in between black piano tiles.
+  // Add a blank space before and after the selected roll.
   Widget blankSpace({required int flex}) {
     return Expanded(
       flex: flex,
