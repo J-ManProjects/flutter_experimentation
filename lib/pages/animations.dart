@@ -21,7 +21,13 @@ class _AnimationsState extends State<Animations>
     controller = AnimationController(
       duration: Duration(seconds: 2),
       vsync: this,
-    )..repeat(reverse: true);
+    );
+
+    controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        print("Animation completed");
+      }
+    });
   }
 
 
@@ -48,6 +54,7 @@ class _AnimationsState extends State<Animations>
 
     // The horizontal end point for the animation.
     double end = (screenWidth) / width;
+    print("Offset end = $end");
 
     // The offset tween animation.
     offset = Tween<Offset>(
@@ -61,23 +68,59 @@ class _AnimationsState extends State<Animations>
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          SlideTransition(
-            position: offset,
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
-                  color: Colors.black54,
+          Expanded(
+            flex: 2,
+            child: SlideTransition(
+              position: offset,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: Colors.black54,
+                  ),
+                  color: Colors.purple,
                 ),
-                color: Colors.purple,
+                width: width,
+                height: 20,
               ),
-              width: width,
-              height: 20,
+            ),
+          ),
+          Divider(
+            height: 2,
+            thickness: 2,
+          ),
+          Expanded(
+            flex: 3,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  ElevatedButton(
+                    child: Text("Slide From Left"),
+                    onPressed: () {
+                      controller.reset();
+                      controller.forward();
+                    },
+                  ),
+                  ElevatedButton(
+                    child: Text("Slide From Right"),
+                    onPressed: () {
+                      controller.reset();
+                      controller.reverse(from: width);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
+
+  void slideTransition() {}
 }
