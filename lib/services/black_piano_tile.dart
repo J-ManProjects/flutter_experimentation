@@ -2,10 +2,8 @@ import "package:flutter/material.dart";
 
 
 class BlackPianoTile extends StatefulWidget {
-  final String note;
   final bool highlight;
   const BlackPianoTile({
-    required this.note,
     required this.highlight,
     Key? key,
   }) : super(key: key);

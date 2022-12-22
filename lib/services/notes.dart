@@ -11,6 +11,17 @@ class Notes {
   static const int Fs = 44100;
 
 
+  // Determines whether the given pitch is a natural note.
+  static bool isNaturalNote(int pitch) {
+    int chroma = pitch % 12;
+    if (chroma < 5) {
+      return chroma % 2 == 0;
+    } else {
+      return chroma % 2 == 1;
+    }
+  }
+
+
   // Determine the note of the given pitch.
   static String pitchToNote(int pitch) {
     String note = NOTES[pitch % 12];

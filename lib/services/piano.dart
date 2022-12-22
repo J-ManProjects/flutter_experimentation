@@ -63,10 +63,11 @@ class _PianoState extends State<Piano> {
     whiteTiles.clear();
     blackTiles.clear();
     int prevPitch = 0;
+    String note;
 
     // Add the necessary blank space at the bottom.
-    String note = Notes.pitchToNote(lowestPitch)[0];
-    int flex = (note == "B" || note == "E") ? 3 : 1;
+    int chroma = lowestPitch % 12;
+    int flex = (chroma == 11 || chroma == 4) ? 3 : 1;
     blackTiles.add(blankSpace(flex: flex));
 
     // Add all notes in between.
@@ -89,7 +90,6 @@ class _PianoState extends State<Piano> {
 
         // Add black piano tile.
         blackTiles.add(BlackPianoTile(
-          note: note,
           highlight: (pitch == selectedPitch),
         ));
         prevPitch = pitch;
@@ -97,8 +97,8 @@ class _PianoState extends State<Piano> {
     }
 
     // Add the necessary blank space on top.
-    note = Notes.pitchToNote(highestPitch)[0];
-    flex = (note == "C" || note == "F") ? 3 : 1;
+    chroma = highestPitch % 12;
+    flex = (chroma == 0 || chroma == 5) ? 3 : 1;
     blackTiles.add(blankSpace(flex: flex));
   }
 

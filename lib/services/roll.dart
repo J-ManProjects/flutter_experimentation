@@ -14,8 +14,6 @@ class Roll extends StatefulWidget {
 }
 
 class _RollState extends State<Roll> {
-  final List<int> naturals = [0, 2, 4, 5, 7, 9, 11];
-  final List<int> sharps = [1, 3, 6, 8, 10];
   List<Widget> rolls = [];
 
   int lowestPitch = 0;
@@ -63,13 +61,19 @@ class _RollState extends State<Roll> {
     }
 
     // Align for natural notes.
-    if (naturals.contains(selectedPitch % 12)) {
-      alignNaturalNotes(rolls: rolls, selectedPitch: selectedPitch);
+    if (Notes.isNaturalNote(selectedPitch)) {
+      alignNaturalNotes(
+        rolls: rolls,
+        selectedPitch: selectedPitch,
+      );
     }
 
     // Align for sharps.
     else {
-      alignSharps(rolls: rolls, selectedPitch: selectedPitch);
+      alignSharps(
+        rolls: rolls,
+        selectedPitch: selectedPitch,
+      );
     }
   }
 
@@ -83,11 +87,12 @@ class _RollState extends State<Roll> {
       int flex = 0;
 
       // Skip sharps.
-      if (sharps.contains(pitch % 12)) {
+      if (!Notes.isNaturalNote(pitch)) {
         continue;
       }
 
-      // Highlight selected pitch, increment the flex otherwise.
+      // Highlight selected pitch and add blank space beforehand.
+      // Increase the flex otherwise.
       if (pitch == selectedPitch) {
         if (flex > 0) {
           rolls.add(blankSpace(flex: flex));
@@ -113,15 +118,15 @@ class _RollState extends State<Roll> {
   }) {
 
     // Calculate the necessary initial flex.
-    int note = lowestPitch % 12;
-    int flex = (note == 11 || note == 4) ? 3 : 1;
+    int chroma = lowestPitch % 12;
+    int flex = (chroma == 11 || chroma == 4) ? 3 : 1;
 
     // Iterate through all pitches.
     int prevPitch = lowestPitch;
     for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
 
       // Skip natural notes, but add to the flex.
-      if (naturals.contains(pitch % 12)) {
+      if (Notes.isNaturalNote(pitch)) {
         flex += 2;
         continue;
       }
@@ -144,8 +149,8 @@ class _RollState extends State<Roll> {
     }
 
     // Add the necessary final blank space.
-    note = highestPitch % 12;
-    flex += (note == 0 || note == 5) ? 3 : 1;
+    chroma = highestPitch % 12;
+    flex += (chroma == 0 || chroma == 5) ? 3 : 1;
     rolls.add(blankSpace(flex: flex));
   }
 
@@ -161,7 +166,7 @@ class _RollState extends State<Roll> {
             color: Colors.black54,
           ),
           borderRadius: BorderRadius.circular(2),
-          color: isNatural ? Colors.green : Colors.green[700],
+          color: isNatural ? Colors.purple : Colors.purple[700],
         ),
       ),
     );
