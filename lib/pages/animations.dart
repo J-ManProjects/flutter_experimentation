@@ -1,4 +1,3 @@
-import "dart:math";
 import "package:flutter/material.dart";
 
 
@@ -12,8 +11,16 @@ class Animations extends StatefulWidget {
 class _AnimationsState extends State<Animations>
     with TickerProviderStateMixin
 {
-  late SlidingTileOld tile;
+  late List<SlidingTile> tiles = [];
+  late List<Widget> rolls = [];
   late double width;
+  late int numTiles;
+  late int minNumTiles;
+  late int maxNumTiles;
+  late int index;
+  late String numTilesText;
+
+  bool mustPopulate = true;
 
 
   @override
@@ -23,21 +30,24 @@ class _AnimationsState extends State<Animations>
     // The container width.
     width = 200;
 
-    // The sliding tile tween animation class.
-    tile = SlidingTileOld(
-      controller: AnimationController(
-        duration: Duration(seconds: 2),
-        vsync: this,
-      ),
-    );
-  }
+    // The initial number of sliding tiles.
+    numTiles = 16;
 
+    // The minimum and maximum allowed number of tiles.
+    minNumTiles = 2;
+    maxNumTiles = 30;
+
+    // The index of the current tile.
+    index = 0;
+  }
 
   @override
   void dispose() {
-    print("Disposing of controller...");
-    tile.controller.stop();
-    tile.controller.dispose();
+    print("Disposing of controllers...");
+    for (int i = 0; i < numTiles; i++) {
+      tiles[i].controller.stop();
+      tiles[i].controller.dispose();
+    }
     super.dispose();
   }
 
@@ -53,8 +63,22 @@ class _AnimationsState extends State<Animations>
     double end = (screenWidth) / width;
     print("Offset end = $end");
 
-    // Set the endpoint.
-    tile.setEnd(end);
+    // Populate the lists.
+    if (mustPopulate) {
+      mustPopulate = false;
+      for (int i = 0; i < numTiles; i++) {
+        tiles.add(defaultSlidingTile(end: end));
+        rolls.add(expandedRoll(index: i));
+      }
+    }
+
+    // Configure the number of tiles text.
+    numTilesText = "Number of tiles:  $numTiles";
+    if (numTiles == minNumTiles) {
+      numTilesText = "$numTilesText (MIN)";
+    } else if (numTiles == maxNumTiles) {
+      numTilesText = "$numTilesText (MAX)";
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -64,68 +88,124 @@ class _AnimationsState extends State<Animations>
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+
+          // The tween animations.
           Expanded(
-            flex: 2,
-            child: SlideTransition(
-              position: tile.offset,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 2,
-                    color: Colors.black54,
-                  ),
-                  color: Colors.purple,
+            flex: 1,
+            child: Column(
+              children: rolls,
+            ),
+          ),
+
+          // The number of tiles text.
+          Divider(
+            thickness: 1,
+            height: 2,
+          ),
+          Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                numTilesText,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
                 ),
-                width: width,
-                height: 20,
               ),
             ),
           ),
           Divider(
+            thickness: 1,
             height: 2,
-            thickness: 2,
           ),
+
+          // The buttons.
           Expanded(
-            flex: 3,
+            flex: 1,
             child: Center(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  ElevatedButton(
-                    child: Text("Slide to the right"),
-                    onPressed: () {
-                      tile.controller.reset();
-                      tile.controller.forward();
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      ElevatedButton(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(Icons.keyboard_double_arrow_left_sharp),
+                            Text("Slide to the left"),
+                          ],
+                        ),
+                        onPressed: () {
+                          tiles[index].controller.reset();
+                          tiles[index].controller.reverse(from: width);
+                          index = (index + 1) % numTiles;
+                        },
+                      ),
+                      ElevatedButton(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("Slide to the right"),
+                            Icon(Icons.keyboard_double_arrow_right_sharp),
+                          ],
+                        ),
+                        onPressed: () {
+                          tiles[index].controller.reset();
+                          tiles[index].controller.forward();
+                          index = (index + 1) % numTiles;
+                        },
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    child: Text("Slide to the left"),
-                    onPressed: () {
-                      tile.controller.reset();
-                      tile.controller.reverse(from: width);
-                    },
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      ElevatedButton(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(Icons.remove),
+                            Text("Decrement tiles"),
+                          ],
+                        ),
+                        onPressed: () {
+                          if (numTiles > minNumTiles) {
+                            setState(() {
+                              numTiles--;
+                              tiles.removeLast();
+                              rolls.removeLast();
+                              if (index >= numTiles) {
+                                index = 0;
+                              }
+                            });
+                          }
+                        },
+                      ),
+                      ElevatedButton(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(Icons.add),
+                            Text("Increment tiles"),
+                          ],
+                        ),
+                        onPressed: () {
+                          if (numTiles < maxNumTiles) {
+                            setState(() {
+                              tiles.add(defaultSlidingTile(end: end));
+                              rolls.add(expandedRoll(index: numTiles));
+                              numTiles++;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    child: Text("Increase width"),
-                    onPressed: () {
-                      if (width < 400) {
-                        setState(() {
-                          width += 20;
-                        });
-                      }
-                    },
-                  ),
-                  ElevatedButton(
-                    child: Text("Decrease width"),
-                    onPressed: () {
-                      if (width > 20) {
-                        setState(() {
-                          width -= 20;
-                        });
-                      }
-                    },
-                  ),
+                  SizedBox(height: 10),
                 ],
               ),
             ),
@@ -134,15 +214,50 @@ class _AnimationsState extends State<Animations>
       ),
     );
   }
+
+
+  // The actual roll layout.
+  Widget expandedRoll({required int index}) {
+    return Expanded(
+      child: SlideTransition(
+        position: tiles[index].offset,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 2,
+              color: Colors.black54,
+            ),
+            color: Colors.purple,
+          ),
+          width: width,
+          height: 20,
+        ),
+      ),
+    );
+  }
+
+
+  // The sliding tile class default configurations.
+  SlidingTile defaultSlidingTile({required double end}) {
+    return SlidingTile(
+      controller: AnimationController(
+        duration: Duration(seconds: 2, milliseconds: 500),
+        vsync: this,
+      ),
+      end: end,
+    );
+  }
+
+
 }
 
 
 // The sliding tile tween animation class.
-class SlidingTileOld {
+class SlidingTile {
   late AnimationController controller;
   late Animation<Offset> offset;
 
-  SlidingTileOld({required this.controller, double end = 1.0}) {
+  SlidingTile({required this.controller, double end = 1.0}) {
     setEnd(end);
 
     controller.addStatusListener((status) {
