@@ -92,7 +92,6 @@ class _PianoTouchState extends State<PianoTouch> {
 
   @override
   void dispose() {
-    super.dispose();
 
     // Exit fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -101,6 +100,8 @@ class _PianoTouchState extends State<PianoTouch> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+
+    super.dispose();
   }
 
 

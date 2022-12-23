@@ -9,36 +9,27 @@ class Animations extends StatefulWidget {
 }
 
 class _AnimationsState extends State<Animations>
-    with SingleTickerProviderStateMixin
+    with TickerProviderStateMixin
 {
-  late AnimationController controller;
-  late Animation<Offset> offset;
+  late SlidingTileOld tile;
+  late double width;
+
 
   @override
   void initState() {
     super.initState();
 
-    controller = AnimationController(
-      duration: Duration(seconds: 2),
-      vsync: this,
-    );
-
-    controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        print("Animation completed");
-      }
-    });
+    // The container width.
+    width = 200;
   }
 
 
   @override
   void dispose() {
+    print("Disposing of controller...");
+    tile.controller.stop();
+    tile.controller.dispose();
     super.dispose();
-    try {
-      controller.dispose();
-    } catch (e) {
-      print(e);
-    }
   }
 
 
@@ -49,18 +40,18 @@ class _AnimationsState extends State<Animations>
     print("Screen width = $screenWidth");
     print("Screen height = $screenHeight");
 
-    // The container width.
-    double width = 200;
-
     // The horizontal end point for the animation.
     double end = (screenWidth) / width;
     print("Offset end = $end");
 
-    // The offset tween animation.
-    offset = Tween<Offset>(
-      begin: Offset(-1.0, 0.0),
-      end: Offset(end, 0.0),
-    ).animate(controller);
+    // The sliding tile tween animation class.
+    tile = SlidingTileOld(
+      controller: AnimationController(
+        duration: Duration(seconds: 2),
+        vsync: this,
+      ),
+      end: end,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -73,7 +64,7 @@ class _AnimationsState extends State<Animations>
           Expanded(
             flex: 2,
             child: SlideTransition(
-              position: offset,
+              position: tile.offset,
               child: Container(
                 decoration: BoxDecoration(
                   border: Border.all(
@@ -99,17 +90,17 @@ class _AnimationsState extends State<Animations>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   ElevatedButton(
-                    child: Text("Slide From Left"),
+                    child: Text("Slide to the right"),
                     onPressed: () {
-                      controller.reset();
-                      controller.forward();
+                      tile.controller.reset();
+                      tile.controller.forward();
                     },
                   ),
                   ElevatedButton(
-                    child: Text("Slide From Right"),
+                    child: Text("Slide to the left"),
                     onPressed: () {
-                      controller.reset();
-                      controller.reverse(from: width);
+                      tile.controller.reset();
+                      tile.controller.reverse(from: width);
                     },
                   ),
                 ],
@@ -120,7 +111,26 @@ class _AnimationsState extends State<Animations>
       ),
     );
   }
+}
 
 
-  void slideTransition() {}
+// The sliding tile tween animation class.
+class SlidingTileOld {
+  late AnimationController controller;
+  late Animation<Offset> offset;
+
+  SlidingTileOld({required this.controller, required double end}) {
+    offset = Tween<Offset>(
+      begin: Offset(-1.0, 0.0),
+      end: Offset(end, 0.0),
+    ).animate(controller);
+
+    controller.addStatusListener((status) {
+      if (status == AnimationStatus.forward) {
+        print("Sliding to the right");
+      } else if (status == AnimationStatus.reverse) {
+        print("Sliding to the left");
+      }
+    });
+  }
 }

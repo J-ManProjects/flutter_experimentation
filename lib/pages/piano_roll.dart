@@ -60,7 +60,6 @@ class _PianoRollState extends State<PianoRoll> {
 
   @override
   void dispose() {
-    super.dispose();
 
     // Exit fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -69,5 +68,7 @@ class _PianoRollState extends State<PianoRoll> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+
+    super.dispose();
   }
 }
