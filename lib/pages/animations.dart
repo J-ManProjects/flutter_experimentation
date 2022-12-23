@@ -1,3 +1,4 @@
+import "dart:math";
 import "package:flutter/material.dart";
 
 
@@ -21,6 +22,14 @@ class _AnimationsState extends State<Animations>
 
     // The container width.
     width = 200;
+
+    // The sliding tile tween animation class.
+    tile = SlidingTileOld(
+      controller: AnimationController(
+        duration: Duration(seconds: 2),
+        vsync: this,
+      ),
+    );
   }
 
 
@@ -44,14 +53,8 @@ class _AnimationsState extends State<Animations>
     double end = (screenWidth) / width;
     print("Offset end = $end");
 
-    // The sliding tile tween animation class.
-    tile = SlidingTileOld(
-      controller: AnimationController(
-        duration: Duration(seconds: 2),
-        vsync: this,
-      ),
-      end: end,
-    );
+    // Set the endpoint.
+    tile.setEnd(end);
 
     return Scaffold(
       appBar: AppBar(
@@ -103,6 +106,26 @@ class _AnimationsState extends State<Animations>
                       tile.controller.reverse(from: width);
                     },
                   ),
+                  ElevatedButton(
+                    child: Text("Increase width"),
+                    onPressed: () {
+                      if (width < 400) {
+                        setState(() {
+                          width += 20;
+                        });
+                      }
+                    },
+                  ),
+                  ElevatedButton(
+                    child: Text("Decrease width"),
+                    onPressed: () {
+                      if (width > 20) {
+                        setState(() {
+                          width -= 20;
+                        });
+                      }
+                    },
+                  ),
                 ],
               ),
             ),
@@ -119,11 +142,8 @@ class SlidingTileOld {
   late AnimationController controller;
   late Animation<Offset> offset;
 
-  SlidingTileOld({required this.controller, required double end}) {
-    offset = Tween<Offset>(
-      begin: Offset(-1.0, 0.0),
-      end: Offset(end, 0.0),
-    ).animate(controller);
+  SlidingTileOld({required this.controller, double end = 1.0}) {
+    setEnd(end);
 
     controller.addStatusListener((status) {
       if (status == AnimationStatus.forward) {
@@ -132,5 +152,12 @@ class SlidingTileOld {
         print("Sliding to the left");
       }
     });
+  }
+
+  void setEnd(double end) {
+    offset = Tween<Offset>(
+      begin: Offset(-1.0, 0.0),
+      end: Offset(end, 0.0),
+    ).animate(controller);
   }
 }
