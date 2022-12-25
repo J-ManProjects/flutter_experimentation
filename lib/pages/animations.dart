@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:flutter_experimentation/services/my_theme.dart';
 
 
 class Animations extends StatefulWidget {
@@ -99,8 +100,11 @@ class _AnimationsState extends State<Animations>
 
           // The number of tiles text.
           Divider(
-            thickness: 1,
+            thickness: 2,
             height: 2,
+            color: MyTheme.isLightMode(context)
+                ? Colors.black54
+                : Colors.grey,
           ),
           Center(
             child: Padding(
@@ -115,8 +119,11 @@ class _AnimationsState extends State<Animations>
             ),
           ),
           Divider(
-            thickness: 1,
+            thickness: 2,
             height: 2,
+            color: MyTheme.isLightMode(context)
+                ? Colors.black54
+                : Colors.grey,
           ),
 
           // The buttons.
@@ -139,9 +146,10 @@ class _AnimationsState extends State<Animations>
                           ],
                         ),
                         onPressed: () {
+                          index %= numTiles;
                           tiles[index].controller.reset();
                           tiles[index].controller.reverse(from: width);
-                          index = (index + 1) % numTiles;
+                          index++;
                         },
                       ),
                       ElevatedButton(
@@ -153,9 +161,10 @@ class _AnimationsState extends State<Animations>
                           ],
                         ),
                         onPressed: () {
+                          index %= numTiles;
                           tiles[index].controller.reset();
                           tiles[index].controller.forward();
-                          index = (index + 1) % numTiles;
+                          index++;
                         },
                       ),
                     ],
@@ -168,7 +177,10 @@ class _AnimationsState extends State<Animations>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(Icons.remove),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Icon(Icons.remove),
+                            ),
                             Text("Decrement tiles"),
                           ],
                         ),
@@ -189,8 +201,11 @@ class _AnimationsState extends State<Animations>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Icon(Icons.add),
                             Text("Increment tiles"),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: Icon(Icons.add),
+                            ),
                           ],
                         ),
                         onPressed: () {
