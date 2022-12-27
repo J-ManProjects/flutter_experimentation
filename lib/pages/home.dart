@@ -1,6 +1,7 @@
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_experimentation/services/my_theme.dart";
 
 
 // Setup the home page.
@@ -12,6 +13,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late List<ListButton> buttons;
 
   @override
   void initState() {
@@ -28,95 +30,129 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 96),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
 
-              // Interactive piano button.
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/piano_touch");
-                },
-                child: Text("Piano Touch"),
+    // All onscreen buttons.
+    buttons = [
+
+      // Interactive piano button.
+      ListButton(
+        context: context,
+        title: "Piano Touch",
+        page: "/piano_touch",
+      ),
+
+      // Piano bar button.
+      ListButton(
+        context: context,
+        title: "Piano Bar",
+        page: "/piano_bar",
+      ),
+
+      // Animations button.
+      ListButton(
+        context: context,
+        title: "Animations",
+        page: "/animations",
+      ),
+
+      // Generate sounds.
+      ListButton(
+        context: context,
+        title: "Sound Generator",
+        page: "/sound",
+      ),
+
+      // Piano roll button.
+      ListButton(
+        context: context,
+        title: "Piano Roll",
+        page: "/piano_roll"
+      ),
+
+      // File manager (read and write storage).
+      ListButton(
+        context: context,
+        title: "File Reading & Writing",
+      ),
+
+      // Simple audio recorder and audio playback.
+      ListButton(
+        context: context,
+        title: "Record & Playback Audio",
+      ),
+
+      // Function in C++ testing.
+      ListButton(
+        context: context,
+        title: "Functions in C++",
+      ),
+
+      // Exit the app.
+      ListButton(
+        context: context,
+        title: "Exit",
+        page: "_exit_",
+      ),
+    ];
+
+    return SafeArea(
+      child: Scaffold(
+        body: ListView.builder(
+          padding: const EdgeInsets.all(8.0),
+          itemCount: buttons.length,
+          itemBuilder: (context, index) {
+            return Card(
+              child: ListTile(
+                tileColor: MyTheme.listTileColor(
+                  context: context,
+                  enabled: buttons[index].isEnabled(),
+                ),
+                title: Text(
+                  buttons[index].title,
+                  style: TextStyle(
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.bold,
+                    color: buttons[index].isEnabled()
+                        ? Colors.white
+                        : MyTheme.disabledTextColor(context),
+                  ),
+                ),
+                onTap: buttons[index].function,
+                enabled: buttons[index].isEnabled(),
               ),
-
-              // Piano roll button.
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/piano_roll");
-                },
-                child: Text("Piano Roll"),
-              ),
-
-              // Animations button.
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/animations");
-                },
-                child: Text("Animations"),
-              ),
-
-              // Generate sounds.
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/sound");
-                },
-                child: Text("Sound Generator"),
-              ),
-
-              // File manager (read and write storage).
-              ElevatedButton(
-                onPressed: null,
-                child: Text("File Reading/Writing"),
-              ),
-
-              // Simple audio recorder and audio playback.
-              ElevatedButton(
-                onPressed: null,
-                child: Text("Record/Playback Audio"),
-              ),
-
-              // Function in C++ testing.
-              ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  final snackBar = customSnackBar("Functions in C++");
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                },
-                child: Text("Functions in C++"),
-              ),
-
-              // Exit the app.
-              ElevatedButton(
-                onPressed: () {
-                  exit(0);
-                },
-                child: Text("Exit"),
-              ),
-
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
   }
+}
 
 
-  // The snack bar with not implemented message.
-  SnackBar customSnackBar(String title) {
-    return SnackBar(
-      content: Text("'$title' not implemented yet"),
-      action: SnackBarAction(
-        label: "OK",
-        onPressed: () {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        },
-      ),
-    );
+// The button title and function housing class.
+class ListButton {
+  String title;
+  void Function()? function;
+
+  ListButton({required context, required this.title, String page = ""}) {
+    switch (page) {
+      case "":
+        function = null;
+        break;
+      case "_exit_":
+        function = (() {
+          exit(0);
+        });
+        break;
+      default:
+        function = (() {
+          Navigator.pushNamed(context, page);
+        });
+    }
+  }
+
+  // Indicates if the button is enabled.
+  bool isEnabled() {
+    return function != null;
   }
 }

@@ -2,19 +2,19 @@ import "package:flutter/material.dart";
 import "package:flutter_experimentation/services/notes.dart";
 
 
-class Roll extends StatefulWidget {
+class Bar extends StatefulWidget {
   final int selectedPitch;
-  const Roll({
+  const Bar({
     this.selectedPitch = 0,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<Roll> createState() => _RollState();
+  State<Bar> createState() => _BarState();
 }
 
-class _RollState extends State<Roll> {
-  List<Widget> rolls = [];
+class _BarState extends State<Bar> {
+  List<Widget> bars = [];
 
   int lowestPitch = 0;
   int highestPitch = 0;
@@ -33,8 +33,8 @@ class _RollState extends State<Roll> {
   Widget build(BuildContext context) {
     selectedPitch = widget.selectedPitch;
 
-    // Align the roll animation.
-    alignRoll(selectedPitch: selectedPitch, rolls: rolls);
+    // Align the bar animation.
+    alignBar(selectedPitch: selectedPitch, bars: bars);
 
     return Expanded(
       flex: 3,
@@ -43,19 +43,19 @@ class _RollState extends State<Roll> {
           Container(
             color: Colors.grey[900],
           ),
-          Row(children: rolls),
+          Row(children: bars),
         ],
       ),
     );
   }
 
 
-  // Align the roll to the selected pitch.
-  void alignRoll({
-    required List<Widget> rolls,
+  // Align the bar to the selected pitch.
+  void alignBar({
+    required List<Widget> bars,
     int selectedPitch = 0,
   }) {
-    rolls.clear();
+    bars.clear();
     if (selectedPitch < lowestPitch || selectedPitch > highestPitch) {
       return;
     }
@@ -63,7 +63,7 @@ class _RollState extends State<Roll> {
     // Align for natural notes.
     if (Notes.isNaturalNote(selectedPitch)) {
       alignNaturalNotes(
-        rolls: rolls,
+        bars: bars,
         selectedPitch: selectedPitch,
       );
     }
@@ -71,16 +71,16 @@ class _RollState extends State<Roll> {
     // Align for sharps.
     else {
       alignSharps(
-        rolls: rolls,
+        bars: bars,
         selectedPitch: selectedPitch,
       );
     }
   }
 
 
-  // Align the roll for natural notes.
+  // Align the bar for natural notes.
   void alignNaturalNotes({
-    required List<Widget> rolls,
+    required List<Widget> bars,
     required int selectedPitch,
   }) {
     for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
@@ -95,9 +95,9 @@ class _RollState extends State<Roll> {
       // Increase the flex otherwise.
       if (pitch == selectedPitch) {
         if (flex > 0) {
-          rolls.add(blankSpace(flex: flex));
+          bars.add(blankSpace(flex: flex));
         }
-        rolls.add(selectedRoll(isNatural: true));
+        bars.add(selectedBar(isNatural: true));
         flex = 0;
       } else {
         flex++;
@@ -105,15 +105,15 @@ class _RollState extends State<Roll> {
 
       // Add final blank space.
       if (flex > 0) {
-        rolls.add(blankSpace(flex: flex));
+        bars.add(blankSpace(flex: flex));
       }
     }
   }
 
 
-  // Align the roll for sharps.
+  // Align the bar for sharps.
   void alignSharps({
-    required List<Widget> rolls,
+    required List<Widget> bars,
     required int selectedPitch,
   }) {
 
@@ -139,8 +139,8 @@ class _RollState extends State<Roll> {
       // Highlight selected pitch and add blank space beforehand.
       // Increase the flex otherwise.
       if (pitch == selectedPitch) {
-        rolls.add(blankSpace(flex: flex));
-        rolls.add(selectedRoll(isNatural: false));
+        bars.add(blankSpace(flex: flex));
+        bars.add(selectedBar(isNatural: false));
         flex = 0;
       } else {
         flex += 2;
@@ -151,12 +151,12 @@ class _RollState extends State<Roll> {
     // Add the necessary final blank space.
     chroma = highestPitch % 12;
     flex += (chroma == 0 || chroma == 5) ? 3 : 1;
-    rolls.add(blankSpace(flex: flex));
+    bars.add(blankSpace(flex: flex));
   }
 
 
-  // Similar to a highlighted piano tile, but for the roll.
-  Widget selectedRoll({required bool isNatural}) {
+  // Similar to a highlighted piano tile, but for the bar.
+  Widget selectedBar({required bool isNatural}) {
     return Expanded(
       flex: isNatural ? 1 : 2,
       child: Container(
@@ -173,7 +173,7 @@ class _RollState extends State<Roll> {
   }
 
 
-  // Add a blank space before and after the selected roll.
+  // Add a blank space before and after the selected bar.
   Widget blankSpace({required int flex}) {
     return Expanded(
       flex: flex,

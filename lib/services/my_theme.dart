@@ -49,6 +49,11 @@ class MyTheme {
         ),
       ),
     ),
+
+    // List tiles.
+    listTileTheme: ListTileThemeData(
+      tileColor: Colors.blue[700],
+    ),
   );
 
 
@@ -63,6 +68,21 @@ class MyTheme {
   static bool isLightMode(context) {
     var brightness = MediaQuery.of(context).platformBrightness;
     return brightness == Brightness.light;
+  }
+
+
+  // Returns the color of the list tile.
+  static listTileColor({required context, bool enabled = true}) {
+    if (MyTheme.isLightMode(context)) {
+      return enabled ? Colors.blue : Colors.grey[400];
+    } else {
+      return enabled ? Colors.blue[700] : Colors.grey[800];
+    }
+  }
+
+
+  static disabledTextColor(context) {
+    return MyTheme.isDarkMode(context) ? Colors.grey : Colors.grey[600];
   }
 
 
