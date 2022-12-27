@@ -18,7 +18,7 @@ class _PianoBarState extends State<PianoBar> {
   @override
   void initState() {
     super.initState();
-    selectedPitch = Notes.minPitch;
+    selectedPitch = Notes.minPitch - 2;
 
     // Make fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);

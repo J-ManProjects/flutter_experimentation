@@ -18,7 +18,7 @@ class _PianoRollState extends State<PianoRoll> {
   @override
   void initState() {
     super.initState();
-    selectedPitch = Notes.minPitch;
+    selectedPitch = Notes.minPitch - 1;
 
     // Make fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
@@ -33,7 +33,7 @@ class _PianoRollState extends State<PianoRoll> {
   Widget build(BuildContext context) {
 
     // Cycle through selected pitches.
-    Future.delayed(Duration(milliseconds: 250), () {
+    Future.delayed(Duration(seconds: 1), () {
       try {
         setState(() {
           if (selectedPitch < Notes.maxPitch) {

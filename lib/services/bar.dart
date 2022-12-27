@@ -83,8 +83,12 @@ class _BarState extends State<Bar> {
     required List<Widget> bars,
     required int selectedPitch,
   }) {
+
+    // The initial flex.
+    int flex = 0;
+
+    // Iterate through all pitches.
     for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
-      int flex = 0;
 
       // Skip sharps.
       if (!Notes.isNaturalNote(pitch)) {
@@ -102,11 +106,11 @@ class _BarState extends State<Bar> {
       } else {
         flex++;
       }
+    }
 
-      // Add final blank space.
-      if (flex > 0) {
-        bars.add(blankSpace(flex: flex));
-      }
+    // Add final blank space.
+    if (flex > 0) {
+      bars.add(blankSpace(flex: flex));
     }
   }
 

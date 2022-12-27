@@ -16,8 +16,8 @@ class Roll extends StatefulWidget {
 class _RollState extends State<Roll> {
   List<Widget> rolls = [];
 
-  int lowestPitch = 0;
-  int highestPitch = 0;
+  late int lowestPitch;
+  late int highestPitch;
   late int selectedPitch;
 
 
@@ -83,8 +83,12 @@ class _RollState extends State<Roll> {
     required List<Widget> rolls,
     required int selectedPitch,
   }) {
+
+    // The initial flex.
+    int flex = 0;
+
+    // Iterate through all pitches.
     for (int pitch = lowestPitch; pitch <= highestPitch; pitch++) {
-      int flex = 0;
 
       // Skip sharps.
       if (!Notes.isNaturalNote(pitch)) {
@@ -102,11 +106,11 @@ class _RollState extends State<Roll> {
       } else {
         flex++;
       }
+    }
 
-      // Add final blank space.
-      if (flex > 0) {
-        rolls.add(blankSpace(flex: flex));
-      }
+    // Add final blank space.
+    if (flex > 0) {
+      rolls.add(blankSpace(flex: flex));
     }
   }
 
