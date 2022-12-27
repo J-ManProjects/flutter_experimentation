@@ -81,6 +81,7 @@ class MyTheme {
   }
 
 
+  // Text color for disabled text.
   static disabledTextColor(context) {
     return MyTheme.isDarkMode(context) ? Colors.grey : Colors.grey[600];
   }
