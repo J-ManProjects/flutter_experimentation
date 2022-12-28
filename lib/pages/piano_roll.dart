@@ -4,6 +4,7 @@ import "package:flutter_experimentation/services/my_theme.dart";
 import "package:flutter_experimentation/services/notes.dart";
 import "package:flutter_experimentation/services/piano.dart";
 import "package:flutter_experimentation/services/roll.dart";
+import "package:flutter_midi/flutter_midi.dart";
 
 
 class PianoRoll extends StatefulWidget {
@@ -14,10 +15,12 @@ class PianoRoll extends StatefulWidget {
 }
 
 class _PianoRollState extends State<PianoRoll> {
+  late FlutterMidi midi;
   late int selectedPitch;
   late bool isPlaying;
   late int pianoFlex;
   late Widget topWidget;
+
 
   @override
   void initState() {
@@ -28,6 +31,10 @@ class _PianoRollState extends State<PianoRoll> {
     // The percentage of the screen (flex) the piano takes.
     pianoFlex = 20;
 
+    // Configure the midi playback.
+    midi = FlutterMidi();
+    prepareMidi();
+
     // Make fullscreen.
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
@@ -35,6 +42,15 @@ class _PianoRollState extends State<PianoRoll> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
     ]);
+  }
+
+
+  // Prepare the midi sound font.
+  void prepareMidi() async {
+    midi.unmute();
+    String asset = "assets/sf2/Piano.sf2";
+    ByteData data = await rootBundle.load(asset);
+    midi.prepare(sf2: data);
   }
 
 
@@ -122,7 +138,7 @@ class _PianoRollState extends State<PianoRoll> {
     int i, pitch;
 
     for (pitch = Notes.minPitch; pitch <= Notes.maxPitch; pitch++) {
-      for (i = 0; i < 50; i++) {
+      for (i = 0; i < 20; i++) {
         sequence.add(pitch);
       }
     }
@@ -154,19 +170,29 @@ class _PianoRollState extends State<PianoRoll> {
   }
 
 
+  // Plays the melody based on the given list of notes.
   void playMelody({required List<Note> notes}) async {
     setState(() {
       isPlaying = true;
     });
     for (var note in notes) {
-      setState(() {
-        selectedPitch = note.pitch;
+      midi.playMidiNote(midi: note.pitch);
+      Future.delayed(Duration(milliseconds: 500), () {
+        setState(() {
+          selectedPitch = note.pitch;
+        });
       });
-      await Future.delayed(Duration(milliseconds: note.duration));
+      await Future.delayed(Duration(milliseconds: note.duration), () {
+        midi.stopMidiNote(midi: note.pitch);
+      });
     }
-    setState(() {
-      isPlaying = false;
-      selectedPitch = 0;
+
+    // Delay the reset.
+    Future.delayed(Duration(seconds: 1), () {
+      setState(() {
+        selectedPitch = 0;
+        isPlaying = false;
+      });
     });
   }
 
