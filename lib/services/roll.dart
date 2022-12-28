@@ -68,6 +68,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
     // Add to the stack.
     if (rolls.isNotEmpty) {
 
+      // Create the controller.
       var controller = AnimationController(
         duration: Duration(milliseconds: 2000+milliseconds),
         vsync: this,
@@ -83,17 +84,18 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
         }
       });
 
+      // Define the sliding tile.
       tile = SlidingTile(
         controller: controller,
         rolls: rolls,
         end: end,
       );
+
+      // Start the animation.
       tile.controller.forward(from: -1);
 
+      // Add to the tile stack.
       tileStack.add(tile.layout);
-      // Future.delayed(Duration(seconds: 2), () {
-      //   tileStack.removeAt(1);
-      // });
     }
 
     return Expanded(
@@ -226,7 +228,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
           border: Border.all(
             color: Colors.black54,
           ),
-          color: isNatural ? Colors.purple : Colors.purple[700],
+          color: isNatural ? Colors.green : Colors.green[700],
         ),
       ),
     );

@@ -32,7 +32,7 @@ class _BlackPianoTileState extends State<BlackPianoTile> {
                   color: Colors.black54,
                 ),
                 borderRadius: BorderRadius.circular(2),
-                color: highlight ? Colors.purple[700] : Colors.black,
+                color: highlight ? Colors.green[700] : Colors.black,
               ),
             ),
           ),

@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_experimentation/services/midi_sequences.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
-import "package:flutter_experimentation/services/notes.dart";
 import "package:flutter_experimentation/services/piano.dart";
 import "package:flutter_experimentation/services/roll.dart";
 import "package:flutter_midi/flutter_midi.dart";
@@ -17,7 +17,6 @@ class PianoRoll extends StatefulWidget {
 class _PianoRollState extends State<PianoRoll> {
   late bool addRoll;
   late FlutterMidi midi;
-  // late int selectedPitch;
   late int selectedRollPitch;
   late int selectedPianoPitch;
   late int selectedDuration;
@@ -116,7 +115,8 @@ class _PianoRollState extends State<PianoRoll> {
               children: <Widget>[
                 ElevatedButton(
                   onPressed: () {
-                    List<int> sequence = chromaticScaleSequence();
+                    // List<int> sequence = Sequence.chromaticScale();
+                    List<int> sequence = Sequence.odeToJoy();
                     List<Note> notes = sequenceToNotes(sequence: sequence);
                     playMelody(notes: notes);
                   },
@@ -132,7 +132,8 @@ class _PianoRollState extends State<PianoRoll> {
                 Padding(
                   padding: const EdgeInsets.only(top: 16.0),
                   child: Text(
-                    "Play chromatic scale",
+                    // "Play chromatic scale",
+                    "Play Ode to Joy",
                     style: TextStyle(
                       letterSpacing: 1,
                       fontSize: 16,
@@ -165,20 +166,6 @@ class _PianoRollState extends State<PianoRoll> {
         ],
       ),
     );
-  }
-
-
-  // The sequence of the complete chromatic scale.
-  List<int> chromaticScaleSequence() {
-    List<int> sequence = [];
-    int i, pitch, count = 20;
-
-    for (pitch = Notes.minPitch; pitch <= Notes.maxPitch; pitch++) {
-      for (i = 0; i < count; i++) {
-        sequence.add(pitch);
-      }
-    }
-    return sequence;
   }
 
 
@@ -217,6 +204,12 @@ class _PianoRollState extends State<PianoRoll> {
     // Iterate through all notes.
     for (var note in notes) {
 
+      // Skip zero pitches.
+      if (note.pitch == 0) {
+        await Future.delayed(Duration(milliseconds: note.duration));
+        continue;
+      }
+
       // First set the roll pitch and duration.
       setState(() {
         selectedRollPitch = note.pitch;
@@ -245,8 +238,8 @@ class _PianoRollState extends State<PianoRoll> {
       });
     }
 
-    // Swap back to play button after 2 seconds.
-    Future.delayed(Duration(seconds: 2), () {
+    // Swap back to play button after 2.5 seconds.
+    Future.delayed(Duration(milliseconds: 2500), () {
       setState(() {
         selectedRollPitch = 0;
         selectedPianoPitch = 0;
