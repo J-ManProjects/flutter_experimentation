@@ -6,8 +6,11 @@ import "package:flutter_experimentation/services/black_piano_tile.dart";
 
 class Piano extends StatefulWidget {
   final int selectedPitch;
+  final int pianoFlex;
+
   const Piano({
     this.selectedPitch = 0,
+    this.pianoFlex = 20,
     Key? key,
   }) : super(key: key);
 
@@ -18,9 +21,10 @@ class Piano extends StatefulWidget {
 class _PianoState extends State<Piano> {
   List<Widget> whiteTiles = [];
   List<Widget> blackTiles = [];
-  int lowestPitch = 0;
-  int highestPitch = 0;
+  late int lowestPitch;
+  late int highestPitch;
   late int selectedPitch;
+  late int pianoFlex;
 
 
   @override
@@ -28,6 +32,7 @@ class _PianoState extends State<Piano> {
     super.initState();
     lowestPitch = Notes.minPitch;
     highestPitch = Notes.maxPitch;
+    pianoFlex = widget.pianoFlex;
   }
 
 
@@ -43,7 +48,7 @@ class _PianoState extends State<Piano> {
     );
 
     return Expanded(
-      flex: 1,
+      flex: pianoFlex,
       child: Stack(
         children: <Widget>[
           Row(children: whiteTiles),

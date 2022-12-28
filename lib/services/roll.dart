@@ -4,8 +4,11 @@ import "package:flutter_experimentation/services/notes.dart";
 
 class Roll extends StatefulWidget {
   final int selectedPitch;
+  final int pianoFlex;
+
   const Roll({
     this.selectedPitch = 0,
+    this.pianoFlex = 20,
     Key? key,
   }) : super(key: key);
 
@@ -19,6 +22,7 @@ class _RollState extends State<Roll> {
   late int lowestPitch;
   late int highestPitch;
   late int selectedPitch;
+  late int rollFlex;
 
 
   @override
@@ -26,6 +30,7 @@ class _RollState extends State<Roll> {
     super.initState();
     lowestPitch = Notes.minPitch;
     highestPitch = Notes.maxPitch;
+    rollFlex = 100 - widget.pianoFlex;
   }
 
 
@@ -37,7 +42,7 @@ class _RollState extends State<Roll> {
     alignRoll(selectedPitch: selectedPitch, rolls: rolls);
 
     return Expanded(
-      flex: 3,
+      flex: rollFlex,
       child: Stack(
         children: <Widget>[
           Container(
@@ -169,7 +174,6 @@ class _RollState extends State<Roll> {
             width: 0.75,
             color: Colors.black54,
           ),
-          borderRadius: BorderRadius.circular(2),
           color: isNatural ? Colors.purple : Colors.purple[700],
         ),
       ),
