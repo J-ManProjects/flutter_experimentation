@@ -5,9 +5,11 @@ import "package:flutter_experimentation/services/notes.dart";
 class Roll extends StatefulWidget {
   final int selectedPitch;
   final int pianoFlex;
+  final int milliseconds;
 
   const Roll({
     this.selectedPitch = 0,
+    this.milliseconds = 0,
     this.pianoFlex = 20,
     Key? key,
   }) : super(key: key);
@@ -16,12 +18,14 @@ class Roll extends StatefulWidget {
   State<Roll> createState() => _RollState();
 }
 
-class _RollState extends State<Roll> {
+class _RollState extends State<Roll> with TickerProviderStateMixin {
   List<Widget> tileStack = [];
-
+  late SlidingTile tile;
   late int lowestPitch;
   late int highestPitch;
   late int selectedPitch;
+  late int milliseconds;
+  late double height;
   late int rollFlex;
 
 
@@ -44,18 +48,48 @@ class _RollState extends State<Roll> {
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    // Setup the selected pitch.
     selectedPitch = widget.selectedPitch;
-    List<Widget> rolls = [];
+
+    // Setup the duration in milliseconds.
+    milliseconds = widget.milliseconds;
+
+    // Setup the sliding tile height.
+    height = milliseconds / 5;
 
     // Align the roll animation.
-    alignRoll(selectedPitch: selectedPitch, rolls: rolls);
+    List<Widget> rolls = alignRoll(selectedPitch: selectedPitch);
+
+    // The vertical end point for the animation.
+    double end = screenHeight / height;
 
     // Add to the stack.
     if (rolls.isNotEmpty) {
-      tileStack.add(Row(children: rolls));
-      Future.delayed(Duration(seconds: 2), () {
-        tileStack.removeAt(1);
+
+      var controller = AnimationController(
+        duration: Duration(milliseconds: 2000+milliseconds),
+        vsync: this,
+      );
+      controller.addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          print("Removing from stack...");
+          tileStack.removeAt(1);
+        }
       });
+
+      tile = SlidingTile(
+        controller: controller,
+        rolls: rolls,
+        end: end,
+      );
+      tile.controller.forward(from: -1);
+
+      tileStack.add(tile.layout);
+      // Future.delayed(Duration(seconds: 2), () {
+      //   tileStack.removeAt(1);
+      // });
     }
 
     return Expanded(
@@ -68,13 +102,12 @@ class _RollState extends State<Roll> {
 
 
   // Align the roll to the selected pitch.
-  void alignRoll({
-    required List<Widget> rolls,
-    int selectedPitch = 0,
-  }) {
-    rolls.clear();
+  List<Widget> alignRoll({int selectedPitch = 0}) {
+    List<Widget> rolls = [];
+
+    // Return an empty list if selected pitch is out of range.
     if (selectedPitch < lowestPitch || selectedPitch > highestPitch) {
-      return;
+      return rolls;
     }
 
     // Align for natural notes.
@@ -92,6 +125,9 @@ class _RollState extends State<Roll> {
         selectedPitch: selectedPitch,
       );
     }
+
+    // Return the resulting rolls.
+    return rolls;
   }
 
 
@@ -181,7 +217,7 @@ class _RollState extends State<Roll> {
     return Expanded(
       flex: isNatural ? 1 : 2,
       child: Container(
-        height: 1000,
+        height: height,
         decoration: BoxDecoration(
           border: Border.all(
             color: Colors.black54,
@@ -198,6 +234,34 @@ class _RollState extends State<Roll> {
     return Expanded(
       flex: flex,
       child: SizedBox(),
+    );
+  }
+}
+
+
+
+// The sliding tile tween animation class.
+class SlidingTile {
+  AnimationController controller;
+  late Animation<Offset> offset;
+  late Widget layout;
+
+  SlidingTile({
+    required this.controller,
+    required List<Widget> rolls,
+    required double end,
+  }) {
+
+    // Create the offset.
+    offset = Tween<Offset>(
+      begin: Offset(0.0, -1.0),
+      end: Offset(0.0, end),
+    ).animate(controller);
+
+    // Create the tile widget.
+    layout = SlideTransition(
+      position: offset,
+      child: Row(children: rolls),
     );
   }
 }

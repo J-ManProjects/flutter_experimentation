@@ -17,6 +17,7 @@ class PianoRoll extends StatefulWidget {
 class _PianoRollState extends State<PianoRoll> {
   late FlutterMidi midi;
   late int selectedPitch;
+  late int selectedDuration;
   late bool isPlaying;
   late int pianoFlex;
   late Widget topWidget;
@@ -27,6 +28,7 @@ class _PianoRollState extends State<PianoRoll> {
   void initState() {
     super.initState();
     selectedPitch = 0;
+    selectedDuration = 0;
     isPlaying = false;
 
     // The percentage of the screen (flex) the piano takes.
@@ -93,6 +95,7 @@ class _PianoRollState extends State<PianoRoll> {
     if (isPlaying) {
       topWidget = Roll(
         selectedPitch: selectedPitch,
+        milliseconds: selectedDuration,
         pianoFlex: pianoFlex,
       );
     } else {
@@ -161,10 +164,10 @@ class _PianoRollState extends State<PianoRoll> {
   // The sequence of the complete chromatic scale.
   List<int> chromaticScaleSequence() {
     List<int> sequence = [];
-    int i, pitch;
+    int i, pitch, count = 20;
 
     for (pitch = Notes.minPitch; pitch <= Notes.maxPitch; pitch++) {
-      for (i = 0; i < 20; i++) {
+      for (i = 0; i < count; i++) {
         sequence.add(pitch);
       }
     }
@@ -206,6 +209,7 @@ class _PianoRollState extends State<PianoRoll> {
       Future.delayed(Duration(milliseconds: 500), () {
         setState(() {
           selectedPitch = note.pitch;
+          selectedDuration = note.duration;
         });
       });
       await Future.delayed(Duration(milliseconds: note.duration), () {
@@ -214,9 +218,10 @@ class _PianoRollState extends State<PianoRoll> {
     }
 
     // Delay the reset.
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 5), () {
       setState(() {
         selectedPitch = 0;
+        selectedDuration = 0;
         isPlaying = false;
       });
     });
