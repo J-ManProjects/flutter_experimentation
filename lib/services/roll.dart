@@ -74,8 +74,12 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
       );
       controller.addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          print("Removing from stack...");
           tileStack.removeAt(1);
+          if (tileStack.length == 1) {
+            print("Cleared the stack.");
+          } else {
+            print("Removing from stack, ${tileStack.length - 1} remaining...");
+          }
         }
       });
 

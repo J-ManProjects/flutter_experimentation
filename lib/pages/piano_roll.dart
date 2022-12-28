@@ -15,8 +15,11 @@ class PianoRoll extends StatefulWidget {
 }
 
 class _PianoRollState extends State<PianoRoll> {
+  late bool addRoll;
   late FlutterMidi midi;
-  late int selectedPitch;
+  // late int selectedPitch;
+  late int selectedRollPitch;
+  late int selectedPianoPitch;
   late int selectedDuration;
   late bool isPlaying;
   late int pianoFlex;
@@ -27,9 +30,11 @@ class _PianoRollState extends State<PianoRoll> {
   @override
   void initState() {
     super.initState();
-    selectedPitch = 0;
+    selectedRollPitch = 0;
+    selectedPianoPitch = 0;
     selectedDuration = 0;
     isPlaying = false;
+    addRoll = true;
 
     // The percentage of the screen (flex) the piano takes.
     pianoFlex = 20;
@@ -93,11 +98,13 @@ class _PianoRollState extends State<PianoRoll> {
 
     // The piano roll if playing, the play button otherwise.
     if (isPlaying) {
-      topWidget = Roll(
-        selectedPitch: selectedPitch,
-        milliseconds: selectedDuration,
-        pianoFlex: pianoFlex,
-      );
+      if (addRoll) {
+        topWidget = Roll(
+          selectedPitch: selectedRollPitch,
+          milliseconds: selectedDuration,
+          pianoFlex: pianoFlex,
+        );
+      }
     } else {
       topWidget = Expanded(
         flex: 100 - pianoFlex,
@@ -152,7 +159,7 @@ class _PianoRollState extends State<PianoRoll> {
 
           // The piano tiles.
           Piano(
-            selectedPitch: selectedPitch,
+            selectedPitch: selectedPianoPitch,
             pianoFlex: pianoFlex,
           ),
         ],
@@ -201,26 +208,48 @@ class _PianoRollState extends State<PianoRoll> {
 
   // Plays the melody based on the given list of notes.
   void playMelody({required List<Note> notes}) async {
+
+    // Swap to roll.
     setState(() {
       isPlaying = true;
     });
+
+    // Iterate through all notes.
     for (var note in notes) {
-      midi.playMidiNote(midi: note.pitch);
-      Future.delayed(Duration(milliseconds: 500), () {
-        setState(() {
-          selectedPitch = note.pitch;
-          selectedDuration = note.duration;
+
+      // First set the roll pitch and duration.
+      setState(() {
+        selectedRollPitch = note.pitch;
+        selectedDuration = note.duration;
+        addRoll = true;
+      });
+
+      // Set the midi playback.
+      Future.delayed(Duration(milliseconds: 1200), () {
+        midi.playMidiNote(midi: note.pitch);
+        Future.delayed(Duration(milliseconds: note.duration), () {
+          midi.stopMidiNote(midi: note.pitch);
         });
       });
+
+      // Set the piano pitch.
+      Future.delayed(Duration(milliseconds: 1500), () {
+        setState(() {
+          selectedPianoPitch = note.pitch;
+          addRoll = false;
+        });
+      });
+
+      // Delay for note's duration before continuing to next note.
       await Future.delayed(Duration(milliseconds: note.duration), () {
-        midi.stopMidiNote(midi: note.pitch);
       });
     }
 
-    // Delay the reset.
-    Future.delayed(Duration(seconds: 5), () {
+    // Swap back to play button after 2 seconds.
+    Future.delayed(Duration(seconds: 2), () {
       setState(() {
-        selectedPitch = 0;
+        selectedRollPitch = 0;
+        selectedPianoPitch = 0;
         selectedDuration = 0;
         isPlaying = false;
       });
