@@ -20,6 +20,7 @@ class _PianoRollState extends State<PianoRoll> {
   late bool isPlaying;
   late int pianoFlex;
   late Widget topWidget;
+  late Widget separator;
 
 
   @override
@@ -42,6 +43,22 @@ class _PianoRollState extends State<PianoRoll> {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
     ]);
+
+    // Configure the piano and roll separator.
+    separator = Container(
+      height: 6,
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.black,
+              Colors.brown[900] as Color,
+              Colors.black,
+            ],
+          )
+      ),
+    );
   }
 
 
@@ -72,6 +89,7 @@ class _PianoRollState extends State<PianoRoll> {
   @override
   Widget build(BuildContext context) {
 
+    // The piano roll if playing, the play button otherwise.
     if (isPlaying) {
       topWidget = Roll(
         selectedPitch: selectedPitch,
@@ -102,7 +120,7 @@ class _PianoRollState extends State<PianoRoll> {
                   child: Icon(Icons.play_arrow),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(top: 16.0),
                   child: Text(
                     "Play chromatic scale",
                     style: TextStyle(
@@ -121,7 +139,14 @@ class _PianoRollState extends State<PianoRoll> {
     return Scaffold(
       body: Column(
         children: <Widget>[
+
+          // Either the play button or the piano roll.
           topWidget,
+
+          // The gradient filled separator.
+          separator,
+
+          // The piano tiles.
           Piano(
             selectedPitch: selectedPitch,
             pianoFlex: pianoFlex,
