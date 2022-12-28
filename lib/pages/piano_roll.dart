@@ -46,14 +46,14 @@ class _PianoRollState extends State<PianoRoll> {
 
     // Configure the piano and roll separator.
     separator = Container(
-      height: 6,
+      height: 8,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: <Color>[
             Colors.black,
-            Colors.brown[900] as Color,
+            Colors.blue[700] as Color,
             Colors.black,
           ],
         ),
@@ -126,6 +126,7 @@ class _PianoRollState extends State<PianoRoll> {
                     style: TextStyle(
                       letterSpacing: 1,
                       fontSize: 16,
+                      color: Colors.white,
                     ),
                   ),
                 ),

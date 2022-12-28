@@ -17,7 +17,7 @@ class Roll extends StatefulWidget {
 }
 
 class _RollState extends State<Roll> {
-  List<Widget> rolls = [];
+  List<Widget> tileStack = [];
 
   late int lowestPitch;
   late int highestPitch;
@@ -27,29 +27,41 @@ class _RollState extends State<Roll> {
 
   @override
   void initState() {
-    super.initState();
     lowestPitch = Notes.minPitch;
     highestPitch = Notes.maxPitch;
+
+    // Setup the flex.
     rollFlex = 100 - widget.pianoFlex;
+
+    // Add the grey background.
+    tileStack.add(Container(
+      color: Colors.grey[900],
+    ));
+
+    super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
     selectedPitch = widget.selectedPitch;
+    List<Widget> rolls = [];
 
     // Align the roll animation.
     alignRoll(selectedPitch: selectedPitch, rolls: rolls);
 
+    // Add to the stack.
+    if (rolls.isNotEmpty) {
+      tileStack.add(Row(children: rolls));
+      Future.delayed(Duration(seconds: 2), () {
+        tileStack.removeAt(1);
+      });
+    }
+
     return Expanded(
       flex: rollFlex,
       child: Stack(
-        children: <Widget>[
-          Container(
-            color: Colors.grey[900],
-          ),
-          Row(children: rolls),
-        ],
+        children: tileStack,
       ),
     );
   }
@@ -169,9 +181,9 @@ class _RollState extends State<Roll> {
     return Expanded(
       flex: isNatural ? 1 : 2,
       child: Container(
+        height: 1000,
         decoration: BoxDecoration(
           border: Border.all(
-            width: 0.75,
             color: Colors.black54,
           ),
           color: isNatural ? Colors.purple : Colors.purple[700],
