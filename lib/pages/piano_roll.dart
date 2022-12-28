@@ -48,15 +48,15 @@ class _PianoRollState extends State<PianoRoll> {
     separator = Container(
       height: 6,
       decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black,
-              Colors.brown[900] as Color,
-              Colors.black,
-            ],
-          )
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            Colors.black,
+            Colors.brown[900] as Color,
+            Colors.black,
+          ],
+        ),
       ),
     );
   }
