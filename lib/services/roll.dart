@@ -225,8 +225,10 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
       child: Container(
         height: height,
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(2),
           border: Border.all(
             color: Colors.black54,
+
           ),
           color: isNatural ? Colors.green : Colors.green[700],
         ),

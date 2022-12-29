@@ -15,6 +15,9 @@ class PianoRoll extends StatefulWidget {
 }
 
 class _PianoRollState extends State<PianoRoll> {
+  late List<String> sequenceTitles;
+  late Map sequences;
+  late String selectedSequence;
   late bool addRoll;
   late FlutterMidi midi;
   late int selectedRollPitch;
@@ -50,9 +53,26 @@ class _PianoRollState extends State<PianoRoll> {
       DeviceOrientation.landscapeLeft,
     ]);
 
+    // Populate the list of sequences.
+    sequenceTitles = [
+      "Chromatic Scale",
+      "Chromatic Scale (x2)",
+      "Chromatic Scale (x4)",
+      "Ode to Joy",
+    ];
+    sequences = {
+      sequenceTitles[0]: Sequence.chromaticScale(count: 80),
+      sequenceTitles[1]: Sequence.chromaticScale(count: 40),
+      sequenceTitles[2]: Sequence.chromaticScale(count: 20),
+      sequenceTitles[3]: Sequence.odeToJoy(),
+    };
+
+    // Chromatic scale by default.
+    selectedSequence = sequenceTitles[1];
+
     // Configure the piano and roll separator.
     separator = Container(
-      height: 8,
+      height: 6,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -116,7 +136,8 @@ class _PianoRollState extends State<PianoRoll> {
                 ElevatedButton(
                   onPressed: () {
                     // List<int> sequence = Sequence.chromaticScale();
-                    List<int> sequence = Sequence.odeToJoy();
+                    // List<int> sequence = Sequence.odeToJoy();
+                    List<int> sequence = sequences[selectedSequence];
                     List<Note> notes = sequenceToNotes(sequence: sequence);
                     playMelody(notes: notes);
                   },
@@ -130,15 +151,25 @@ class _PianoRollState extends State<PianoRoll> {
                   child: Icon(Icons.play_arrow),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 16.0),
-                  child: Text(
-                    // "Play chromatic scale",
-                    "Play Ode to Joy",
-                    style: TextStyle(
-                      letterSpacing: 1,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+                  padding: const EdgeInsets.only(top: 16),
+                  child: DropdownButton(
+                    value: selectedSequence,
+                    items: sequenceTitles.map((String title) {
+                      return DropdownMenuItem(
+                        value: title,
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (newSequence) {
+                      setState(() {
+                        selectedSequence = newSequence!;
+                      });
+                    },
                   ),
                 ),
               ],
