@@ -59,7 +59,7 @@ class _PianoRollState extends State<PianoRoll> {
           end: Alignment.bottomCenter,
           colors: <Color>[
             Colors.black,
-            Colors.blue[700] as Color,
+            Colors.brown[900] as Color,
             Colors.black,
           ],
         ),
@@ -238,8 +238,8 @@ class _PianoRollState extends State<PianoRoll> {
       });
     }
 
-    // Swap back to play button after 2.5 seconds.
-    Future.delayed(Duration(milliseconds: 2500), () {
+    // Swap back to play button final note.
+    Future.delayed(Duration(milliseconds: notes.last.duration+1500), () {
       setState(() {
         selectedRollPitch = 0;
         selectedPianoPitch = 0;
