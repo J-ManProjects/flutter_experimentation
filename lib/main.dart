@@ -4,7 +4,8 @@ import "package:flutter_experimentation/pages/piano_bar.dart";
 import "package:flutter_experimentation/pages/piano_roll.dart";
 import "package:flutter_experimentation/pages/piano_touch.dart";
 import "package:flutter_experimentation/pages/sound_generator.dart";
-import "package:flutter_experimentation/pages/animations.dart";
+import "package:flutter_experimentation/pages/sliding_animations.dart";
+import "package:flutter_experimentation/pages/color_animations.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 
 
@@ -34,8 +35,9 @@ class _MyAppState extends State<MyApp> {
         "/home": (context) => Home(),
         "/piano_touch": (context) => PianoTouch(),
         "/piano_bar": (context) => PianoBar(),
-        "/animations": (context) => Animations(),
+        "/sliding_animations": (context) => SlidingAnimations(),
         "/sound": (context) => SoundGenerator(),
+        "/color_animations": (context) => ColorAnimations(),
         "/piano_roll": (context) => PianoRoll(),
       },
     );

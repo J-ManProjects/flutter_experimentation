@@ -48,11 +48,11 @@ class _HomeState extends State<Home> {
         page: "/piano_bar",
       ),
 
-      // Animations button.
+      // Sliding animations button.
       ListButton(
         context: context,
-        title: "Animations",
-        page: "/animations",
+        title: "Sliding Animations",
+        page: "/sliding_animations",
       ),
 
       // Generate sounds.
@@ -60,6 +60,13 @@ class _HomeState extends State<Home> {
         context: context,
         title: "Sound Generator",
         page: "/sound",
+      ),
+
+      // Sliding animations button.
+      ListButton(
+        context: context,
+        title: "Color Changing Animations",
+        page: "/color_animations",
       ),
 
       // Piano roll button.

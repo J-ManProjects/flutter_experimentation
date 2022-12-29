@@ -2,14 +2,14 @@ import "package:flutter/material.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 
 
-class Animations extends StatefulWidget {
-  const Animations({Key? key}) : super(key: key);
+class SlidingAnimations extends StatefulWidget {
+  const SlidingAnimations({Key? key}) : super(key: key);
 
   @override
-  State<Animations> createState() => _AnimationsState();
+  State<SlidingAnimations> createState() => _SlidingAnimationsState();
 }
 
-class _AnimationsState extends State<Animations>
+class _SlidingAnimationsState extends State<SlidingAnimations>
     with TickerProviderStateMixin
 {
   late List<SlidingTile> tiles = [];
@@ -83,7 +83,7 @@ class _AnimationsState extends State<Animations>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Animations"),
+        title: Text("Sliding Animations"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

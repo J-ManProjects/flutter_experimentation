@@ -262,8 +262,7 @@ class _PianoRollState extends State<PianoRoll> {
       });
 
       // Delay for note's duration before continuing to next note.
-      await Future.delayed(Duration(milliseconds: note.duration), () {
-      });
+      await Future.delayed(Duration(milliseconds: note.duration));
     }
 
     // Swap back to play button final note.
