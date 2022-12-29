@@ -58,13 +58,15 @@ class _PianoRollState extends State<PianoRoll> {
       "Chromatic Scale",
       "Chromatic Scale (x2)",
       "Chromatic Scale (x4)",
-      "Ode to Joy",
+      "Beethoven's Ode to Joy",
+      "Brahms' Hungarian Dance No. 5",
     ];
     sequences = {
       sequenceTitles[0]: Sequence.chromaticScale(count: 80),
       sequenceTitles[1]: Sequence.chromaticScale(count: 40),
       sequenceTitles[2]: Sequence.chromaticScale(count: 20),
       sequenceTitles[3]: Sequence.odeToJoy(),
+      sequenceTitles[4]: Sequence.hungarianDanceNo5(),
     };
 
     // Chromatic scale by default.

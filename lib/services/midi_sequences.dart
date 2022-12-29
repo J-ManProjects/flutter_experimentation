@@ -530,4 +530,427 @@ class Sequence {
 
     return sequence;
   }
+
+
+  // The sequence for part of Brahms' Hungarian Dance No 5.
+  static List<int> hungarianDanceNo5() {
+    List<int> sequence = [];
+    int quarter = 24;
+    int eighth = 12;
+
+    
+    // Part 1.
+    
+    // D4
+    int count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // G4
+    count = quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+    // A#4
+    count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 70,
+    );
+
+    // G4
+    count = quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+    // F#4
+    count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 66,
+    );
+
+    // G4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+    // A4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 69,
+    );
+
+    // G4
+    count = 4*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+
+    // D#4
+    count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 63,
+    );
+
+    // F4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 65,
+    );
+
+    // G4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+    // D4
+    count = 4*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // C4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 60,
+    );
+
+    // A#3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 58,
+    );
+
+    // A#3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 58,
+    );
+
+    // A3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 57,
+    );
+
+    // A3
+    count = 3*eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 57,
+    );
+
+    // D4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // G3
+    count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 55,
+    );
+
+    // Rest.
+    count = quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+    );
+
+
+    // Part 2.
+
+    // D4
+    count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // G4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+    // A#4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 70,
+    );
+
+    // D5
+    count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 74,
+    );
+
+    // A#4
+    count = quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 70,
+    );
+
+    // A4
+    count = 3*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 69,
+    );
+
+    // A#4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 70,
+    );
+
+    // C5
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 72,
+    );
+
+    // A#4
+    count = 4*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 70,
+    );
+
+    // D#4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 63,
+    );
+
+    // F4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 65,
+    );
+
+    // G4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+    // D#4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 63,
+    );
+
+    // D4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // D#4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 63,
+    );
+
+    // F4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 65,
+    );
+
+    // D4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // C4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 60,
+    );
+
+    // D4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // D#4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 63,
+    );
+
+    // C4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 60,
+    );
+
+    // A#3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 58,
+    );
+
+    // C4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 60,
+    );
+
+    // D4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // A#3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 58,
+    );
+
+    // C4
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 60,
+    );
+
+    // A#3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 58,
+    );
+
+    // A#3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 58,
+    );
+
+    // A3
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 57,
+    );
+
+    // A3
+    count = 3*eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 57,
+    );
+
+    // D4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 62,
+    );
+
+    // G3
+    count = 2*quarter;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 55,
+    );
+
+    // G4
+    count = eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+      pitch: 67,
+    );
+
+    // Rest.
+    count = 3*eighth;
+    Sequence.addRepeatedSequence(
+      sequence: sequence,
+      count: count,
+    );
+
+
+    return sequence;
+  }
+
 }
