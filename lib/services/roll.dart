@@ -73,8 +73,11 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
         duration: Duration(milliseconds: 2000+milliseconds),
         vsync: this,
       );
+
+      // Dispose of controller on completion.
       controller.addStatusListener((status) {
         if (status == AnimationStatus.completed) {
+          controller.dispose();
           tileStack.removeAt(1);
           if (tileStack.length == 1) {
             print("Cleared the stack.");

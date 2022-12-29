@@ -127,53 +127,48 @@ class _PianoRollState extends State<PianoRoll> {
     } else {
       topWidget = Expanded(
         flex: 100 - pianoFlex,
-        child: Container(
-          color: Colors.grey[900],
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: () {
-                    // List<int> sequence = Sequence.chromaticScale();
-                    // List<int> sequence = Sequence.odeToJoy();
-                    List<int> sequence = sequences[selectedSequence];
-                    List<Note> notes = sequenceToNotes(sequence: sequence);
-                    playMelody(notes: notes);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(20),
-                    backgroundColor: MyTheme.isDarkMode(context)
-                        ? Colors.green[700]
-                        : Colors.green,
-                  ),
-                  child: Icon(Icons.play_arrow),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: () {
+                  List<int> sequence = sequences[selectedSequence];
+                  List<Note> notes = sequenceToNotes(sequence: sequence);
+                  playMelody(notes: notes);
+                },
+                style: ElevatedButton.styleFrom(
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.all(20),
+                  backgroundColor: MyTheme.isDarkMode(context)
+                      ? Colors.green[700]
+                      : Colors.green,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: DropdownButton(
-                    value: selectedSequence,
-                    items: sequenceTitles.map((String title) {
-                      return DropdownMenuItem(
-                        value: title,
-                        child: Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
+                child: Icon(Icons.play_arrow),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: DropdownButton(
+                  value: selectedSequence,
+                  items: sequenceTitles.map((String title) {
+                    return DropdownMenuItem(
+                      value: title,
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
                         ),
-                      );
-                    }).toList(),
-                    onChanged: (newSequence) {
-                      setState(() {
-                        selectedSequence = newSequence!;
-                      });
-                    },
-                  ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (newSequence) {
+                    setState(() {
+                      selectedSequence = newSequence!;
+                    });
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
@@ -270,7 +265,7 @@ class _PianoRollState extends State<PianoRoll> {
     }
 
     // Swap back to play button final note.
-    Future.delayed(Duration(milliseconds: notes.last.duration+1500), () {
+    Future.delayed(Duration(milliseconds: notes.last.duration+2000), () {
       setState(() {
         selectedRollPitch = 0;
         selectedPianoPitch = 0;
