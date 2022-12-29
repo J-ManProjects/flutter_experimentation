@@ -28,8 +28,8 @@ class _ColorAnimationsState extends State<ColorAnimations>
 
     // Initialise the color(s).
     animation = Tween<Color>(
-      begin: Colors.indigo,
-      end: Colors.amber,
+      begin: Colors.blue[900],
+      end: Colors.red[900],
     ).animate(controller);
 
     // Add a status listener to the controller.
@@ -55,9 +55,14 @@ class _ColorAnimationsState extends State<ColorAnimations>
       ),
       body: Center(
         child: Container(
-          height: 100,
-          width: 100,
-          color: animation?.value,
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 8,
+            ),
+            color: animation?.value,
+          ),
+          height: 160,
+          width: 160,
           child: InkWell(
             onTap: () {
               setState(() {
