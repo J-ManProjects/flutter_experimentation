@@ -12,13 +12,12 @@ class _ColorAnimationsState extends State<ColorAnimations>
     with TickerProviderStateMixin
 {
   late AnimationController controller;
-  late Animation<Color>? animation;
-  late bool reverse;
+  late Animation<Color>? boxColors;
+  late Animation<Color>? textColors;
 
 
   @override
   void initState() {
-    reverse = false;
 
     // Initialise the controller.
     controller = AnimationController(
@@ -27,19 +26,24 @@ class _ColorAnimationsState extends State<ColorAnimations>
     );
 
     // Initialise the color(s).
-    animation = Tween<Color>(
-      begin: Colors.blue[900],
-      end: Colors.red[900],
+    boxColors = Tween<Color>(
+      begin: Colors.green[700],
+      end: Colors.white,
     ).animate(controller);
+    textColors = Tween<Color>(
+      begin: Colors.white,
+      end: Colors.black,
+    ).animate(controller);
+    
+
+    controller.forward();
+    controller.duration = Duration(seconds: 2);
 
     // Add a status listener to the controller.
     controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         print("Completed");
-        reverse = !reverse;
-      } else if (status == AnimationStatus.dismissed) {
-        print("Dismissed");
-        reverse = !reverse;
+        setState(() {});
       }
     });
 
@@ -59,19 +63,34 @@ class _ColorAnimationsState extends State<ColorAnimations>
             border: Border.all(
               width: 8,
             ),
-            color: animation?.value,
+            color: boxColors?.value,
           ),
           height: 160,
           width: 160,
           child: InkWell(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  "Random text goes here",
+                  maxLines: 3,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: textColors?.value,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+            ),
             onTap: () {
-              setState(() {
-                if (reverse) {
-                  controller.reverse();
-                } else {
+              if (controller.isCompleted) {
+                setState(() {
+                  controller.reset();
                   controller.forward();
-                }
-              });
+                });
+              }
             },
           ),
         ),
