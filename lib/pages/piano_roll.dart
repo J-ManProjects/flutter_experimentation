@@ -27,6 +27,7 @@ class _PianoRollState extends State<PianoRoll> {
   late int pianoFlex;
   late Widget topWidget;
   late Widget separator;
+  late final Widget piano;
 
 
   @override
@@ -86,6 +87,12 @@ class _PianoRollState extends State<PianoRoll> {
           ],
         ),
       ),
+    );
+
+    // Default piano layout.
+    piano = Piano(
+      selectedPitch: selectedPianoPitch,
+      pianoFlex: pianoFlex,
     );
   }
 
@@ -187,10 +194,11 @@ class _PianoRollState extends State<PianoRoll> {
           separator,
 
           // The piano tiles.
-          Piano(
-            selectedPitch: selectedPianoPitch,
-            pianoFlex: pianoFlex,
-          ),
+          piano,
+          // Piano(
+          //   selectedPitch: selectedPianoPitch,
+          //   pianoFlex: pianoFlex,
+          // ),
         ],
       ),
     );
@@ -246,20 +254,20 @@ class _PianoRollState extends State<PianoRoll> {
       });
 
       // Set the midi playback.
-      Future.delayed(Duration(milliseconds: 1200), () {
+      Future.delayed(Duration(milliseconds: 1200), () async {
         midi.playMidiNote(midi: note.pitch);
-        Future.delayed(Duration(milliseconds: note.duration), () {
+        await Future.delayed(Duration(milliseconds: note.duration), () {
           midi.stopMidiNote(midi: note.pitch);
         });
       });
 
-      // Set the piano pitch.
-      Future.delayed(Duration(milliseconds: 1500), () {
-        setState(() {
-          selectedPianoPitch = note.pitch;
-          addRoll = false;
-        });
-      });
+      // // Set the piano pitch.
+      // Future.delayed(Duration(milliseconds: 1500), () {
+      //   setState(() {
+      //     selectedPianoPitch = note.pitch;
+      //     addRoll = false;
+      //   });
+      // });
 
       // Delay for note's duration before continuing to next note.
       await Future.delayed(Duration(milliseconds: note.duration));

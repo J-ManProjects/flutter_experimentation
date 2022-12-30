@@ -535,8 +535,8 @@ class Sequence {
   // The sequence for part of Brahms' Hungarian Dance No 5.
   static List<int> hungarianDanceNo5() {
     List<int> sequence = [];
-    int quarter = 24;
     int eighth = 12;
+    int quarter = 2*eighth;
 
     
     // Part 1.
