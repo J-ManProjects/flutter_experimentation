@@ -14,10 +14,12 @@ class _ColorAnimationsState extends State<ColorAnimations>
   late AnimationController controller;
   late Animation<Color>? boxColors;
   late Animation<Color>? textColors;
+  late int duration;
 
 
   @override
   void initState() {
+    duration = 0;
 
     // Initialise the controller.
     controller = AnimationController(
@@ -35,9 +37,9 @@ class _ColorAnimationsState extends State<ColorAnimations>
       end: Colors.black,
     ).animate(controller);
     
-
+    // Initialise the animation.
     controller.forward();
-    controller.duration = Duration(seconds: 2);
+    controller.duration = Duration(seconds: duration);
 
     // Add a status listener to the controller.
     controller.addStatusListener((status) {
@@ -58,41 +60,61 @@ class _ColorAnimationsState extends State<ColorAnimations>
         title: Text("Color Changing Animations"),
       ),
       body: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 8,
-            ),
-            color: boxColors?.value,
-          ),
-          height: 160,
-          width: 160,
-          child: InkWell(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Text(
-                  "Random text goes here",
-                  maxLines: 3,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: textColors?.value,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                    fontSize: 24,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 8,
+                ),
+                color: boxColors?.value,
+              ),
+              height: 160,
+              width: 160,
+              child: InkWell(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      "Random text goes here",
+                      maxLines: 3,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: textColors?.value,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1,
+                        fontSize: 24,
+                      ),
+                    ),
                   ),
+                ),
+                onTap: () {
+                  if (controller.isCompleted) {
+                    setState(() {
+                      if (duration == 5) {
+                        duration = 1;
+                      } else {
+                        duration++;
+                      }
+                      controller.duration = Duration(seconds: duration);
+                      controller.reset();
+                      controller.forward();
+                    });
+                  }
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Text(
+                "Delay: $duration second${(duration == 1) ? "" : "s"}",
+                style: TextStyle(
+                  fontSize: 16,
                 ),
               ),
             ),
-            onTap: () {
-              if (controller.isCompleted) {
-                setState(() {
-                  controller.reset();
-                  controller.forward();
-                });
-              }
-            },
-          ),
+          ],
         ),
       ),
     );
