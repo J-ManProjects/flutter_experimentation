@@ -20,12 +20,16 @@ class Roll extends StatefulWidget {
 
 class _RollState extends State<Roll> with TickerProviderStateMixin {
   List<Widget> tileStack = [];
+  late List<Widget> rolls;
   late SlidingTile tile;
   late int lowestPitch;
   late int highestPitch;
   late int selectedPitch;
   late int milliseconds;
   late double height;
+  late bool heightCalculated;
+  late double screenHeight;
+  late double end;
   late int rollFlex;
 
 
@@ -33,6 +37,9 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
   void initState() {
     lowestPitch = Notes.minPitch;
     highestPitch = Notes.maxPitch;
+
+    // The screen height has not yet been calculated.
+    heightCalculated = false;
 
     // Setup the flex.
     rollFlex = 100 - widget.pianoFlex;
@@ -48,7 +55,12 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
+
+    // Calculate screen height only once.
+    if (!heightCalculated) {
+      heightCalculated = true;
+      screenHeight = MediaQuery.of(context).size.height;
+    }
 
     // Setup the selected pitch.
     selectedPitch = widget.selectedPitch;
@@ -60,10 +72,10 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
     height = milliseconds / 5;
 
     // Align the roll animation.
-    List<Widget> rolls = alignRoll(selectedPitch: selectedPitch);
+    rolls = alignRoll(selectedPitch: selectedPitch);
 
     // The vertical end point for the animation.
-    double end = screenHeight / height;
+    end = screenHeight / height;
 
     // Add to the stack.
     if (rolls.isNotEmpty) {
@@ -226,7 +238,6 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
           borderRadius: BorderRadius.circular(2),
           border: Border.all(
             color: Colors.black54,
-
           ),
           color: isNatural ? Colors.green : Colors.green[700],
         ),

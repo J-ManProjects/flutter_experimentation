@@ -27,7 +27,6 @@ class _PianoRollState extends State<PianoRoll> {
   late int pianoFlex;
   late Widget topWidget;
   late Widget separator;
-  late final Widget piano;
 
 
   @override
@@ -56,21 +55,21 @@ class _PianoRollState extends State<PianoRoll> {
 
     // Populate the list of sequences.
     sequenceTitles = [
-      "Chromatic Scale",
-      "Chromatic Scale (x2)",
-      "Chromatic Scale (x4)",
       "Beethoven's Ode to Joy",
       "Brahms' Hungarian Dance No. 5",
+      "Chromatic Scale (x1)",
+      "Chromatic Scale (x2)",
+      "Chromatic Scale (x4)",
     ];
     sequences = {
-      sequenceTitles[0]: Sequence.chromaticScale(count: 80),
-      sequenceTitles[1]: Sequence.chromaticScale(count: 40),
-      sequenceTitles[2]: Sequence.chromaticScale(count: 20),
-      sequenceTitles[3]: Sequence.odeToJoy(),
-      sequenceTitles[4]: Sequence.hungarianDanceNo5(),
+      sequenceTitles[0]: Sequence.odeToJoy(),
+      sequenceTitles[1]: Sequence.hungarianDanceNo5(),
+      sequenceTitles[2]: Sequence.chromaticScale(count: 80),
+      sequenceTitles[3]: Sequence.chromaticScale(count: 40),
+      sequenceTitles[4]: Sequence.chromaticScale(count: 20),
     };
 
-    // Chromatic scale by default.
+    // Hungarian Dance No. 5 by default.
     selectedSequence = sequenceTitles[1];
 
     // Configure the piano and roll separator.
@@ -87,12 +86,6 @@ class _PianoRollState extends State<PianoRoll> {
           ],
         ),
       ),
-    );
-
-    // Default piano layout.
-    piano = Piano(
-      selectedPitch: selectedPianoPitch,
-      pianoFlex: pianoFlex,
     );
   }
 
@@ -194,11 +187,10 @@ class _PianoRollState extends State<PianoRoll> {
           separator,
 
           // The piano tiles.
-          piano,
-          // Piano(
-          //   selectedPitch: selectedPianoPitch,
-          //   pianoFlex: pianoFlex,
-          // ),
+          Piano(
+            selectedPitch: selectedPianoPitch,
+            pianoFlex: pianoFlex,
+          ),
         ],
       ),
     );
@@ -232,6 +224,10 @@ class _PianoRollState extends State<PianoRoll> {
   // Plays the melody based on the given list of notes.
   void playMelody({required List<Note> notes}) async {
 
+    // Create the duration objects.
+    Duration duration1200 = Duration(milliseconds: 1200);
+    Duration duration1500 = Duration(milliseconds: 1500);
+
     // Swap to roll.
     setState(() {
       isPlaying = true;
@@ -254,27 +250,27 @@ class _PianoRollState extends State<PianoRoll> {
       });
 
       // Set the midi playback.
-      Future.delayed(Duration(milliseconds: 1200), () async {
+      Future.delayed(duration1200, () async {
         midi.playMidiNote(midi: note.pitch);
-        await Future.delayed(Duration(milliseconds: note.duration), () {
+        Future.delayed(Duration(milliseconds: note.duration), () {
           midi.stopMidiNote(midi: note.pitch);
         });
       });
 
-      // // Set the piano pitch.
-      // Future.delayed(Duration(milliseconds: 1500), () {
-      //   setState(() {
-      //     selectedPianoPitch = note.pitch;
-      //     addRoll = false;
-      //   });
-      // });
+      // Set the piano pitch.
+      Future.delayed(duration1500, () {
+        setState(() {
+          selectedPianoPitch = note.pitch;
+          addRoll = false;
+        });
+      });
 
       // Delay for note's duration before continuing to next note.
       await Future.delayed(Duration(milliseconds: note.duration));
     }
 
     // Swap back to play button final note.
-    Future.delayed(Duration(milliseconds: notes.last.duration+2000), () {
+    await Future.delayed(Duration(milliseconds: notes.last.duration+2000), () {
       setState(() {
         selectedRollPitch = 0;
         selectedPianoPitch = 0;

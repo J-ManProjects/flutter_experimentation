@@ -37,7 +37,7 @@ class _BarState extends State<Bar> {
     alignBar(selectedPitch: selectedPitch, bars: bars);
 
     return Expanded(
-      flex: 3,
+      flex: 80,
       child: Stack(
         children: <Widget>[
           Container(
