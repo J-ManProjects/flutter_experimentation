@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
-import 'package:flutter_experimentation/pages/path_provider.dart';
+import "package:flutter_experimentation/pages/file_explorer.dart";
+import "package:flutter_experimentation/pages/path_provider.dart";
 
 
 class FileManagement extends StatefulWidget {
@@ -30,6 +31,17 @@ class _FileManagementState extends State<FileManagement> {
                 );
               },
               child: Text("Path Provider Example"),
+            ),
+
+            // Path Provider Example.
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FileExplorer()),
+                );
+              },
+              child: Text("File Explorer"),
             ),
 
           ],
