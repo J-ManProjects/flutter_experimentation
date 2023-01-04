@@ -25,6 +25,7 @@ class _PianoRollState extends State<PianoRoll> {
   late int selectedDuration;
   late int pianoFlex;
   late int rollFlex;
+  late int separatorFlex;
   late bool addRoll;
   late bool isPlaying;
   late Widget topWidget;
@@ -42,7 +43,8 @@ class _PianoRollState extends State<PianoRoll> {
 
     // The percentage of the screen (flex) each section takes.
     pianoFlex = 20;
-    rollFlex = 100 - pianoFlex;
+    separatorFlex = 2;
+    rollFlex = 100 - pianoFlex - separatorFlex;
 
     // The default piano tiles.
     piano = Piano(pianoFlex: pianoFlex);
@@ -79,17 +81,19 @@ class _PianoRollState extends State<PianoRoll> {
     selectedSequence = sequenceTitles[1];
 
     // Configure the piano and roll separator.
-    separator = Container(
-      height: 6,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[
-            Colors.black,
-            Colors.brown[900] as Color,
-            Colors.black,
-          ],
+    separator = Expanded(
+      flex: separatorFlex,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              Colors.black,
+              Colors.brown[900] as Color,
+              Colors.black,
+            ],
+          ),
         ),
       ),
     );
@@ -169,9 +173,9 @@ class _PianoRollState extends State<PianoRoll> {
                       ),
                     );
                   }).toList(),
-                  onChanged: (newSequence) {
+                  onChanged: (dropDownValue) {
                     setState(() {
-                      selectedSequence = newSequence!;
+                      selectedSequence = dropDownValue!;
                     });
                   },
                 ),

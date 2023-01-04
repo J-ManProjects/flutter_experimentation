@@ -29,6 +29,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
   late double height;
   late bool heightCalculated;
   late double screenHeight;
+  late double ratio;
   late double end;
   late int rollFlex;
 
@@ -56,10 +57,11 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
 
-    // Calculate screen height only once.
+    // Calculate screen height and ratio only once.
     if (!heightCalculated) {
       heightCalculated = true;
       screenHeight = MediaQuery.of(context).size.height;
+      ratio = screenHeight / 2057.14285714286;
     }
 
     // Setup the selected pitch.
@@ -69,7 +71,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
     milliseconds = widget.milliseconds;
 
     // Setup the sliding tile height.
-    height = milliseconds / 5;
+    height = milliseconds * ratio;
 
     // Align the roll animation.
     rolls = alignRoll(selectedPitch: selectedPitch);
