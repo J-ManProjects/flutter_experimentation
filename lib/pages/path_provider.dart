@@ -4,7 +4,8 @@ import "package:path_provider/path_provider.dart";
 
 
 class PathProviderExample extends StatefulWidget {
-  const PathProviderExample({Key? key}) : super(key: key);
+  final String title;
+  const PathProviderExample({required this.title, Key? key}) : super(key: key);
 
   @override
   State<PathProviderExample> createState() => _PathProviderExampleState();
@@ -117,7 +118,7 @@ class _PathProviderExampleState extends State<PathProviderExample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Path Provider Example"),
+        title: Text(widget.title),
       ),
       body: Center(
         child: ListView(
