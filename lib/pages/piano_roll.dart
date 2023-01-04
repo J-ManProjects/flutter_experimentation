@@ -58,18 +58,18 @@ class _PianoRollState extends State<PianoRoll> {
 
     // Populate the list of sequences.
     sequenceTitles = [
-      "Beethoven's Ode to Joy",
-      "Brahms' Hungarian Dance No. 5",
       "Chromatic Scale (x1)",
       "Chromatic Scale (x2)",
       "Chromatic Scale (x4)",
+      "Beethoven's Ode to Joy",
+      "Brahms' Hungarian Dance No. 5",
     ];
     sequences = {
-      sequenceTitles[0]: Sequence.odeToJoy(),
-      sequenceTitles[1]: Sequence.hungarianDanceNo5(),
-      sequenceTitles[2]: Sequence.chromaticScale(count: 80),
-      sequenceTitles[3]: Sequence.chromaticScale(count: 40),
-      sequenceTitles[4]: Sequence.chromaticScale(count: 20),
+      sequenceTitles[0]: Sequence.chromaticScale(count: 80),
+      sequenceTitles[1]: Sequence.chromaticScale(count: 40),
+      sequenceTitles[2]: Sequence.chromaticScale(count: 20),
+      sequenceTitles[3]: Sequence.odeToJoy(),
+      sequenceTitles[4]: Sequence.hungarianDanceNo5(),
     };
 
     // Hungarian Dance No. 5 by default.
@@ -140,9 +140,7 @@ class _PianoRollState extends State<PianoRoll> {
             children: <Widget>[
               ElevatedButton(
                 onPressed: () {
-                  List<int> sequence = sequences[selectedSequence];
-                  List<Note> notes = sequenceToNotes(sequence: sequence);
-                  playMelody(notes: notes);
+                  playMelody(sequence: sequences[selectedSequence]);
                 },
                 style: ElevatedButton.styleFrom(
                   shape: CircleBorder(),
@@ -223,8 +221,11 @@ class _PianoRollState extends State<PianoRoll> {
   }
 
 
-  // Plays the melody based on the given list of notes.
-  void playMelody({required List<Note> notes}) async {
+  // Plays the melody based on the given sequence.
+  void playMelody({required List<int> sequence}) async {
+
+    // Convert to a sequence of notes.
+    List<Note> notes = sequenceToNotes(sequence: sequence);
 
     // Create the duration objects.
     Duration duration1200 = Duration(milliseconds: 1200);
