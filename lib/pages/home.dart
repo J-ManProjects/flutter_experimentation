@@ -73,13 +73,14 @@ class _HomeState extends State<Home> {
       ListButton(
         context: context,
         title: "Piano Roll",
-        page: "/piano_roll"
+        page: "/piano_roll",
       ),
 
       // File manager (read and write storage).
       ListButton(
         context: context,
         title: "File Reading & Writing",
+        page: "/files",
       ),
 
       // Simple audio recorder and audio playback.
