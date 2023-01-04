@@ -4,13 +4,13 @@ import "package:flutter_experimentation/services/notes.dart";
 
 class Roll extends StatefulWidget {
   final int selectedPitch;
-  final int pianoFlex;
   final int milliseconds;
+  final int rollFlex;
 
   const Roll({
     this.selectedPitch = 0,
     this.milliseconds = 0,
-    this.pianoFlex = 20,
+    this.rollFlex = 80,
     Key? key,
   }) : super(key: key);
 
@@ -42,7 +42,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
     heightCalculated = false;
 
     // Setup the flex.
-    rollFlex = 100 - widget.pianoFlex;
+    rollFlex = widget.rollFlex;
 
     // Add the grey background.
     tileStack.add(Container(
