@@ -27,11 +27,11 @@ class _PianoRollState extends State<PianoRoll> {
   late int pianoFlex;
   late Widget topWidget;
   late Widget separator;
+  late Widget piano;
 
 
   @override
   void initState() {
-    super.initState();
     selectedRollPitch = 0;
     selectedPianoPitch = 0;
     selectedDuration = 0;
@@ -40,6 +40,9 @@ class _PianoRollState extends State<PianoRoll> {
 
     // The percentage of the screen (flex) the piano takes.
     pianoFlex = 20;
+
+    // The default piano tiles.
+    piano = Piano(pianoFlex: pianoFlex);
 
     // Configure the midi playback.
     midi = FlutterMidi();
@@ -87,6 +90,8 @@ class _PianoRollState extends State<PianoRoll> {
         ),
       ),
     );
+
+    super.initState();
   }
 
 
@@ -187,10 +192,7 @@ class _PianoRollState extends State<PianoRoll> {
           separator,
 
           // The piano tiles.
-          Piano(
-            selectedPitch: selectedPianoPitch,
-            pianoFlex: pianoFlex,
-          ),
+          piano,
         ],
       ),
     );
@@ -262,6 +264,10 @@ class _PianoRollState extends State<PianoRoll> {
         setState(() {
           selectedPianoPitch = note.pitch;
           addRoll = false;
+          piano = Piano(
+            selectedPitch: selectedPianoPitch,
+            pianoFlex: pianoFlex,
+          );
         });
       });
 
@@ -275,7 +281,9 @@ class _PianoRollState extends State<PianoRoll> {
         selectedRollPitch = 0;
         selectedPianoPitch = 0;
         selectedDuration = 0;
+        addRoll = false;
         isPlaying = false;
+        piano = Piano(pianoFlex: pianoFlex);
       });
     });
   }

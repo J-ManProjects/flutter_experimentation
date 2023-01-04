@@ -7,9 +7,11 @@ import "package:flutter_experimentation/services/black_piano_tile.dart";
 class Piano extends StatefulWidget {
   final int selectedPitch;
   final int pianoFlex;
+  final int milliseconds;
 
   const Piano({
     this.selectedPitch = 0,
+    this.milliseconds = 0,
     this.pianoFlex = 20,
     Key? key,
   }) : super(key: key);
@@ -21,10 +23,16 @@ class Piano extends StatefulWidget {
 class _PianoState extends State<Piano> {
   List<Widget> whiteTiles = [];
   List<Widget> blackTiles = [];
+  Map whiteIndices = {};
+  Map blackIndices = {};
+  Map notes = {};
   late int lowestPitch;
   late int highestPitch;
   late int selectedPitch;
+  late int milliseconds;
   late int pianoFlex;
+  late int whiteIndex, blackIndex;
+  late String note;
 
 
   @override
@@ -33,20 +41,51 @@ class _PianoState extends State<Piano> {
     lowestPitch = Notes.minPitch;
     highestPitch = Notes.maxPitch;
     pianoFlex = widget.pianoFlex;
+
+    // Create all piano tiles.
+    populatePianoTiles();
   }
 
 
   @override
   Widget build(BuildContext context) {
     selectedPitch = widget.selectedPitch;
+    milliseconds = widget.milliseconds;
 
-    // Create all piano tiles.
-    populatePianoTiles(
-      whiteTiles: whiteTiles,
-      blackTiles: blackTiles,
-      selectedPitch: selectedPitch,
-    );
+    // If needed, replace note with highlighted one.
+    if (selectedPitch > 0) {
+      note = Notes.pitchToNote(selectedPitch);
 
+      // White tiles.
+      if (Notes.isNaturalNote(selectedPitch)) {
+        whiteIndex = whiteIndices[selectedPitch];
+        whiteTiles[whiteIndex] = WhitePianoTile(
+          note: notes[whiteIndex],
+          highlight: true,
+        );
+        Future.delayed(Duration(milliseconds: milliseconds), () {
+          whiteTiles[whiteIndex] = WhitePianoTile(
+            note: notes[whiteIndex],
+            highlight: false,
+          );
+        });
+      }
+
+      // Black tiles.
+      else {
+        blackIndex = blackIndices[selectedPitch];
+        blackTiles[blackIndex] = BlackPianoTile(
+          highlight: true,
+        );
+        Future.delayed(Duration(milliseconds: milliseconds), () {
+          blackTiles[blackIndex] = BlackPianoTile(
+            highlight: false,
+          );
+        });
+      }
+    }
+
+    // Piano layout.
     return Expanded(
       flex: pianoFlex,
       child: Stack(
@@ -60,15 +99,10 @@ class _PianoState extends State<Piano> {
 
 
   // Populate both white and black piano tiles.
-  void populatePianoTiles({
-    required List<Widget> whiteTiles,
-    required List<Widget> blackTiles,
-    int selectedPitch = 0,
-  }) {
+  void populatePianoTiles() {
     whiteTiles.clear();
     blackTiles.clear();
     int prevPitch = 0;
-    String note;
 
     // Add the necessary blank space at the bottom.
     int chroma = lowestPitch % 12;
@@ -81,9 +115,11 @@ class _PianoState extends State<Piano> {
 
       // Add white piano tile.
       if (note.length == 2) {
+        whiteIndices[pitch] = whiteTiles.length;
+        notes[whiteTiles.length] = note;
         whiteTiles.add(WhitePianoTile(
           note: note,
-          highlight: (pitch == selectedPitch),
+          highlight: false,
         ));
         blackTiles.add(blankSpace(flex: 2));
       } else {
@@ -94,8 +130,9 @@ class _PianoState extends State<Piano> {
         }
 
         // Add black piano tile.
+        blackIndices[pitch] = blackTiles.length;
         blackTiles.add(BlackPianoTile(
-          highlight: (pitch == selectedPitch),
+          highlight: false,
         ));
         prevPitch = pitch;
       }
