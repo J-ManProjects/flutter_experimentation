@@ -279,16 +279,14 @@ class _FileExplorerState extends State<FileExplorer> {
                 getContents(directory: directory);
               });
             } : () {},
-            trailing: isFolder ? null : IconButton(
+            trailing: (!isFolder && items[index].endsWith(".txt")) ? IconButton(
               icon: Icon(Icons.delete),
               onPressed: () async {
-                if (items[index].endsWith(".txt")) {
-                  print("Deleting '${items[index]}'");
-                  await File("$directory/${items[index]}").delete();
-                  getContents(directory: directory);
-                }
+                print("Deleting '${items[index]}'");
+                await File("$directory/${items[index]}").delete();
+                getContents(directory: directory);
               },
-            ),
+            ) : null,
           );
         },
       );
