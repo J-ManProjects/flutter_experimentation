@@ -1,4 +1,7 @@
+import "dart:io";
 import "package:flutter/material.dart";
+import "package:path_provider/path_provider.dart";
+import "package:intl/intl.dart";
 
 
 class FileExplorer extends StatefulWidget {
@@ -10,10 +13,13 @@ class FileExplorer extends StatefulWidget {
 }
 
 class _FileExplorerState extends State<FileExplorer> {
+  late String? directory;
   late Widget storage;
   late Widget explore;
   late bool inExplorerMode;
   late bool internalStorage;
+  late List contents;
+  late List entities;
 
 
   @override
@@ -104,6 +110,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // Explorer mode dummy.
     if (inExplorerMode) {
+      getDirectory();
       explore = Center(
         child: Text(
           internalStorage
@@ -122,6 +129,38 @@ class _FileExplorerState extends State<FileExplorer> {
         body: inExplorerMode ? explore : storage,
       ),
     );
+  }
+
+
+  // Get the contents of the internal storage directory.
+  void getDirectory() async {
+    directory = (await getExternalStorageDirectory())?.path;
+    directory = directory?.replaceAll(
+      RegExp("Android/data/com.experimental.flutter_experimentation/files"),
+      "",
+    );
+    directory = "/storage/emulated/0/";
+
+    // Get the contents of the directory.
+    entities = Directory(directory!).listSync();
+    contents = List.generate(entities.length, (index) {
+      return entities[index].toString().split(directory!).last;
+    });
+    contents.sort();
+
+    // Format date time.
+    DateTime dt = DateTime.now();
+    DateFormat df = DateFormat("yyyy_MM_dd__HH_mm_ss");
+    String now = df.format(dt);
+
+    // Print everything.
+    print("Timestamp: $now");
+    print("Directory: $directory");
+    print("Contents of directory:");
+    print("======================");
+    for (var item in contents) {
+      print(item);
+    }
   }
 
 
