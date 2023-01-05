@@ -61,6 +61,8 @@ class _FileExplorerState extends State<FileExplorer> {
                 setState(() {
                   inExplorerMode = true;
                   internalStorage = true;
+                  body = loading;
+                  getContents(directory: directory);
                 });
               },
               child: Padding(
@@ -120,25 +122,14 @@ class _FileExplorerState extends State<FileExplorer> {
       ),
     );
 
+    body = storage;
+
     super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
-
-    // Configure the body.
-    if (inExplorerMode) {
-      getContents(directory: directory);
-      if (internalStorage && contentsReady) {
-        body = content;
-      } else {
-        body = loading;
-      }
-    } else {
-      body = storage;
-    }
-
     return WillPopScope(
       onWillPop: backOverride,
       child: Scaffold(
@@ -194,7 +185,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // Set the state.
     setState(() {
-      contentsReady = true;
+      body = content;
     });
   }
 
@@ -222,8 +213,9 @@ class _FileExplorerState extends State<FileExplorer> {
             title: Text(folders[index]),
             onTap: () {
               setState(() {
+                body = loading;
                 directory = "$directory${folders[index]}/";
-                contentsReady = false;
+                getContents(directory: directory);
               });
             },
           );
@@ -253,14 +245,16 @@ class _FileExplorerState extends State<FileExplorer> {
       if (root == directory) {
         setState(() {
           inExplorerMode = false;
+          body = storage;
         });
       } else {
         var temp = directory.split("/");
-        print("Temp = $temp");
         temp.removeLast();
         temp.removeLast();
         setState(() {
+          body = loading;
           directory = "${temp.join("/")}/";
+          getContents(directory: directory);
         });
       }
       return false;
