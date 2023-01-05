@@ -1,8 +1,6 @@
 import "dart:io";
 import "package:flutter/material.dart";
-import "package:path_provider/path_provider.dart";
 import "package:intl/intl.dart";
-import "package:flutter_experimentation/services/my_theme.dart";
 
 
 class FileExplorer extends StatefulWidget {
@@ -22,7 +20,6 @@ class _FileExplorerState extends State<FileExplorer> {
   late Widget storage;
   late Widget explore;
   late Widget loading;
-  late Widget content;
   late Widget body;
   late bool inExplorerMode;
   late bool internalStorage;
@@ -122,6 +119,7 @@ class _FileExplorerState extends State<FileExplorer> {
       ),
     );
 
+    // Initialize body to storage selection.
     body = storage;
 
     super.initState();
@@ -181,12 +179,45 @@ class _FileExplorerState extends State<FileExplorer> {
     }
 
     // Set the content list widget.
-    content = contentsList(folders: folders);
+    Widget content = contentWithDirectory(
+      child: contentsList(folders: folders),
+    );
 
     // Set the state.
     setState(() {
       body = content;
     });
+  }
+
+
+  // The content list widget
+  Widget contentWithDirectory({required Widget child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          flex: 5,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(directory),
+              ),
+            ),
+          ),
+        ),
+        Divider(
+          height: 3,
+          thickness: 3,
+        ),
+        Expanded(
+          flex: 95,
+          child: child,
+        ),
+      ],
+    );
   }
 
 
@@ -212,9 +243,9 @@ class _FileExplorerState extends State<FileExplorer> {
             ),
             title: Text(folders[index]),
             onTap: () {
+              directory = "$directory${folders[index]}/";
+              body = contentWithDirectory(child: loading);
               setState(() {
-                body = loading;
-                directory = "$directory${folders[index]}/";
                 getContents(directory: directory);
               });
             },
@@ -240,14 +271,19 @@ class _FileExplorerState extends State<FileExplorer> {
   // Overrides the back button.
   Future<bool> backOverride() async {
 
-    // Return to storage widget.
+    // Check if currently in file explorer mode.
     if (inExplorerMode) {
+
+      // Back to storage selection if root.
       if (root == directory) {
         setState(() {
           inExplorerMode = false;
           body = storage;
         });
-      } else {
+      }
+
+      // Otherwise, return one level up.
+      else {
         var temp = directory.split("/");
         temp.removeLast();
         temp.removeLast();
