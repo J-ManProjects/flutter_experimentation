@@ -160,7 +160,7 @@ class _FileExplorerState extends State<FileExplorer> {
             String now = df.format(dt);
 
             // Write to file.
-            File file = File("$directory/test_file__$now.txt");
+            File file = File("$directory/$now.txt");
             file.writeAsString("Hello world!");
 
             // Refresh contents.
@@ -213,13 +213,7 @@ class _FileExplorerState extends State<FileExplorer> {
       return a.toUpperCase().compareTo(b.toUpperCase());
     });
 
-    // Format date time.
-    DateTime dt = DateTime.now();
-    DateFormat df = DateFormat("yyyy_MM_dd__HH_mm_ss");
-    String now = df.format(dt);
-
     // Print everything.
-    print("Timestamp: $now");
     print("Directory: $directory");
     print("Folders and files:");
     print("======================");
@@ -285,6 +279,16 @@ class _FileExplorerState extends State<FileExplorer> {
                 getContents(directory: directory);
               });
             } : () {},
+            trailing: isFolder ? null : IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () async {
+                if (items[index].endsWith(".txt")) {
+                  print("Deleting '${items[index]}'");
+                  await File("$directory/${items[index]}").delete();
+                  getContents(directory: directory);
+                }
+              },
+            ),
           );
         },
       );
