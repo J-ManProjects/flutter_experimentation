@@ -42,7 +42,16 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // The loading page.
     loading = Center(
-      child: Text("Loading"),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          CircularProgressIndicator(),
+          Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Text("Loading"),
+          ),
+        ],
+      ),
     );
 
     // The default storage page.
