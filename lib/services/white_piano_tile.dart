@@ -36,7 +36,7 @@ class _WhitePianoTileState extends State<WhitePianoTile> {
             width: 0.75,
             color: Colors.black54,
           ),
-          borderRadius: BorderRadius.circular(2),
+          // borderRadius: BorderRadius.circular(2),
           color: highlight ? Colors.green : Colors.white,
         ),
         child: Column(

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:flutter_experimentation/pages/permission_explorer.dart";
 import "package:flutter_experimentation/pages/path_provider.dart";
+import "package:flutter_experimentation/pages/file_explorer.dart";
 
 
 class FileManagement extends StatefulWidget {
@@ -12,6 +13,7 @@ class FileManagement extends StatefulWidget {
 
 class _FileManagementState extends State<FileManagement> {
   late List<String> titles;
+  late int index;
 
 
   @override
@@ -19,6 +21,7 @@ class _FileManagementState extends State<FileManagement> {
     titles = [
       "Path Provider Example",
       "Permission Explorer",
+      "File Explorer",
     ];
     super.initState();
   }
@@ -48,7 +51,7 @@ class _FileManagementState extends State<FileManagement> {
               child: Text(titles[0]),
             ),
 
-            // Path Provider Example.
+            // Permission Explorer.
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -59,6 +62,19 @@ class _FileManagementState extends State<FileManagement> {
                 );
               },
               child: Text(titles[1]),
+            ),
+
+            // File Explorer.
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return FileExplorer(title: titles[2]);
+                  }),
+                );
+              },
+              child: Text(titles[2]),
             ),
 
           ],
