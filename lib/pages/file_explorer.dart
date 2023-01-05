@@ -288,10 +288,7 @@ class _FileExplorerState extends State<FileExplorer> {
             scrollDirection: Axis.horizontal,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(directory),
-              ),
+              child: navigationBar(),
             ),
           ),
         ),
@@ -305,6 +302,77 @@ class _FileExplorerState extends State<FileExplorer> {
         ),
       ],
     );
+  }
+
+
+  // The top directory navigation bar.
+  Widget navigationBar() {
+    List<String> items = directory.split(root).last.split("/");
+
+    // Remove blank item.
+    if (items[0] == "") {
+      items.removeAt(0);
+    }
+
+    // Add internal storage to items.
+    items.insert(0, "Internal storage");
+
+    // All navigation bar items go here.
+    List<Widget> bar = [
+      IconButton(
+        onPressed: () {
+          setState(() {
+            inExplorerMode = false;
+            directory = root;
+            body = storage;
+          });
+        },
+        icon: Icon(Icons.home),
+      ),
+    ];
+
+    // Add all additional items.
+    for (int i = 0; i < items.length; i++) {
+
+      // Add separator.
+      bar.add(Icon(Icons.chevron_right));
+
+      // Only text button if not last item.
+      if (items[i] == items.last) {
+        bar.add(Text(
+          items[i],
+        ));
+      } else {
+        bar.add(TextButton(
+          onPressed: () {
+            items.removeRange(i+1, items.length);
+            items.removeAt(0);
+            setState(() {
+              body = loading;
+              directory = items.isNotEmpty
+                  ? "$root/${items.join("/")}"
+                  : root;
+              getContents(directory: directory);
+            });
+          },
+          style: TextButton.styleFrom(
+            minimumSize: Size.zero,
+            padding: EdgeInsets.zero,
+          ),
+          child: Text(items[i]),
+        ));
+      }
+    }
+
+    // The final navigation bar.
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Row(
+        children: bar,
+      ),
+    );
+
+
   }
 
 
