@@ -19,9 +19,9 @@ class _FileExplorerState extends State<FileExplorer> {
   late String directory;
   late String root;
   late Widget storage;
-  late Widget explore;
   late Widget loading;
   late Widget body;
+  late bool showFloating;
   late bool inExplorerMode;
   late bool internalStorage;
   late bool contentsReady;
@@ -29,6 +29,9 @@ class _FileExplorerState extends State<FileExplorer> {
 
   @override
   void initState() {
+
+    // Indicates if the floating action button should be shown.
+    showFloating = false;
 
     // Indicates if in file explorer mode.
     inExplorerMode = false;
@@ -68,6 +71,7 @@ class _FileExplorerState extends State<FileExplorer> {
                 setState(() {
                   inExplorerMode = true;
                   internalStorage = true;
+                  showFloating = false;
                   body = loading;
                   getContents(directory: directory);
                 });
@@ -143,6 +147,27 @@ class _FileExplorerState extends State<FileExplorer> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
+        floatingActionButton: showFloating ? ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: CircleBorder(),
+            padding: EdgeInsets.all(20),
+          ),
+          onPressed: () {
+
+            // Format date time.
+            DateTime dt = DateTime.now();
+            DateFormat df = DateFormat("yyyy_MM_dd__HH_mm_ss");
+            String now = df.format(dt);
+
+            // Write to file.
+            File file = File("$directory/test_file__$now.txt");
+            file.writeAsString("Hello world!");
+
+            // Refresh contents.
+            getContents(directory: directory);
+          },
+          child: Icon(Icons.add),
+        ) : null,
         body: SafeArea(
           child: body,
         ),
@@ -217,6 +242,7 @@ class _FileExplorerState extends State<FileExplorer> {
     // Set the state.
     setState(() {
       body = content;
+      showFloating = true;
     });
   }
 
@@ -255,6 +281,7 @@ class _FileExplorerState extends State<FileExplorer> {
               directory = "$directory/${items[index]}";
               body = contentWithDirectory(child: loading);
               setState(() {
+                showFloating = false;
                 getContents(directory: directory);
               });
             } : () {},
@@ -320,9 +347,11 @@ class _FileExplorerState extends State<FileExplorer> {
     // All navigation bar items go here.
     List<Widget> bar = [
       IconButton(
+        padding: EdgeInsets.zero,
         onPressed: () {
           setState(() {
             inExplorerMode = false;
+            showFloating = false;
             directory = root;
             body = storage;
           });
@@ -349,6 +378,7 @@ class _FileExplorerState extends State<FileExplorer> {
             items.removeAt(0);
             setState(() {
               body = loading;
+              showFloating = false;
               directory = items.isNotEmpty
                   ? "$root/${items.join("/")}"
                   : root;
@@ -386,6 +416,7 @@ class _FileExplorerState extends State<FileExplorer> {
       if (root == directory) {
         setState(() {
           inExplorerMode = false;
+          showFloating = false;
           body = storage;
         });
       }
@@ -397,6 +428,7 @@ class _FileExplorerState extends State<FileExplorer> {
         temp.removeLast();
         setState(() {
           body = loading;
+          showFloating = false;
           directory = temp.join("/");
           getContents(directory: directory);
         });
