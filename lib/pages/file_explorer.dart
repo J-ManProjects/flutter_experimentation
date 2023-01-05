@@ -37,7 +37,7 @@ class _FileExplorerState extends State<FileExplorer> {
     contentsReady = false;
 
     // Initialise the root directory.
-    root = "/storage/emulated/0/";
+    root = "/storage/emulated/0";
     directory = root;
 
     // The loading page.
@@ -165,8 +165,8 @@ class _FileExplorerState extends State<FileExplorer> {
       item = entity.toString().split(directory).last;
 
       // Check that item is not hidden.
-      if (item[0] != ".") {
-        item = item.substring(0, item.length-1);
+      if (item[1] != ".") {
+        item = item.substring(1, item.length-1);
 
         // Check if directory.
         if (Directory(entity.path).existsSync()) {
@@ -252,7 +252,7 @@ class _FileExplorerState extends State<FileExplorer> {
             ),
             title: Text(items[index]),
             onTap: isFolder ? () {
-              directory = "$directory${items[index]}/";
+              directory = "$directory/${items[index]}";
               body = contentWithDirectory(child: loading);
               setState(() {
                 getContents(directory: directory);
@@ -325,11 +325,11 @@ class _FileExplorerState extends State<FileExplorer> {
       // Otherwise, return one level up.
       else {
         var temp = directory.split("/");
-        temp.removeLast();
+        print(temp);
         temp.removeLast();
         setState(() {
           body = loading;
-          directory = "${temp.join("/")}/";
+          directory = temp.join("/");
           getContents(directory: directory);
         });
       }
