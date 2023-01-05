@@ -14,6 +14,9 @@ class FileExplorer extends StatefulWidget {
 }
 
 class _FileExplorerState extends State<FileExplorer> {
+  late List<FileSystemEntity> entities;
+  List<String> folders = [];
+  List<String> files = [];
   late String directory;
   late String root;
   late Widget storage;
@@ -24,8 +27,6 @@ class _FileExplorerState extends State<FileExplorer> {
   late bool inExplorerMode;
   late bool internalStorage;
   late bool contentsReady;
-  late List<String> folders;
-  late List<FileSystemEntity> entities;
 
 
   @override
@@ -126,20 +127,9 @@ class _FileExplorerState extends State<FileExplorer> {
   @override
   Widget build(BuildContext context) {
 
-    // Explorer mode dummy.
-    if (inExplorerMode) {
-      getContents(directory: directory);
-      explore = Center(
-        child: Text(
-          internalStorage
-              ? "Exploring internal storage"
-              : "Exploring SD card",
-        ),
-      );
-    }
-
     // Configure the body.
     if (inExplorerMode) {
+      getContents(directory: directory);
       if (internalStorage && contentsReady) {
         body = content;
       } else {
@@ -155,7 +145,9 @@ class _FileExplorerState extends State<FileExplorer> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: body,
+        body: SafeArea(
+          child: body,
+        ),
       ),
     );
   }
@@ -167,7 +159,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // Get all files and folders within the directory.
     entities = Directory(directory).listSync();
-    folders = [];
+    folders.clear();
     for (var entity in entities) {
       item = entity.toString().split(directory).last;
       if (item[0] != ".") {
@@ -213,7 +205,6 @@ class _FileExplorerState extends State<FileExplorer> {
     // Show list of items.
     if (folders.isNotEmpty) {
       return ListView.separated(
-        padding: const EdgeInsets.all(8.0),
         itemCount: folders.length,
         separatorBuilder: (context, index) {
           return Divider(
