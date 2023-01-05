@@ -1,6 +1,7 @@
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:intl/intl.dart";
+import "package:path_provider/path_provider.dart";
 
 
 class FileExplorer extends StatefulWidget {
@@ -90,7 +91,6 @@ class _FileExplorerState extends State<FileExplorer> {
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    inExplorerMode = true;
                     internalStorage = false;
                   });
                 },
@@ -149,18 +149,33 @@ class _FileExplorerState extends State<FileExplorer> {
     // Get all files and folders within the directory.
     entities = Directory(directory).listSync();
     folders.clear();
+    files.clear();
+
+    // Iterate through all entities.
     for (var entity in entities) {
       item = entity.toString().split(directory).last;
+
+      // Check that item is not hidden.
       if (item[0] != ".") {
         item = item.substring(0, item.length-1);
+
+        // Check if directory.
         if (Directory(entity.path).existsSync()) {
           folders.add(item);
+        }
+
+        // File otherwise.
+        else {
+          files.add(item);
         }
       }
     }
 
     // Sort contents case-insensitive.
     folders.sort((a, b) {
+      return a.toUpperCase().compareTo(b.toUpperCase());
+    });
+    files.sort((a, b) {
       return a.toUpperCase().compareTo(b.toUpperCase());
     });
 
@@ -172,21 +187,84 @@ class _FileExplorerState extends State<FileExplorer> {
     // Print everything.
     print("Timestamp: $now");
     print("Directory: $directory");
-    print("Contents of directory:");
+    print("Folders and files:");
     print("======================");
     for (var item in folders) {
+      print(item);
+    }
+    print("======================");
+    for (var item in files) {
       print(item);
     }
 
     // Set the content list widget.
     Widget content = contentWithDirectory(
-      child: contentsList(folders: folders),
+      child: contentsList(
+        folders: folders,
+        files: files,
+      ),
     );
 
     // Set the state.
     setState(() {
       body = content;
     });
+  }
+
+
+  // The directory contents list.
+  Widget contentsList({
+    required List<String> folders,
+    required List<String> files,
+  }) {
+
+    // Show list of items.
+    if (folders.isNotEmpty || files.isNotEmpty) {
+      bool isFolder;
+
+      // Combine lists
+      List<String> items = folders + files;
+
+      return ListView.separated(
+        itemCount: items.length,
+        separatorBuilder: (context, index) {
+          return Divider(
+            thickness: 1,
+            height: 1,
+          );
+        },
+        itemBuilder: (context, index) {
+          isFolder = (index < folders.length);
+          return ListTile(
+            leading: Icon(
+              isFolder ? Icons.folder : Icons.insert_drive_file,
+              color: isFolder ? Colors.amber : null,
+              size: 32,
+            ),
+            title: Text(items[index]),
+            onTap: isFolder ? () {
+              directory = "$directory${items[index]}/";
+              body = contentWithDirectory(child: loading);
+              setState(() {
+                getContents(directory: directory);
+              });
+            } : () {},
+          );
+        },
+      );
+    }
+
+    // Empty folder.
+    else {
+      return Center(
+        child: Text(
+          "Empty folder",
+          style: TextStyle(
+            fontSize: 16,
+          ),
+        ),
+      );
+    }
   }
 
 
@@ -218,53 +296,6 @@ class _FileExplorerState extends State<FileExplorer> {
         ),
       ],
     );
-  }
-
-
-  // The directory contents list.
-  Widget contentsList({required List<String> folders}) {
-
-    // Show list of items.
-    if (folders.isNotEmpty) {
-      return ListView.separated(
-        itemCount: folders.length,
-        separatorBuilder: (context, index) {
-          return Divider(
-            thickness: 1,
-            height: 1,
-          );
-        },
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: Icon(
-              Icons.folder,
-              color: Colors.amber,
-              size: 32,
-            ),
-            title: Text(folders[index]),
-            onTap: () {
-              directory = "$directory${folders[index]}/";
-              body = contentWithDirectory(child: loading);
-              setState(() {
-                getContents(directory: directory);
-              });
-            },
-          );
-        },
-      );
-    }
-
-    // Empty folder.
-    else {
-      return Center(
-        child: Text(
-          "Empty folder",
-          style: TextStyle(
-            fontSize: 16,
-          ),
-        ),
-      );
-    }
   }
 
 
