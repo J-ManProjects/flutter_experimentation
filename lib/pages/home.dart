@@ -1,7 +1,6 @@
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:flutter_experimentation/services/my_theme.dart";
 
 
 // Setup the home page.
@@ -111,18 +110,11 @@ class _HomeState extends State<Home> {
           itemBuilder: (context, index) {
             return Card(
               child: ListTile(
-                tileColor: MyTheme.listTileColor(
-                  context: context,
-                  enabled: buttons[index].isEnabled(),
-                ),
                 title: Text(
                   buttons[index].title,
                   style: TextStyle(
                     letterSpacing: 1,
                     fontWeight: FontWeight.bold,
-                    color: buttons[index].isEnabled()
-                        ? Colors.white
-                        : MyTheme.disabledTextColor(context),
                   ),
                 ),
                 onTap: buttons[index].function,

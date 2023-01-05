@@ -2,6 +2,7 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:path_provider/path_provider.dart";
 import "package:intl/intl.dart";
+import "package:flutter_experimentation/services/my_theme.dart";
 
 
 class FileExplorer extends StatefulWidget {
@@ -13,13 +14,18 @@ class FileExplorer extends StatefulWidget {
 }
 
 class _FileExplorerState extends State<FileExplorer> {
-  late String? directory;
+  late String directory;
+  late String root;
   late Widget storage;
   late Widget explore;
+  late Widget loading;
+  late Widget content;
+  late Widget body;
   late bool inExplorerMode;
   late bool internalStorage;
-  late List contents;
-  late List entities;
+  late bool contentsReady;
+  late List<String> folders;
+  late List<FileSystemEntity> entities;
 
 
   @override
@@ -27,6 +33,18 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // Indicates if in file explorer mode.
     inExplorerMode = false;
+
+    // Indicates whether the directory contents have loaded.
+    contentsReady = false;
+
+    // Initialise the root directory.
+    root = "/storage/emulated/0/";
+    directory = root;
+
+    // The loading page.
+    loading = Center(
+      child: Text("Loading"),
+    );
 
     // The default storage page.
     storage = Center(
@@ -110,7 +128,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // Explorer mode dummy.
     if (inExplorerMode) {
-      getDirectory();
+      getContents(directory: directory);
       explore = Center(
         child: Text(
           internalStorage
@@ -120,33 +138,50 @@ class _FileExplorerState extends State<FileExplorer> {
       );
     }
 
+    // Configure the body.
+    if (inExplorerMode) {
+      if (internalStorage && contentsReady) {
+        body = content;
+      } else {
+        body = loading;
+      }
+    } else {
+      body = storage;
+    }
+
     return WillPopScope(
       onWillPop: backOverride,
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: inExplorerMode ? explore : storage,
+        body: body,
       ),
     );
   }
 
 
   // Get the contents of the internal storage directory.
-  void getDirectory() async {
-    directory = (await getExternalStorageDirectory())?.path;
-    directory = directory?.replaceAll(
-      RegExp("Android/data/com.experimental.flutter_experimentation/files"),
-      "",
-    );
-    directory = "/storage/emulated/0/";
+  void getContents({required String directory}) async {
+    String item;
 
-    // Get the contents of the directory.
-    entities = Directory(directory!).listSync();
-    contents = List.generate(entities.length, (index) {
-      return entities[index].toString().split(directory!).last;
+    // Get all files and folders within the directory.
+    entities = Directory(directory).listSync();
+    folders = [];
+    for (var entity in entities) {
+      item = entity.toString().split(directory).last;
+      if (item[0] != ".") {
+        item = item.substring(0, item.length-1);
+        if (Directory(entity.path).existsSync()) {
+          folders.add(item);
+        }
+      }
+    }
+
+    // Sort contents case-insensitive.
+    folders.sort((a, b) {
+      return a.toUpperCase().compareTo(b.toUpperCase());
     });
-    contents.sort();
 
     // Format date time.
     DateTime dt = DateTime.now();
@@ -158,8 +193,63 @@ class _FileExplorerState extends State<FileExplorer> {
     print("Directory: $directory");
     print("Contents of directory:");
     print("======================");
-    for (var item in contents) {
+    for (var item in folders) {
       print(item);
+    }
+
+    // Set the content list widget.
+    content = contentsList(folders: folders);
+
+    // Set the state.
+    setState(() {
+      contentsReady = true;
+    });
+  }
+
+
+  // The directory contents list.
+  Widget contentsList({required List<String> folders}) {
+
+    // Show list of items.
+    if (folders.isNotEmpty) {
+      return ListView.separated(
+        padding: const EdgeInsets.all(8.0),
+        itemCount: folders.length,
+        separatorBuilder: (context, index) {
+          return Divider(
+            thickness: 1,
+            height: 1,
+          );
+        },
+        itemBuilder: (context, index) {
+          return ListTile(
+            leading: Icon(
+              Icons.folder,
+              color: Colors.amber,
+              size: 32,
+            ),
+            title: Text(folders[index]),
+            onTap: () {
+              setState(() {
+                directory = "$directory${folders[index]}/";
+                contentsReady = false;
+              });
+            },
+          );
+        },
+      );
+    }
+
+    // Empty folder.
+    else {
+      return Center(
+        child: Text(
+          "Empty folder",
+          style: TextStyle(
+            fontSize: 16,
+          ),
+        ),
+      );
     }
   }
 
@@ -169,9 +259,19 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // Return to storage widget.
     if (inExplorerMode) {
-      setState(() {
-        inExplorerMode = false;
-      });
+      if (root == directory) {
+        setState(() {
+          inExplorerMode = false;
+        });
+      } else {
+        var temp = directory.split("/");
+        print("Temp = $temp");
+        temp.removeLast();
+        temp.removeLast();
+        setState(() {
+          directory = "${temp.join("/")}/";
+        });
+      }
       return false;
     }
 
