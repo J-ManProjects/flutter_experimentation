@@ -310,7 +310,7 @@ class _FileExplorerState extends State<FileExplorer> {
                 title: Text(items[index]),
                 subtitle: !isFolder
                     ? calculateFormattedSize(filename: items[index])
-                    : null,
+                    : itemsInFolder(folder: items[index]),
                 onTap: isFolder ? () {
                   setState(() {
                     directory = "$directory/${items[index]}";
@@ -498,6 +498,24 @@ class _FileExplorerState extends State<FileExplorer> {
         children: bar,
       ),
     );
+  }
+
+
+  // Widget with the number of items in the folder.
+  Widget? itemsInFolder({required String folder}) {
+
+    // If folder inaccessible, return null;
+    try {
+
+      // Get the number of items.
+      var dir = Directory("$directory/$folder");
+      int count = dir.listSync().length;
+
+      // Format the text output.
+      return Text((count == 1) ? "1 item" : "$count items");
+    } catch (e) {
+      return null;
+    }
   }
 
 
