@@ -14,6 +14,7 @@ class FileExplorer extends StatefulWidget {
 
 class _FileExplorerState extends State<FileExplorer> {
   late List<FileSystemEntity> entities;
+  late Duration contentDelay;
   List<String> allRoots = [];
   List<String> folders = [];
   List<String> files = [];
@@ -34,6 +35,9 @@ class _FileExplorerState extends State<FileExplorer> {
     // Indicates if the floating action button should be shown.
     showFloating = false;
 
+    // Set the delay duration for getContents().
+    contentDelay = const Duration(milliseconds: 1);
+
     // Indicates if in file explorer mode.
     inExplorerMode = false;
 
@@ -45,16 +49,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // The loading page.
     loading = Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          CircularProgressIndicator(),
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Text("Loading"),
-          ),
-        ],
-      ),
+      child: Text("Loading"),
     );
 
     // The default storage page.
@@ -75,7 +70,9 @@ class _FileExplorerState extends State<FileExplorer> {
                   showFloating = false;
                   body = contentWithDirectory(child: loading);
                 });
-                getContents(directory: directory);
+                Future.delayed(contentDelay, () {
+                  getContents(directory: directory);
+                });
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -111,7 +108,9 @@ class _FileExplorerState extends State<FileExplorer> {
                     showFloating = false;
                     body = contentWithDirectory(child: loading);
                   });
-                  getContents(directory: directory);
+                  Future.delayed(contentDelay, () {
+                    getContents(directory: directory);
+                  });
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -307,7 +306,9 @@ class _FileExplorerState extends State<FileExplorer> {
                     showFloating = false;
                     body = contentWithDirectory(child: loading);
                   });
-                  getContents(directory: directory);
+                  Future.delayed(contentDelay, () {
+                    getContents(directory: directory);
+                  });
                 } : () {},
                 trailing: getTrailing(
                   isFolder: isFolder,
@@ -466,7 +467,9 @@ class _FileExplorerState extends State<FileExplorer> {
                   : root;
               body = contentWithDirectory(child: loading);
             });
-            getContents(directory: directory);
+            Future.delayed(contentDelay, () {
+              getContents(directory: directory);
+            });
           },
           style: TextButton.styleFrom(
             minimumSize: Size.zero,
