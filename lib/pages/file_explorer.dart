@@ -275,37 +275,43 @@ class _FileExplorerState extends State<FileExplorer> {
       // Combine lists
       List<String> items = folders + files;
 
-      return ListView.separated(
-        itemCount: items.length,
-        separatorBuilder: (context, index) {
-          return Divider(
-            thickness: 1,
-            height: 1,
-          );
-        },
-        itemBuilder: (context, index) {
-          isFolder = (index < folders.length);
-          return ListTile(
-            leading: Icon(
-              isFolder ? Icons.folder : Icons.insert_drive_file,
-              color: isFolder ? Colors.amber : null,
-              size: 32,
-            ),
-            title: Text(items[index]),
-            onTap: isFolder ? () {
-              setState(() {
-                directory = "$directory/${items[index]}";
-                showFloating = false;
-                body = contentWithDirectory(child: loading);
-              });
-              getContents(directory: directory);
-            } : () {},
-            trailing: getTrailing(
-              isFolder: isFolder,
-              item: items[index],
-            ),
-          );
-        },
+      // Pull down to refresh with RefreshIndicator.
+      return RefreshIndicator(
+        onRefresh: pullDownRefresh,
+
+        // Build ListVIew with Divider separator.
+        child: ListView.separated(
+          itemCount: items.length,
+          separatorBuilder: (context, index) {
+            return Divider(
+              thickness: 1,
+              height: 1,
+            );
+          },
+          itemBuilder: (context, index) {
+            isFolder = (index < folders.length);
+            return ListTile(
+              leading: Icon(
+                isFolder ? Icons.folder : Icons.insert_drive_file,
+                color: isFolder ? Colors.amber : null,
+                size: 32,
+              ),
+              title: Text(items[index]),
+              onTap: isFolder ? () {
+                setState(() {
+                  directory = "$directory/${items[index]}";
+                  showFloating = false;
+                  body = contentWithDirectory(child: loading);
+                });
+                getContents(directory: directory);
+              } : () {},
+              trailing: getTrailing(
+                isFolder: isFolder,
+                item: items[index],
+              ),
+            );
+          },
+        ),
       );
     }
 
@@ -320,6 +326,13 @@ class _FileExplorerState extends State<FileExplorer> {
         ),
       );
     }
+  }
+
+
+  // The function for pull down refresh.
+  Future<void> pullDownRefresh() async {
+    print("Refreshing");
+    getContents(directory: directory);
   }
 
 
