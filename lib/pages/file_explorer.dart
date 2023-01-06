@@ -147,6 +147,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
   @override
   Widget build(BuildContext context) {
+    print("Building");
     return WillPopScope(
       onWillPop: backOverride,
       child: Scaffold(
@@ -248,7 +249,6 @@ class _FileExplorerState extends State<FileExplorer> {
       print(item);
     }
 
-
     // Set the state.
     setState(() {
       showFloating = true;
@@ -279,38 +279,43 @@ class _FileExplorerState extends State<FileExplorer> {
       return RefreshIndicator(
         onRefresh: pullDownRefresh,
 
-        // Build ListVIew with Divider separator.
-        child: ListView.separated(
-          itemCount: items.length,
-          separatorBuilder: (context, index) {
-            return Divider(
-              thickness: 1,
-              height: 1,
-            );
-          },
-          itemBuilder: (context, index) {
-            isFolder = (index < folders.length);
-            return ListTile(
-              leading: Icon(
-                isFolder ? Icons.folder : Icons.insert_drive_file,
-                color: isFolder ? Colors.amber : null,
-                size: 32,
-              ),
-              title: Text(items[index]),
-              onTap: isFolder ? () {
-                setState(() {
-                  directory = "$directory/${items[index]}";
-                  showFloating = false;
-                  body = contentWithDirectory(child: loading);
-                });
-                getContents(directory: directory);
-              } : () {},
-              trailing: getTrailing(
-                isFolder: isFolder,
-                item: items[index],
-              ),
-            );
-          },
+        // Give the list view a scroll bar.
+        child: Scrollbar(
+          interactive: true,
+
+          // Build ListView with Divider separator.
+          child: ListView.separated(
+            itemCount: items.length,
+            separatorBuilder: (context, index) {
+              return Divider(
+                thickness: 1,
+                height: 1,
+              );
+            },
+            itemBuilder: (context, index) {
+              isFolder = (index < folders.length);
+              return ListTile(
+                leading: Icon(
+                  isFolder ? Icons.folder : Icons.insert_drive_file,
+                  color: isFolder ? Colors.amber : null,
+                  size: 32,
+                ),
+                title: Text(items[index]),
+                onTap: isFolder ? () {
+                  setState(() {
+                    directory = "$directory/${items[index]}";
+                    showFloating = false;
+                    body = contentWithDirectory(child: loading);
+                  });
+                  getContents(directory: directory);
+                } : () {},
+                trailing: getTrailing(
+                  isFolder: isFolder,
+                  item: items[index],
+                ),
+              );
+            },
+          ),
         ),
       );
     }
