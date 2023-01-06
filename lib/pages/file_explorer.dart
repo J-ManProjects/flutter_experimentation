@@ -14,17 +14,18 @@ class FileExplorer extends StatefulWidget {
 
 class _FileExplorerState extends State<FileExplorer> {
   late List<FileSystemEntity> entities;
+  List<String> allRoots = [];
   List<String> folders = [];
   List<String> files = [];
+  late String appFolder;
   late String directory;
   late String root;
+  late String rootTitle;
   late Widget storage;
   late Widget loading;
   late Widget body;
   late bool showFloating;
   late bool inExplorerMode;
-  late bool internalStorage;
-  late bool contentsReady;
 
 
   @override
@@ -36,12 +37,11 @@ class _FileExplorerState extends State<FileExplorer> {
     // Indicates if in file explorer mode.
     inExplorerMode = false;
 
-    // Indicates whether the directory contents have loaded.
-    contentsReady = false;
+    // The relative app folder location.
+    appFolder = "/Android/data/com.experimental.flutter_experimentation/files";
 
-    // Initialise the root directory.
-    root = "/storage/emulated/0";
-    directory = root;
+    // Initialise the root directories.
+    loadRootDirectories();
 
     // The loading page.
     loading = Center(
@@ -69,8 +69,9 @@ class _FileExplorerState extends State<FileExplorer> {
             child: ElevatedButton(
               onPressed: () {
                 setState(() {
+                  root = directory = allRoots[0];
+                  rootTitle = "Internal storage";
                   inExplorerMode = true;
-                  internalStorage = true;
                   showFloating = false;
                   body = contentWithDirectory(child: loading);
                 });
@@ -104,8 +105,13 @@ class _FileExplorerState extends State<FileExplorer> {
               child: ElevatedButton(
                 onPressed: () {
                   setState(() {
-                    internalStorage = false;
+                    root = directory = allRoots[1];
+                    rootTitle = "SD card";
+                    inExplorerMode = true;
+                    showFloating = false;
+                    body = contentWithDirectory(child: loading);
                   });
+                  getContents(directory: directory);
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -173,6 +179,23 @@ class _FileExplorerState extends State<FileExplorer> {
         ),
       ),
     );
+  }
+
+
+  // Load all root directories.
+  void loadRootDirectories() async {
+
+    // Clear all current roots.
+    allRoots.clear();
+
+    // Get the external storage directories.
+    var directories = await getExternalStorageDirectories();
+
+    // Add only the root paths
+    for (var dir in directories!) {
+      allRoots.add(dir.path.replaceAll(RegExp(appFolder), ""));
+      print(allRoots.last);
+    }
   }
 
 
@@ -386,7 +409,7 @@ class _FileExplorerState extends State<FileExplorer> {
     }
 
     // Add internal storage to items.
-    items.insert(0, "Internal storage");
+    items.insert(0, rootTitle);
 
     // All navigation bar items go here.
     List<Widget> bar = [
@@ -412,9 +435,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
       // Only text button if not last item.
       if (items[i] == items.last) {
-        bar.add(Text(
-          items[i],
-        ));
+        bar.add(Text(items[i]));
       } else {
         bar.add(TextButton(
           onPressed: () {
@@ -445,8 +466,6 @@ class _FileExplorerState extends State<FileExplorer> {
         children: bar,
       ),
     );
-
-
   }
 
 
