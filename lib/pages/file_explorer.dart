@@ -63,16 +63,10 @@ class _FileExplorerState extends State<FileExplorer> {
             width: 180,
             child: ElevatedButton(
               onPressed: () {
-                setState(() {
-                  root = directory = allRoots[0];
-                  rootTitle = "Internal storage";
-                  inExplorerMode = true;
-                  showFloating = false;
-                  body = contentWithDirectory(child: loading);
-                });
-                Future.delayed(contentDelay, () {
-                  getContents(directory: directory);
-                });
+                storageButtonFunction(
+                  selectedRoot: allRoots[0],
+                  title: "Internal storage",
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -101,16 +95,10 @@ class _FileExplorerState extends State<FileExplorer> {
               width: 180,
               child: ElevatedButton(
                 onPressed: () {
-                  setState(() {
-                    root = directory = allRoots[1];
-                    rootTitle = "SD card";
-                    inExplorerMode = true;
-                    showFloating = false;
-                    body = contentWithDirectory(child: loading);
-                  });
-                  Future.delayed(contentDelay, () {
-                    getContents(directory: directory);
-                  });
+                  storageButtonFunction(
+                    selectedRoot: allRoots[1],
+                    title: "SD card",
+                  );
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -144,6 +132,24 @@ class _FileExplorerState extends State<FileExplorer> {
   }
 
 
+  // The function for the external storage buttons.
+  void storageButtonFunction({
+    required String selectedRoot,
+    required String title,
+  }) {
+    setState(() {
+      rootTitle = title;
+      root = directory = selectedRoot;
+      inExplorerMode = true;
+      showFloating = false;
+      body = contentWithDirectory(child: loading);
+    });
+    Future.delayed(contentDelay, () {
+      getContents(directory: directory);
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     print("Building");
@@ -170,7 +176,9 @@ class _FileExplorerState extends State<FileExplorer> {
             file.writeAsString("Hello world!");
 
             // Refresh contents.
-            getContents(directory: directory);
+            Future.delayed(Duration(milliseconds: 50), () {
+              getContents(directory: directory);
+            });
           },
           child: Icon(Icons.add),
         ) : null,
@@ -300,6 +308,9 @@ class _FileExplorerState extends State<FileExplorer> {
                   size: 32,
                 ),
                 title: Text(items[index]),
+                subtitle: !isFolder
+                    ? calculateFormattedSize(filename: items[index])
+                    : null,
                 onTap: isFolder ? () {
                   setState(() {
                     directory = "$directory/${items[index]}";
@@ -487,6 +498,36 @@ class _FileExplorerState extends State<FileExplorer> {
         children: bar,
       ),
     );
+  }
+
+
+  // Calculates the file size with the appropriate unit.
+  Widget calculateFormattedSize({required String filename}) {
+    List<String> suffix = ["bytes", "KB", "MB", "GB", "TB"];
+    double size = File("$directory/$filename").lengthSync().toDouble();
+
+    // Check if size = 1 byte.
+    if (size == 1) {
+      return Text("1 byte");
+    }
+
+    // Determine the size in terms of the suffixes.
+    int index = 0;
+    while (size >= 1000) {
+      size /= 1024;
+      index++;
+    }
+
+    // Three significant digits are shown at all time (except for bytes).
+    String text;
+    if (size >= 100 || index == 0) {
+      text = size.toStringAsFixed(0);
+    } else if (size >= 10) {
+      text = size.toStringAsFixed(1);
+    } else {
+      text = size.toStringAsFixed(2);
+    }
+    return Text("$text ${suffix[index]}");
   }
 
 
