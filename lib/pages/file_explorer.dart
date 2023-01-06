@@ -72,9 +72,9 @@ class _FileExplorerState extends State<FileExplorer> {
                   inExplorerMode = true;
                   internalStorage = true;
                   showFloating = false;
-                  body = loading;
-                  getContents(directory: directory);
+                  body = contentWithDirectory(child: loading);
                 });
+                getContents(directory: directory);
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -225,18 +225,16 @@ class _FileExplorerState extends State<FileExplorer> {
       print(item);
     }
 
-    // Set the content list widget.
-    Widget content = contentWithDirectory(
-      child: contentsList(
-        folders: folders,
-        files: files,
-      ),
-    );
 
     // Set the state.
     setState(() {
-      body = content;
       showFloating = true;
+      body = contentWithDirectory(
+        child: contentsList(
+          folders: folders,
+          files: files,
+        ),
+      );
     });
   }
 
@@ -272,21 +270,17 @@ class _FileExplorerState extends State<FileExplorer> {
             ),
             title: Text(items[index]),
             onTap: isFolder ? () {
-              directory = "$directory/${items[index]}";
-              body = contentWithDirectory(child: loading);
               setState(() {
+                directory = "$directory/${items[index]}";
                 showFloating = false;
-                getContents(directory: directory);
+                body = contentWithDirectory(child: loading);
               });
+              getContents(directory: directory);
             } : () {},
-            trailing: (!isFolder && items[index].endsWith(".txt")) ? IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () async {
-                print("Deleting '${items[index]}'");
-                await File("$directory/${items[index]}").delete();
-                getContents(directory: directory);
-              },
-            ) : null,
+            trailing: getTrailing(
+              isFolder: isFolder,
+              item: items[index],
+            ),
           );
         },
       );
@@ -303,6 +297,54 @@ class _FileExplorerState extends State<FileExplorer> {
         ),
       );
     }
+  }
+
+
+  // Get the list tile trailing widget.
+  Widget? getTrailing({
+    required bool isFolder,
+    required String item,
+  }) {
+
+    // Folders return null.
+    if (!isFolder) {
+
+      // Delete button if text file.
+      if (item.endsWith(".txt")) {
+        return deleteButton(item: item);
+      }
+
+      // Info button if WAV file.
+      else if (item.endsWith(".wav")) {
+        return infoButton(item: item);
+      }
+    }
+
+    return null;
+  }
+
+
+  // The text file delete button.
+  Widget deleteButton({required String item}) {
+    return IconButton(
+      icon: Icon(Icons.delete),
+      onPressed: () async {
+        print("Deleting '$item'");
+        await File("$directory/$item").delete();
+        getContents(directory: directory);
+      },
+    );
+  }
+
+
+  // The WAV file info button.
+  Widget infoButton({required String item}) {
+    return IconButton(
+      icon: Icon(Icons.info),
+      onPressed: () {
+        print("Info for '$item'");
+      },
+    );
   }
 
 
@@ -379,13 +421,13 @@ class _FileExplorerState extends State<FileExplorer> {
             items.removeRange(i+1, items.length);
             items.removeAt(0);
             setState(() {
-              body = loading;
               showFloating = false;
               directory = items.isNotEmpty
                   ? "$root/${items.join("/")}"
                   : root;
-              getContents(directory: directory);
+              body = contentWithDirectory(child: loading);
             });
+            getContents(directory: directory);
           },
           style: TextButton.styleFrom(
             minimumSize: Size.zero,
@@ -429,11 +471,11 @@ class _FileExplorerState extends State<FileExplorer> {
         print(temp);
         temp.removeLast();
         setState(() {
-          body = loading;
           showFloating = false;
           directory = temp.join("/");
-          getContents(directory: directory);
+          body = contentWithDirectory(child: loading);
         });
+        getContents(directory: directory);
       }
       return false;
     }
