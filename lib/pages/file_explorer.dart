@@ -1,6 +1,4 @@
-import "dart:convert";
 import "dart:io";
-import "dart:typed_data";
 import "package:flutter/material.dart";
 import "package:flutter_experimentation/services/wav_file.dart";
 import "package:intl/intl.dart";
@@ -162,6 +160,7 @@ class _FileExplorerState extends State<FileExplorer> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         floatingActionButton: showFloating ? ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: CircleBorder(),
@@ -399,61 +398,106 @@ class _FileExplorerState extends State<FileExplorer> {
       icon: Icon(Icons.info),
       onPressed: () {
         String path = "$directory/$item";
-        print("Info for \"$item\":");
+
+        // The info list.
+        List<String> info = [];
+        String bullet = "\u2022";
 
         // Get RIFF.
         var byteData = WavFile.wavToBytes(path);
         dynamic heading = WavFile.bytesToAscii(byteData.sublist(0, 4));
-        print("> $heading");
+        info.add("$bullet \"$heading\"");
 
         // Get file size - 8 bytes.
         heading = WavFile.bytesToUint32(byteData.sublist(4, 8));
         heading = calculateFormattedSize(size: heading);
-        print("> $heading");
+        info.add("$bullet $heading");
 
         // Get WAVE.
         heading = WavFile.bytesToAscii(byteData.sublist(8, 12));
-        print("> $heading");
+        info.add("$bullet \"$heading\"");
 
         // Get "fmt " (trailing space included).
         heading = WavFile.bytesToAscii(byteData.sublist(12, 16));
-        print("> $heading");
+        info.add("$bullet \"$heading\"");
 
         // Get bits/sample.
         heading = WavFile.bytesToUint32(byteData.sublist(16, 20));
-        print("> $heading bits/sample");
+        info.add("$bullet $heading bits/sample");
 
         // Get WAV format type (PCM of 0x01).
         heading = WavFile.bytesToUint16(byteData.sublist(20, 22));
-        print("> $heading (PCM)");
+        info.add("$bullet $heading (PCM)");
 
         // Get the mono (0x1) or stereo (0x2) flag.
         heading = WavFile.bytesToUint16(byteData.sublist(22, 24));
-        print("> $heading (${heading == 1 ? "mono" : "stereo"} audio)");
+        info.add("$bullet $heading (${heading == 1 ? "mono" : "stereo"} audio)");
 
         // Get the sampling frequency.
         heading = WavFile.bytesToUint32(byteData.sublist(24, 28));
-        print("> $heading Hz");
+        info.add("$bullet $heading Hz");
 
         // Get audio data rate (bytes/sec).
         heading = WavFile.bytesToUint32(byteData.sublist(28, 32));
-        print("> $heading bytes/second");
+        info.add("$bullet $heading bytes/second");
 
         // Get the block alignment.
         heading = WavFile.bytesToUint16(byteData.sublist(32, 34));
-        print("> block alignment: $heading");
+        info.add("$bullet block alignment: $heading");
 
         // Get the number of bits per sample.
         heading = WavFile.bytesToUint16(byteData.sublist(34, 36));
-        print("> $heading bits/sample");
+        info.add("$bullet $heading bits/sample");
 
         // Get "data".
         heading = WavFile.bytesToAscii(byteData.sublist(36, 40));
-        print("> $heading");
+        info.add("$bullet \"$heading\"");
 
         // Get the size of the data chunk.
         heading = WavFile.bytesToUint32(byteData.sublist(40, 44));
-        print("> $heading chunks of data");
+        info.add("$bullet $heading data bytes");
+
+        // Show the information dialog.
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                item,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              content: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).backgroundColor,
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: List.generate(info.length, (index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(info[index]),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("OK"),
+                )
+                ,
+              ],
+            );
+          },
+        );
 
       },
     );
