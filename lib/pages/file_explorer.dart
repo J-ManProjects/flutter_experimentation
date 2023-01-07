@@ -1,5 +1,8 @@
+import "dart:convert";
 import "dart:io";
+import "dart:typed_data";
 import "package:flutter/material.dart";
+import "package:flutter_experimentation/services/wav_file.dart";
 import "package:intl/intl.dart";
 import "package:path_provider/path_provider.dart";
 
@@ -309,7 +312,7 @@ class _FileExplorerState extends State<FileExplorer> {
                 ),
                 title: Text(items[index]),
                 subtitle: !isFolder
-                    ? calculateFormattedSize(filename: items[index])
+                    ? getSizeTextWidget(filename: items[index])
                     : itemsInFolder(folder: items[index]),
                 onTap: isFolder ? () {
                   setState(() {
@@ -395,7 +398,63 @@ class _FileExplorerState extends State<FileExplorer> {
     return IconButton(
       icon: Icon(Icons.info),
       onPressed: () {
-        print("Info for '$item'");
+        String path = "$directory/$item";
+        print("Info for \"$item\":");
+
+        // Get RIFF.
+        var byteData = WavFile.wavToBytes(path);
+        dynamic heading = WavFile.bytesToAscii(byteData.sublist(0, 4));
+        print("> $heading");
+
+        // Get file size - 8 bytes.
+        heading = WavFile.bytesToUint32(byteData.sublist(4, 8));
+        heading = calculateFormattedSize(size: heading);
+        print("> $heading");
+
+        // Get WAVE.
+        heading = WavFile.bytesToAscii(byteData.sublist(8, 12));
+        print("> $heading");
+
+        // Get "fmt " (trailing space included).
+        heading = WavFile.bytesToAscii(byteData.sublist(12, 16));
+        print("> $heading");
+
+        // Get bits/sample.
+        heading = WavFile.bytesToUint32(byteData.sublist(16, 20));
+        print("> $heading bits/sample");
+
+        // Get WAV format type (PCM of 0x01).
+        heading = WavFile.bytesToUint16(byteData.sublist(20, 22));
+        print("> $heading (PCM)");
+
+        // Get the mono (0x1) or stereo (0x2) flag.
+        heading = WavFile.bytesToUint16(byteData.sublist(22, 24));
+        print("> $heading (${heading == 1 ? "mono" : "stereo"} audio)");
+
+        // Get the sampling frequency.
+        heading = WavFile.bytesToUint32(byteData.sublist(24, 28));
+        print("> $heading Hz");
+
+        // Get audio data rate (bytes/sec).
+        heading = WavFile.bytesToUint32(byteData.sublist(28, 32));
+        print("> $heading bytes/second");
+
+        // Get the block alignment.
+        heading = WavFile.bytesToUint16(byteData.sublist(32, 34));
+        print("> block alignment: $heading");
+
+        // Get the number of bits per sample.
+        heading = WavFile.bytesToUint16(byteData.sublist(34, 36));
+        print("> $heading bits/sample");
+
+        // Get "data".
+        heading = WavFile.bytesToAscii(byteData.sublist(36, 40));
+        print("> $heading");
+
+        // Get the size of the data chunk.
+        heading = WavFile.bytesToUint32(byteData.sublist(40, 44));
+        print("> $heading chunks of data");
+
       },
     );
   }
@@ -519,33 +578,42 @@ class _FileExplorerState extends State<FileExplorer> {
   }
 
 
-  // Calculates the file size with the appropriate unit.
-  Widget calculateFormattedSize({required String filename}) {
-    List<String> suffix = ["bytes", "KB", "MB", "GB", "TB"];
-    double size = File("$directory/$filename").lengthSync().toDouble();
+  // Calculates the file size text widget with the appropriate unit.
+  Widget getSizeTextWidget({required String filename}) {
+    int size = File("$directory/$filename").lengthSync();
+    return Text(calculateFormattedSize(size: size));
+  }
+
+
+  // Give the file size an appropriate unit.
+  String calculateFormattedSize({required int size}) {
 
     // Check if size = 1 byte.
     if (size == 1) {
-      return Text("1 byte");
+      return "1 byte";
     }
+
+    // Initialise stuff.
+    List<String> suffix = ["bytes", "KB", "MB", "GB", "TB"];
+    double doubleSize = size.toDouble();
 
     // Determine the size in terms of the suffixes.
     int index = 0;
-    while (size >= 1000) {
-      size /= 1024;
+    while (doubleSize >= 1000) {
+      doubleSize /= 1024;
       index++;
     }
 
     // Three significant digits are shown at all time (except for bytes).
     String text;
-    if (size >= 100 || index == 0) {
-      text = size.toStringAsFixed(0);
-    } else if (size >= 10) {
-      text = size.toStringAsFixed(1);
+    if (doubleSize >= 100 || index == 0) {
+      text = doubleSize.toStringAsFixed(0);
+    } else if (doubleSize >= 10) {
+      text = doubleSize.toStringAsFixed(1);
     } else {
-      text = size.toStringAsFixed(2);
+      text = doubleSize.toStringAsFixed(2);
     }
-    return Text("$text ${suffix[index]}");
+    return "$text ${suffix[index]}";
   }
 
 
