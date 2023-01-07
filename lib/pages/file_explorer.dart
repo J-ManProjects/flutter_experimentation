@@ -438,7 +438,7 @@ class _FileExplorerState extends State<FileExplorer> {
       items.removeAt(0);
     }
 
-    // Add internal storage to items.
+    // Add the root title to items.
     items.insert(0, rootTitle);
 
     // All navigation bar items go here.
@@ -566,12 +566,9 @@ class _FileExplorerState extends State<FileExplorer> {
 
       // Otherwise, return one level up.
       else {
-        var temp = directory.split("/");
-        print(temp);
-        temp.removeLast();
         setState(() {
           showFloating = false;
-          directory = temp.join("/");
+          directory = Directory(directory).parent.path;
           body = contentWithDirectory(child: loading);
         });
         getContents(directory: directory);
