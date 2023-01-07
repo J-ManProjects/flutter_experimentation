@@ -26,7 +26,7 @@ class _FileExplorerState extends State<FileExplorer> {
   late Widget storage;
   late Widget loading;
   late Widget body;
-  late bool showFloating;
+  late bool showAddFile;
   late bool inExplorerMode;
 
 
@@ -34,10 +34,10 @@ class _FileExplorerState extends State<FileExplorer> {
   void initState() {
 
     // Indicates if the floating action button should be shown.
-    showFloating = false;
+    showAddFile = false;
 
     // Set the delay duration for getContents().
-    contentDelay = const Duration(milliseconds: 1);
+    contentDelay = const Duration(milliseconds: 50);
 
     // Indicates if in file explorer mode.
     inExplorerMode = false;
@@ -133,24 +133,6 @@ class _FileExplorerState extends State<FileExplorer> {
   }
 
 
-  // The function for the external storage buttons.
-  void storageButtonFunction({
-    required String selectedRoot,
-    required String title,
-  }) {
-    setState(() {
-      rootTitle = title;
-      root = directory = selectedRoot;
-      inExplorerMode = true;
-      showFloating = false;
-      body = contentWithDirectory(child: loading);
-    });
-    Future.delayed(contentDelay, () {
-      getContents(directory: directory);
-    });
-  }
-
-
   @override
   Widget build(BuildContext context) {
     print("Building");
@@ -160,35 +142,29 @@ class _FileExplorerState extends State<FileExplorer> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-        floatingActionButton: showFloating ? ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            shape: CircleBorder(),
-            padding: EdgeInsets.all(20),
-          ),
-          onPressed: () {
-
-            // Format date time.
-            DateTime dt = DateTime.now();
-            DateFormat df = DateFormat("yyyy_MM_dd__HH_mm_ss");
-            String now = df.format(dt);
-
-            // Write to file.
-            File file = File("$directory/$now.txt");
-            file.writeAsString("Hello world!");
-
-            // Refresh contents.
-            Future.delayed(Duration(milliseconds: 50), () {
-              getContents(directory: directory);
-            });
-          },
-          child: Icon(Icons.add),
-        ) : null,
         body: SafeArea(
           child: body,
         ),
       ),
     );
+  }
+
+
+  // The function for the external storage buttons.
+  void storageButtonFunction({
+    required String selectedRoot,
+    required String title,
+  }) {
+    setState(() {
+      rootTitle = title;
+      root = directory = selectedRoot;
+      inExplorerMode = true;
+      showAddFile = false;
+      body = contentWithDirectory(child: loading);
+    });
+    Future.delayed(contentDelay, () {
+      getContents(directory: directory);
+    });
   }
 
 
@@ -260,7 +236,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
     // Set the state.
     setState(() {
-      showFloating = true;
+      showAddFile = true;
       body = contentWithDirectory(
         child: contentsList(
           folders: folders,
@@ -316,7 +292,7 @@ class _FileExplorerState extends State<FileExplorer> {
                 onTap: isFolder ? () {
                   setState(() {
                     directory = "$directory/${items[index]}";
-                    showFloating = false;
+                    showAddFile = false;
                     body = contentWithDirectory(child: loading);
                   });
                   Future.delayed(contentDelay, () {
@@ -511,13 +487,7 @@ class _FileExplorerState extends State<FileExplorer> {
       children: <Widget>[
         Expanded(
           flex: 5,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: navigationBar(),
-            ),
-          ),
+          child: navigationBar(),
         ),
         Divider(
           height: 3,
@@ -551,7 +521,7 @@ class _FileExplorerState extends State<FileExplorer> {
         onPressed: () {
           setState(() {
             inExplorerMode = false;
-            showFloating = false;
+            showAddFile = false;
             directory = root;
             body = storage;
           });
@@ -575,7 +545,7 @@ class _FileExplorerState extends State<FileExplorer> {
             items.removeRange(i+1, items.length);
             items.removeAt(0);
             setState(() {
-              showFloating = false;
+              showAddFile = false;
               directory = items.isNotEmpty
                   ? "$root/${items.join("/")}"
                   : root;
@@ -595,11 +565,50 @@ class _FileExplorerState extends State<FileExplorer> {
     }
 
     // The final navigation bar.
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: Row(
-        children: bar,
-      ),
+    return Row(
+      children: <Widget>[
+        Expanded(
+          flex: 9,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Row(children: bar),
+              ),
+            ),
+          ),
+        ),
+        VerticalDivider(
+          width: 1,
+          thickness: 1,
+        ),
+        Expanded(
+          flex: 1,
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(Icons.add),
+            onPressed: showAddFile ? () {
+
+              // Format date time.
+              DateTime dt = DateTime.now();
+              DateFormat df = DateFormat("yyyy_MM_dd__HH_mm_ss");
+              String now = df.format(dt);
+              now = "${now}_${dt.millisecond.toStringAsPrecision(3)}";
+
+              // Write to file.
+              File file = File("$directory/$now.txt");
+              file.writeAsString("File created at:\n${dt.toString()}");
+
+              // Refresh contents.
+              Future.delayed(Duration(milliseconds: 100), () {
+                getContents(directory: directory);
+              });
+            } : null,
+          ),
+        ),
+      ],
     );
   }
 
@@ -671,7 +680,7 @@ class _FileExplorerState extends State<FileExplorer> {
       if (root == directory) {
         setState(() {
           inExplorerMode = false;
-          showFloating = false;
+          showAddFile = false;
           body = storage;
         });
       }
@@ -679,11 +688,13 @@ class _FileExplorerState extends State<FileExplorer> {
       // Otherwise, return one level up.
       else {
         setState(() {
-          showFloating = false;
+          showAddFile = false;
           directory = Directory(directory).parent.path;
           body = contentWithDirectory(child: loading);
         });
-        getContents(directory: directory);
+        Future.delayed(contentDelay, () {
+          getContents(directory: directory);
+        });
       }
       return false;
     }
