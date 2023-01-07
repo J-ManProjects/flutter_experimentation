@@ -262,7 +262,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
       // Pull down to refresh with RefreshIndicator.
       return RefreshIndicator(
-        onRefresh: pullDownRefresh,
+        onRefresh: refreshContent,
 
         // Give the list view a scroll bar.
         child: Scrollbar(
@@ -313,19 +313,34 @@ class _FileExplorerState extends State<FileExplorer> {
     // Empty folder.
     else {
       return Center(
-        child: Text(
-          "Empty folder",
-          style: TextStyle(
-            fontSize: 16,
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            IconButton(
+              onPressed: refreshContent,
+              icon: Icon(
+                Icons.refresh,
+                size: 32,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 32),
+              child: Text(
+                "Empty folder",
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
   }
 
 
-  // The function for pull down refresh.
-  Future<void> pullDownRefresh() async {
+  // The function for refreshing the contents of the page.
+  Future<void> refreshContent() async {
     print("Refreshing");
     getContents(directory: directory);
   }
