@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 
 
-class WavInfo extends StatefulWidget {
+class WavInfo extends StatelessWidget {
   final String title;
   final List<String> info;
   const WavInfo({
@@ -10,20 +10,12 @@ class WavInfo extends StatefulWidget {
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<WavInfo> createState() => _WavInfoState();
-}
-
-class _WavInfoState extends State<WavInfo> {
-  late List<String> fields;
-  late List<TableRow> headings;
-  late List<TableRow> content;
 
   @override
-  void initState() {
+  Widget build(BuildContext context) {
 
     // The content headings.
-    headings = [
+    List<TableRow> headings = [
       TableRow(
         children: <Widget>[
           Padding(
@@ -57,7 +49,7 @@ class _WavInfoState extends State<WavInfo> {
     ];
 
     // Configure the field names.
-    fields = [
+    List<String> fields = [
       "Chunk ID",
       "Chunk Size",
       "Format",
@@ -73,15 +65,8 @@ class _WavInfoState extends State<WavInfo> {
       "Sub-Chunk 2 Size",
     ];
 
-    super.initState();
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
-
     // Generate the content list.
-    content = List.generate(fields.length, (index) {
+    List<TableRow> content = List.generate(fields.length, (index) {
       return TableRow(
         children: <Widget>[
           Padding(
@@ -95,7 +80,7 @@ class _WavInfoState extends State<WavInfo> {
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(widget.info[index]),
+            child: Text(info[index]),
           ),
         ],
       );
@@ -104,7 +89,7 @@ class _WavInfoState extends State<WavInfo> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.title,
+          title,
           maxLines: 2,
           style: TextStyle(
             fontSize: 16,
