@@ -590,7 +590,7 @@ class _FileExplorerState extends State<FileExplorer> {
 
               // Write to file.
               File file = File("$directory/$now.txt");
-              file.writeAsString("File created at:\n${dt.toString()}");
+              file.writeAsString("File created:\n${dt.toString()}");
 
               // Refresh contents.
               Future.delayed(Duration(milliseconds: 100), () {

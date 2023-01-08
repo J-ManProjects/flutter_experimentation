@@ -114,7 +114,7 @@ class _WavInfoState extends State<WavInfo> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16),
             child: Table(
               border: TableBorder.all(
                 color: Theme.of(context).backgroundColor,
