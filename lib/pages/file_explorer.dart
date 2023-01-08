@@ -395,57 +395,62 @@ class _FileExplorerState extends State<FileExplorer> {
         String bullet = "\u2022";
 
         // Get RIFF.
-        var byteData = WavFile.wavToBytes(path);
-        dynamic heading = WavFile.bytesToAscii(byteData.sublist(0, 4));
+        var bytes = WavFile.wavToBytes(path);
+        dynamic heading = WavFile.bytesToAscii(bytes.sublist(0, 4));
         info.add("$bullet \"$heading\"");
 
         // Get file size - 8 bytes.
-        heading = WavFile.bytesToUint32(byteData.sublist(4, 8));
+        heading = WavFile.bytesToUint32(bytes.sublist(4, 8));
         heading = calculateFormattedSize(size: heading);
         info.add("$bullet $heading");
 
         // Get WAVE.
-        heading = WavFile.bytesToAscii(byteData.sublist(8, 12));
+        heading = WavFile.bytesToAscii(bytes.sublist(8, 12));
         info.add("$bullet \"$heading\"");
 
         // Get "fmt " (trailing space included).
-        heading = WavFile.bytesToAscii(byteData.sublist(12, 16));
+        heading = WavFile.bytesToAscii(bytes.sublist(12, 16));
         info.add("$bullet \"$heading\"");
 
         // Get bits/sample.
-        heading = WavFile.bytesToUint32(byteData.sublist(16, 20));
+        heading = WavFile.bytesToUint32(bytes.sublist(16, 20));
         info.add("$bullet $heading bits/sample");
 
         // Get WAV format type (PCM of 0x01).
-        heading = WavFile.bytesToUint16(byteData.sublist(20, 22));
+        heading = WavFile.bytesToUint16(bytes.sublist(20, 22));
         info.add("$bullet $heading (PCM)");
 
         // Get the mono (0x1) or stereo (0x2) flag.
-        heading = WavFile.bytesToUint16(byteData.sublist(22, 24));
+        heading = WavFile.bytesToUint16(bytes.sublist(22, 24));
         info.add("$bullet $heading (${heading == 1 ? "mono" : "stereo"} audio)");
 
         // Get the sampling frequency.
-        heading = WavFile.bytesToUint32(byteData.sublist(24, 28));
+        heading = WavFile.bytesToUint32(bytes.sublist(24, 28));
         info.add("$bullet $heading Hz");
 
         // Get audio data rate (bytes/sec).
-        heading = WavFile.bytesToUint32(byteData.sublist(28, 32));
+        heading = WavFile.bytesToUint32(bytes.sublist(28, 32));
         info.add("$bullet $heading bytes/second");
 
         // Get the block alignment.
-        heading = WavFile.bytesToUint16(byteData.sublist(32, 34));
+        heading = WavFile.bytesToUint16(bytes.sublist(32, 34));
         info.add("$bullet block alignment: $heading");
 
         // Get the number of bits per sample.
-        heading = WavFile.bytesToUint16(byteData.sublist(34, 36));
+        heading = WavFile.bytesToUint16(bytes.sublist(34, 36));
         info.add("$bullet $heading bits/sample");
 
         // Get "data".
-        heading = WavFile.bytesToAscii(byteData.sublist(36, 40));
+        int index = 36;
+        do {
+          heading = WavFile.bytesToAscii(bytes.sublist(index, index+4));
+          index += 2;
+        } while (heading != "data");
         info.add("$bullet \"$heading\"");
 
         // Get the size of the data chunk.
-        heading = WavFile.bytesToUint32(byteData.sublist(40, 44));
+        index += 2;
+        heading = WavFile.bytesToUint32(bytes.sublist(index, index+4));
         info.add("$bullet $heading data bytes");
 
         // Show the information dialog.
