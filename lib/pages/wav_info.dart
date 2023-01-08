@@ -102,7 +102,7 @@ class WavInfo extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Table(
               border: TableBorder.all(
-                color: Theme.of(context).backgroundColor,
+                color: Theme.of(context).dividerColor,
               ),
               children: headings + content,
             ),
