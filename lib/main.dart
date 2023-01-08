@@ -3,6 +3,7 @@ import "package:flutter_experimentation/pages/home.dart";
 import "package:flutter_experimentation/pages/piano_bar.dart";
 import "package:flutter_experimentation/pages/piano_roll.dart";
 import "package:flutter_experimentation/pages/piano_touch.dart";
+import "package:flutter_experimentation/pages/record_audio.dart";
 import "package:flutter_experimentation/pages/sound_generator.dart";
 import "package:flutter_experimentation/pages/sliding_animations.dart";
 import "package:flutter_experimentation/pages/color_animations.dart";
@@ -41,6 +42,7 @@ class _MyAppState extends State<MyApp> {
         "/color_animations": (context) => ColorAnimations(),
         "/piano_roll": (context) => PianoRoll(),
         "/files": (context) => FileManagement(),
+        "/record": (context) => RecordAudio(),
       },
     );
   }

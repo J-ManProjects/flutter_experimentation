@@ -86,6 +86,7 @@ class _HomeState extends State<Home> {
       ListButton(
         context: context,
         title: "Record & Playback Audio",
+        page: "/record",
       ),
 
       // Function in C++ testing.
