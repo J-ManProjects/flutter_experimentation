@@ -22,6 +22,7 @@ class _BinViewerState extends State<BinViewer> {
   late List<TableRow> headings;
   late Uint8List subData;
   late int offset;
+  late int skip;
 
 
   @override
@@ -37,25 +38,17 @@ class _BinViewerState extends State<BinViewer> {
           headingCell("Offset"),
           headingCell("Hex"),
           headingCell("ASCII"),
-          headingCell("Uint8"),
           headingCell("Uint16"),
           headingCell("Int16"),
         ],
       ),
     ];
 
-    // Configure the column widths.
-    columnWidths = {
-      0: FlexColumnWidth(3),
-      1: FlexColumnWidth(3),
-      2: FlexColumnWidth(3),
-      3: FlexColumnWidth(4),
-      4: FlexColumnWidth(3),
-      5: FlexColumnWidth(3),
-    };
-
     // The data offset to start from.
     offset = 0;
+
+    // The number of bytes to skip.
+    skip = 100;
 
     super.initState();
   }
@@ -69,7 +62,6 @@ class _BinViewerState extends State<BinViewer> {
         child: Column(
           children: <Widget>[
             Table(
-              columnWidths: columnWidths,
               border: TableBorder.all(
                 width: 2,
                 color: Theme.of(context).dividerColor,
@@ -81,7 +73,6 @@ class _BinViewerState extends State<BinViewer> {
                 interactive: true,
                 child: SingleChildScrollView(
                   child: Table(
-                    columnWidths: columnWidths,
                     border: TableBorder.all(
                       width: 2,
                       color: Theme.of(context).dividerColor,
@@ -119,7 +110,7 @@ class _BinViewerState extends State<BinViewer> {
   Widget contentCell(String text) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Text(
           text,
           style: TextStyle(
@@ -136,11 +127,10 @@ class _BinViewerState extends State<BinViewer> {
   List<TableRow> getContent() {
     String ascii;
     String hex;
-    String bytes;
     int start;
 
     // Configure the size.
-    int size = min(32, data.length~/2 - offset);
+    int size = min(50, data.length~/2 - offset);
 
     // Configure the content.
     return List.generate(size, (index) {
@@ -167,17 +157,11 @@ class _BinViewerState extends State<BinViewer> {
       hex += subData[1].toRadixString(16).padLeft(2, "0");
       hex = hex.toUpperCase();
 
-      // Get the two bytes.
-      bytes = "${subData[0]}".padLeft(3);
-      bytes += " | ";
-      bytes += "${subData[1]}".padLeft(3);
-
       return TableRow(
         children: <Widget>[
           contentCell("$start"),
           contentCell(hex),
           contentCell(ascii),
-          contentCell(bytes),
           contentCell("${WavFile.bytesToUint16(subData)}"),
           contentCell("${WavFile.bytesToInt16(subData)}"),
         ],
@@ -194,18 +178,18 @@ class _BinViewerState extends State<BinViewer> {
         TextButton(
           onPressed: (offset > 0) ? () {
             setState(() {
-              offset -= 64;
+              offset -= skip;
             });
           } : null,
-          child: Text("Previous 64 bytes"),
+          child: Text("Previous $skip bytes"),
         ),
         TextButton(
-          onPressed: (offset + 64 < data.length) ? () {
+          onPressed: (offset + skip < data.length) ? () {
             setState(() {
-              offset += 64;
+              offset += skip;
             });
           } : null,
-          child: Text("Next 64 bytes"),
+          child: Text("Next $skip bytes"),
         ),
       ],
 
