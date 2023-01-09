@@ -393,66 +393,74 @@ class _FileExplorerState extends State<FileExplorer> {
 
         // The info list.
         List<String> info = [];
+        try {
 
-        // Chunk ID.
-        var bytes = WavFile.wavToBytes(path);
-        dynamic heading = WavFile.bytesToAscii(bytes.sublist(0, 4));
-        info.add("\"$heading\"");
+          // Chunk ID.
+          var bytes = WavFile.wavToBytes(path);
+          dynamic heading = WavFile.bytesToAscii(bytes.sublist(0, 4));
+          info.add("\"$heading\"");
 
-        // Chunk Size.
-        heading = WavFile.bytesToUint32(bytes.sublist(4, 8));
-        heading = calculateFormattedSize(size: heading);
-        info.add(heading);
+          // Chunk Size.
+          heading = WavFile.bytesToUint32(bytes.sublist(4, 8));
+          heading = calculateFormattedSize(size: heading);
+          info.add(heading);
 
-        // Format.
-        heading = WavFile.bytesToAscii(bytes.sublist(8, 12));
-        info.add("\"$heading\"");
+          // Format.
+          heading = WavFile.bytesToAscii(bytes.sublist(8, 12));
+          info.add("\"$heading\"");
 
-        // Sub-Chunk 1 ID.
-        heading = WavFile.bytesToAscii(bytes.sublist(12, 16));
-        info.add("\"$heading\"");
+          // Sub-Chunk 1 ID.
+          heading = WavFile.bytesToAscii(bytes.sublist(12, 16));
+          info.add("\"$heading\"");
 
-        // Sub-Chunk 1 Size.
-        heading = WavFile.bytesToUint32(bytes.sublist(16, 20));
-        heading = calculateFormattedSize(size: heading);
-        info.add(heading);
+          // Sub-Chunk 1 Size.
+          heading = WavFile.bytesToUint32(bytes.sublist(16, 20));
+          heading = calculateFormattedSize(size: heading);
+          info.add(heading);
 
-        // Audio Format.
-        heading = WavFile.bytesToUint16(bytes.sublist(20, 22));
-        info.add("$heading (PCM)");
+          // Audio Format.
+          heading = WavFile.bytesToUint16(bytes.sublist(20, 22));
+          info.add("$heading (PCM)");
 
-        // Num Channels.
-        heading = WavFile.bytesToUint16(bytes.sublist(22, 24));
-        info.add("$heading (${heading == 1 ? "mono" : "stereo"} audio)");
+          // Num Channels.
+          heading = WavFile.bytesToUint16(bytes.sublist(22, 24));
+          info.add("$heading (${heading == 1 ? "mono" : "stereo"} audio)");
 
-        // Sample Rate.
-        heading = WavFile.bytesToUint32(bytes.sublist(24, 28));
-        info.add("$heading Hz");
+          // Sample Rate.
+          heading = WavFile.bytesToUint32(bytes.sublist(24, 28));
+          info.add("$heading Hz");
 
-        // Byte Rate.
-        heading = WavFile.bytesToUint32(bytes.sublist(28, 32));
-        info.add("$heading B/s");
+          // Byte Rate.
+          heading = WavFile.bytesToUint32(bytes.sublist(28, 32));
+          info.add("$heading B/s");
 
-        // Block Align.
-        heading = WavFile.bytesToUint16(bytes.sublist(32, 34));
-        info.add("$heading");
+          // Block Align.
+          heading = WavFile.bytesToUint16(bytes.sublist(32, 34));
+          info.add("$heading");
 
-        // Bits Per Sample.
-        heading = WavFile.bytesToUint16(bytes.sublist(34, 36));
-        info.add("$heading");
+          // Bits Per Sample.
+          heading = WavFile.bytesToUint16(bytes.sublist(34, 36));
+          info.add("$heading");
 
-        // Sub-Chunk 2 ID.
-        int index = 36;
-        do {
-          heading = WavFile.bytesToAscii(bytes.sublist(index, index+4));
+          // Sub-Chunk 2 ID.
+          int index = 36;
+          do {
+            heading = WavFile.bytesToAscii(bytes.sublist(index, index + 4));
+            index += 2;
+          } while (heading != "data");
+          info.add("\"$heading\"");
+
+          // Sub-Chunk 2 Size.
           index += 2;
-        } while (heading != "data");
-        info.add("\"$heading\"");
+          heading = WavFile.bytesToUint32(bytes.sublist(index, index + 4));
+          info.add("$heading bytes");
+        }
 
-        // Sub-Chunk 2 Size.
-        index += 2;
-        heading = WavFile.bytesToUint32(bytes.sublist(index, index+4));
-        info.add("$heading bytes");
+        // Add only an error message if needed.
+        catch (e) {
+          info.clear();
+          info.add("__ERROR__");
+        }
 
         // Show the information page.
         Navigator.push(

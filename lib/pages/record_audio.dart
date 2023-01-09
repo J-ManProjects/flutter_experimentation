@@ -2,6 +2,9 @@ import "dart:async";
 import "dart:io";
 import "package:flutter/material.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
+import "package:permission_handler/permission_handler.dart";
+import "package:record/record.dart";
+import "package:intl/intl.dart";
 
 
 class RecordAudio extends StatefulWidget {
@@ -18,9 +21,11 @@ class _RecordAudioState extends State<RecordAudio> {
   late String elapsedTime;
   late String root;
   late String path;
-  late bool recording;
+  late bool isRecording;
   late bool colorsLoaded;
+  late bool permissionGranted;
   late Widget button;
+  late Record record;
 
 
   @override
@@ -30,12 +35,6 @@ class _RecordAudioState extends State<RecordAudio> {
     root = "/storage/emulated/0";
     path = "$root/EPR402/Recordings";
 
-    // Ensure the EPR402/Recordings path exists.
-    directory = Directory(path);
-    if (!directory.existsSync()) {
-      directory.createSync(recursive: true);
-    }
-
     // Initialise the stopwatch.
     stopwatch = Stopwatch();
 
@@ -43,10 +42,16 @@ class _RecordAudioState extends State<RecordAudio> {
     elapsedTime = "00:00.0";
 
     // Not recording yet.
-    recording = false;
+    isRecording = false;
 
     // Indicates that colors have to be loaded.
     colorsLoaded = false;
+
+    // Initialise the recorder.
+    record = Record();
+
+    // Permission granted is initially false.
+    permissionGranted = false;
 
     super.initState();
   }
@@ -57,6 +62,7 @@ class _RecordAudioState extends State<RecordAudio> {
 
     // Button is initially start recording.
     if (!colorsLoaded) {
+      checkPermission();
       colorsLoaded = true;
       button = startRecordingButton(context);
     }
@@ -91,6 +97,17 @@ class _RecordAudioState extends State<RecordAudio> {
   }
 
 
+  // Checks if microphone permission has been granted.
+  void checkPermission() async {
+    permissionGranted = await Permission.microphone.isGranted;
+    await Future.delayed(Duration(milliseconds: 100), () {
+      setState(() {
+        button = startRecordingButton(context);
+      });
+    });
+  }
+
+
   // The start recording button.
   Widget startRecordingButton(BuildContext context) {
     return ElevatedButton(
@@ -101,17 +118,36 @@ class _RecordAudioState extends State<RecordAudio> {
         shape: CircleBorder(),
         padding: EdgeInsets.all(20),
       ),
-      onPressed: () {
+      onPressed: permissionGranted ? () async {
 
-        // Restart the stopwatch.
-        stopwatch.reset();
-        stopwatch.start();
+        // Ensure the EPR402/Recordings path exists.
+        directory = Directory(path);
+        if (!directory.existsSync()) {
+          directory.createSync(recursive: true);
+        }
+
+        // Format date time.
+        DateTime dt = DateTime.now();
+        DateFormat df = DateFormat("yyyy_MM_dd__HH_mm_ss");
+        String now = df.format(dt);
 
         // Change button to stop recording and reset the elapsed time.
         setState(() {
           button = stopRecordingButton(context);
-          elapsedTime = "00:00.0";
         });
+
+        // Start recording.
+        await record.start(
+          path: "$path/audio__$now.wav",
+          encoder: AudioEncoder.wav,
+          bitRate: 44100 * 16,
+          samplingRate: 44100,
+          numChannels: 1,
+        );
+
+        // Restart the stopwatch.
+        stopwatch.reset();
+        stopwatch.start();
 
         // Update the elapsed time every 0.1 seconds.
         timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
@@ -119,7 +155,7 @@ class _RecordAudioState extends State<RecordAudio> {
             elapsedTime = stopwatch.elapsed.toString().substring(2, 9);
           });
         });
-      },
+      } : null,
       child: Icon(
         Icons.mic,
         size: 30,
@@ -139,7 +175,10 @@ class _RecordAudioState extends State<RecordAudio> {
         shape: CircleBorder(),
         padding: EdgeInsets.all(20),
       ),
-      onPressed: () {
+      onPressed: () async {
+
+        // Stop the recording.
+        await record.stop();
 
         // Stop the stopwatch and timer.
         stopwatch.stop();
@@ -148,6 +187,13 @@ class _RecordAudioState extends State<RecordAudio> {
         // Change button to start recording again.
         setState(() {
           button = startRecordingButton(context);
+        });
+
+        // Reset the elapsed time after 1 second.
+        Timer(Duration(seconds: 1), () {
+          setState(() {
+            elapsedTime = "00:00.0";
+          });
         });
       },
       child: Icon(

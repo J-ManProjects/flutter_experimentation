@@ -14,6 +14,24 @@ class WavInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    // Error specific layout.
+    if (info[0] == "__ERROR__") {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            title,
+            maxLines: 2,
+            style: TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ),
+        body: Center(
+          child: Text("Error reading WAV info"),
+        ),
+      );
+    }
+
     // The content headings.
     List<TableRow> headings = [
       TableRow(
