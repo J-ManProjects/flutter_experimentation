@@ -1,5 +1,6 @@
 import "dart:io";
 import "package:flutter/material.dart";
+import 'package:flutter_experimentation/pages/bin_viewer.dart';
 import "package:flutter_experimentation/pages/wav_info.dart";
 import "package:flutter_experimentation/services/wav_file.dart";
 import "package:intl/intl.dart";
@@ -299,7 +300,9 @@ class _FileExplorerState extends State<FileExplorer> {
                   Future.delayed(contentDelay, () {
                     getContents(directory: directory);
                   });
-                } : () {},
+                } : () {
+                  binViewer(path: "$directory/${items[index]}");
+                },
                 trailing: getTrailing(
                   isFolder: isFolder,
                   item: items[index],
@@ -475,6 +478,19 @@ class _FileExplorerState extends State<FileExplorer> {
           ),
         );
       },
+    );
+  }
+
+
+  // Reads the bytes of the selected file path.
+  void binViewer({required String path}) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return BinViewer(path: path);
+        },
+      ),
     );
   }
 

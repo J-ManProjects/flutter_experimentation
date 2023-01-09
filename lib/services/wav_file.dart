@@ -16,8 +16,8 @@ class WavFile {
 
 
   // Converts the list of bytes to an ASCII string.
-  static String bytesToAscii(Uint8List bytes) {
-    return _ascii.decode(bytes);
+  static String bytesToAscii(Uint8List bytes, {bool? allowInvalid}) {
+    return _ascii.decode(bytes, allowInvalid: allowInvalid);
   }
 
 
