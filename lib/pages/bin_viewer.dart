@@ -4,24 +4,36 @@ import "package:flutter/material.dart";
 import "package:flutter_experimentation/services/wav_file.dart";
 
 
-class BinViewer extends StatelessWidget {
+class BinViewer extends StatefulWidget {
   final String path;
   const BinViewer({
     required this.path,
     Key? key
 }) : super(key: key);
 
+  @override
+  State<BinViewer> createState() => _BinViewerState();
+}
+
+class _BinViewerState extends State<BinViewer> {
+  late Uint8List data;
+  late Map<int, TableColumnWidth> columnWidths;
+  late List<TableRow> headings;
+  late List<TableRow> content;
+  late String ascii;
+  late String hex;
+  late Uint8List subData;
+  late String bytes;
+
 
   @override
-  Widget build(BuildContext context) {
-    Uint8List data = File(path).readAsBytesSync();
-    String ascii;
-    String hex;
-    Uint8List subData;
-    String bytes;
+  void initState() {
+
+    // Get the byte data.
+    data = File(widget.path).readAsBytesSync();
 
     // Configure the headings.
-    List<TableRow> headings = [
+    headings = [
       TableRow(
         children: <Widget>[
           headingCell("Index"),
@@ -35,7 +47,7 @@ class BinViewer extends StatelessWidget {
     ];
 
     // Configure the column widths.
-    Map<int, TableColumnWidth> columnWidths = {
+    columnWidths = {
       0: FlexColumnWidth(3),
       1: FlexColumnWidth(3),
       2: FlexColumnWidth(3),
@@ -44,8 +56,18 @@ class BinViewer extends StatelessWidget {
       5: FlexColumnWidth(3),
     };
 
+    // Initialise the content list.
+    content = [];
+
+    super.initState();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+
     // Configure the content.
-    List<TableRow> content = List.generate(100, (index) {
+    content = List.generate(100, (index) {
       subData = data.sublist(index*2, index*2+2);
 
       // Attempt to get the ASCII value.
@@ -62,8 +84,10 @@ class BinViewer extends StatelessWidget {
       ascii = "\"$ascii\"";
 
       // Get the hexadecimal value.
-      hex = WavFile.bytesToUint16(subData).toRadixString(16);
-      hex = hex.toUpperCase().padLeft(4, "0");
+      hex = subData[0].toRadixString(16).padLeft(2, "0");
+      hex += " ";
+      hex += subData[1].toRadixString(16).padLeft(2, "0");
+      hex = hex.toUpperCase();
 
       // Get the two bytes.
       bytes = "${subData[0]}".padLeft(3);
@@ -83,9 +107,6 @@ class BinViewer extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("BIN Viewer"),
-      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -118,7 +139,6 @@ class BinViewer extends StatelessWidget {
     );
   }
 
-
   // Returns the table heading cell widget.
   Widget headingCell(String text) {
     return Center(
@@ -135,7 +155,6 @@ class BinViewer extends StatelessWidget {
       ),
     );
   }
-
 
   // Returns the table content cell widget.
   Widget contentCell(String text) {
