@@ -34,7 +34,7 @@ if ($help) {
 }
 
 # Set all to true if no parameters were given.
-if (-not ($explorer -or $android -or $github)) {
+if (-not ($explorer -or $android -or $vscode -or $github)) {
 	$explorer = $true
 	$android = $true
 	$github = $true
