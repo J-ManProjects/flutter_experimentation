@@ -28,6 +28,13 @@ class WavFile {
   }
 
 
+  // Converts the byte data into a 16-bit signed integer.
+  static int bytesToInt16(Uint8List bytes) {
+    _byteData = ByteData.sublistView(bytes);
+    return _byteData.getInt16(0, Endian.little);
+  }
+
+
   // Converts the byte data into a 32-bit unsigned integer.
   static int bytesToUint32(Uint8List bytes) {
     _byteData = ByteData.sublistView(bytes);

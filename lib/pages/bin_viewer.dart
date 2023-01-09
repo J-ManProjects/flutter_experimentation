@@ -15,67 +15,34 @@ class BinViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Uint8List data = File(path).readAsBytesSync();
+    String ascii;
+    String hex;
+    Uint8List subData;
+    String bytes;
 
     // Configure the headings.
     List<TableRow> headings = [
       TableRow(
         children: <Widget>[
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Index",
-                style: TextStyle(
-                  fontFamily: "monospace",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Hex",
-                style: TextStyle(
-                  fontFamily: "monospace",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "ASCII",
-                style: TextStyle(
-                  fontFamily: "monospace",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Uint16",
-                style: TextStyle(
-                  fontFamily: "monospace",
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
+          headingCell("Index"),
+          headingCell("Hex"),
+          headingCell("ASCII"),
+          headingCell("Uint8"),
+          headingCell("Uint16"),
+          headingCell("Int16"),
         ],
       ),
     ];
 
-    // Define stuff.
-    String ascii;
-    String hex;
-    Uint8List subData;
+    // Configure the column widths.
+    Map<int, TableColumnWidth> columnWidths = {
+      0: FlexColumnWidth(3),
+      1: FlexColumnWidth(3),
+      2: FlexColumnWidth(3),
+      3: FlexColumnWidth(4),
+      4: FlexColumnWidth(3),
+      5: FlexColumnWidth(3),
+    };
 
     // Configure the content.
     List<TableRow> content = List.generate(100, (index) {
@@ -98,52 +65,19 @@ class BinViewer extends StatelessWidget {
       hex = WavFile.bytesToUint16(subData).toRadixString(16);
       hex = hex.toUpperCase().padLeft(4, "0");
 
+      // Get the two bytes.
+      bytes = "${subData[0]}".padLeft(3);
+      bytes += " | ";
+      bytes += "${subData[1]}".padLeft(3);
+
       return TableRow(
         children: <Widget>[
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "${index*2}",
-                style: TextStyle(
-                  fontFamily: "monospace",
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                hex,
-                style: TextStyle(
-                  fontFamily: "monospace",
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                ascii,
-                style: TextStyle(
-                  fontFamily: "monospace",
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "${WavFile.bytesToUint16(subData)}",
-                style: TextStyle(
-                  fontFamily: "monospace",
-                ),
-              ),
-            ),
-          )
+          contentCell("${index*2}"),
+          contentCell(hex),
+          contentCell(ascii),
+          contentCell(bytes),
+          contentCell("${WavFile.bytesToUint16(subData)}"),
+          contentCell("${WavFile.bytesToInt16(subData)}"),
         ],
       );
     });
@@ -155,25 +89,26 @@ class BinViewer extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Expanded(
-              flex: 5,
-              child: Table(
-                border: TableBorder.all(
-                  width: 3,
-                  color: Theme.of(context).dividerColor,
-                ),
-                children: headings,
+            Table(
+              columnWidths: columnWidths,
+              border: TableBorder.all(
+                width: 2,
+                color: Theme.of(context).dividerColor,
               ),
+              children: headings,
             ),
             Expanded(
-              flex: 95,
-              child: SingleChildScrollView(
-                child: Table(
-                  border: TableBorder.all(
-                    width: 2,
-                    color: Theme.of(context).dividerColor,
+              child: Scrollbar(
+                interactive: true,
+                child: SingleChildScrollView(
+                  child: Table(
+                    columnWidths: columnWidths,
+                    border: TableBorder.all(
+                      width: 2,
+                      color: Theme.of(context).dividerColor,
+                    ),
+                    children: content,
                   ),
-                  children: content,
                 ),
               ),
             ),
@@ -182,4 +117,40 @@ class BinViewer extends StatelessWidget {
       ),
     );
   }
+
+
+  // Returns the table heading cell widget.
+  Widget headingCell(String text) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontFamily: "monospace",
+            fontWeight: FontWeight.bold,
+            fontSize: 11,
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  // Returns the table content cell widget.
+  Widget contentCell(String text) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Text(
+          text,
+          style: TextStyle(
+            fontFamily: "monospace",
+            fontSize: 11,
+          ),
+        ),
+      ),
+    );
+  }
+
 }
