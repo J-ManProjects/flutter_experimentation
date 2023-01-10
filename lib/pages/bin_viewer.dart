@@ -18,6 +18,7 @@ class BinViewer extends StatefulWidget {
 
 class _BinViewerState extends State<BinViewer> {
   late Uint8List data;
+  late String filename;
   late Map<int, TableColumnWidth> columnWidths;
   late List<TableRow> headings;
   late Uint8List subData;
@@ -30,6 +31,9 @@ class _BinViewerState extends State<BinViewer> {
 
     // Get the byte data.
     data = File(widget.path).readAsBytesSync();
+
+    // Get the filename only.
+    filename = widget.path.split("/").last;
 
     // Configure the headings.
     headings = [
@@ -58,6 +62,14 @@ class _BinViewerState extends State<BinViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: navigationBar(),
+      appBar: AppBar(
+        title: Text(
+          filename,
+          style: TextStyle(
+            fontSize: 14,
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -130,7 +142,7 @@ class _BinViewerState extends State<BinViewer> {
     int start;
 
     // Configure the size.
-    int size = min(50, data.length~/2 - offset);
+    int size = min(skip~/2, data.length~/2 - offset);
 
     // Configure the content.
     return List.generate(size, (index) {
