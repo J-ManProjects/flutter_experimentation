@@ -68,7 +68,7 @@ class WavFile {
       next = WavFile.bytesToInt16(bytes.sublist(index+4, index+6));
 
       // Check if error at current index.
-      if (value == 0 && next != 0 && prev != 0) {
+      if (value == 0 && (next != 0 || prev != 0)) {
 
         // Get the straight-line gradient.
         gradient = (next - prev) / 3;
