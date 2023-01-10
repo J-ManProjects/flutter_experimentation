@@ -142,7 +142,7 @@ class _BinViewerState extends State<BinViewer> {
     int start;
 
     // Configure the size.
-    int size = min(skip~/2, data.length~/2 - offset);
+    int size = min(skip~/2, (data.length-offset)~/2);
 
     // Configure the content.
     return List.generate(size, (index) {
