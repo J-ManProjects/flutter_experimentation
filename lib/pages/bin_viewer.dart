@@ -35,11 +35,22 @@ class _BinViewerState extends State<BinViewer> {
     // Get the filename only.
     filename = widget.path.split("/").last;
 
+    // Configure the table column widths.
+    columnWidths = {
+      0: FlexColumnWidth(4),
+      1: FlexColumnWidth(5),
+      2: FlexColumnWidth(4),
+      3: FlexColumnWidth(4),
+      4: FlexColumnWidth(4),
+      5: FlexColumnWidth(4),
+    };
+
     // Configure the headings.
     headings = [
       TableRow(
         children: <Widget>[
           headingCell("Offset"),
+          headingCell("Bin"),
           headingCell("Hex"),
           headingCell("ASCII"),
           headingCell("Uint16"),
@@ -74,6 +85,7 @@ class _BinViewerState extends State<BinViewer> {
         child: Column(
           children: <Widget>[
             Table(
+              columnWidths: columnWidths,
               border: TableBorder.all(
                 width: 2,
                 color: Theme.of(context).dividerColor,
@@ -85,11 +97,13 @@ class _BinViewerState extends State<BinViewer> {
                 interactive: true,
                 child: SingleChildScrollView(
                   child: Table(
+                    columnWidths: columnWidths,
                     border: TableBorder.all(
                       width: 2,
                       color: Theme.of(context).dividerColor,
                     ),
                     children: getContent(),
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                   ),
                 ),
               ),
@@ -125,6 +139,7 @@ class _BinViewerState extends State<BinViewer> {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Text(
           text,
+          textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: "monospace",
             fontSize: 11,
@@ -139,6 +154,7 @@ class _BinViewerState extends State<BinViewer> {
   List<TableRow> getContent() {
     String ascii;
     String hex;
+    String bin;
     int start;
 
     // Configure the size.
@@ -169,9 +185,15 @@ class _BinViewerState extends State<BinViewer> {
       hex += subData[1].toRadixString(16).padLeft(2, "0");
       hex = hex.toUpperCase();
 
+      // Get the binary value.
+      bin = subData[0].toRadixString(2).padLeft(8, "0");
+      bin += " ";
+      bin += subData[1].toRadixString(2).padLeft(8, "0");
+
       return TableRow(
         children: <Widget>[
           contentCell("$start"),
+          contentCell(bin),
           contentCell(hex),
           contentCell(ascii),
           contentCell("${WavFile.bytesToUint16(subData)}"),
