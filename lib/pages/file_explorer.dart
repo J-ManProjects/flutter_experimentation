@@ -1,5 +1,4 @@
 import "dart:io";
-import "dart:typed_data";
 import "package:flutter/material.dart";
 import "package:flutter_experimentation/pages/bin_viewer.dart";
 import "package:flutter_experimentation/pages/wav_info.dart";

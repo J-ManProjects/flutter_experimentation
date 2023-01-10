@@ -47,14 +47,13 @@ class WavFile {
     Uint8List bytes = WavFile.wavToBytes(filePath);
     Uint8List fourBytes;
     double gradient;
-    int offset = 7000;
-    int index = offset;
+    int offset = 7168;
     int value;
     int prev;
     int next;
 
     // Loop for all data.
-    while (index < bytes.length) {
+    for (int index = 44 + offset; index < bytes.length; index += offset) {
 
       // Break if next not available.
       if (index+6 >= bytes.length) {
@@ -79,14 +78,6 @@ class WavFile {
           bytes[index+i] = value % 256;
           bytes[index+i+1] = value >> 8;
         }
-
-        // Increment by the offset value.
-        index += offset;
-      }
-
-      // Increment by 2 otherwise.
-      else {
-        index += 2;
       }
     }
 
