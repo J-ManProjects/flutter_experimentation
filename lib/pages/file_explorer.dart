@@ -1,6 +1,7 @@
 import "dart:io";
+import "dart:typed_data";
 import "package:flutter/material.dart";
-import 'package:flutter_experimentation/pages/bin_viewer.dart';
+import "package:flutter_experimentation/pages/bin_viewer.dart";
 import "package:flutter_experimentation/pages/wav_info.dart";
 import "package:flutter_experimentation/services/wav_file.dart";
 import "package:intl/intl.dart";
@@ -258,6 +259,7 @@ class _FileExplorerState extends State<FileExplorer> {
     // Show list of items.
     if (folders.isNotEmpty || files.isNotEmpty) {
       bool isFolder;
+      bool isWavFile;
 
       // Combine lists
       List<String> items = folders + files;
@@ -281,6 +283,7 @@ class _FileExplorerState extends State<FileExplorer> {
             },
             itemBuilder: (context, index) {
               isFolder = (index < folders.length);
+              isWavFile = !isFolder && items[index].endsWith(".wav");
               return ListTile(
                 leading: Icon(
                   isFolder ? Icons.folder : Icons.insert_drive_file,
@@ -303,6 +306,47 @@ class _FileExplorerState extends State<FileExplorer> {
                 } : () {
                   binViewer(path: "$directory/${items[index]}");
                 },
+                onLongPress: isWavFile ? () async {
+
+                  // Dialog returns indication for refreshing the content.
+                  bool mustRefresh = await showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        content: Text("Do you want to fix the WAV file glitches?"),
+                        actionsAlignment: MainAxisAlignment.spaceBetween,
+                        actions: <Widget>[
+
+                          // No button.
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                            child: Text("No"),
+                          ),
+
+                          // Yes button.
+                          TextButton(
+                            onPressed: () {
+                              WavFile.fixWavFile("$directory/${items[index]}");
+                              Navigator.pop(context, true);
+                            },
+                            child: Text("Yes"),
+                          ),
+
+                        ],
+                      );
+                    },
+                  );
+
+                  // Refresh to show fixed file (if needed).
+                  if (mustRefresh) {
+                    setState(() {
+                      refreshContent();
+                    });
+                  }
+                } : null,
                 trailing: getTrailing(
                   isFolder: isFolder,
                   item: items[index],
