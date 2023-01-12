@@ -32,6 +32,13 @@ class WavInfo extends StatelessWidget {
       );
     }
 
+    // The table column widths.
+    Map<int, TableColumnWidth> columnWidths = {
+      0: FlexColumnWidth(3),
+      1: FlexColumnWidth(2),
+      2: FlexColumnWidth(3),
+    };
+
     // The content headings.
     List<TableRow> headings = [
       TableRow(
@@ -41,7 +48,17 @@ class WavInfo extends StatelessWidget {
             child: Text(
               "Field",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              "Endian",
+              style: TextStyle(
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -51,7 +68,7 @@ class WavInfo extends StatelessWidget {
             child: Text(
               "Content",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -60,6 +77,7 @@ class WavInfo extends StatelessWidget {
       ),
       TableRow(
         children: <Widget>[
+          SizedBox(height: 1),
           SizedBox(height: 1),
           SizedBox(height: 1),
         ],
@@ -83,6 +101,23 @@ class WavInfo extends StatelessWidget {
       "Sub-Chunk 2 Size",
     ];
 
+    // Configure the Endian styles.
+    List<String> endian = [
+      "Big",
+      "Little",
+      "Big",
+      "Big",
+      "Little",
+      "Little",
+      "Little",
+      "Little",
+      "Little",
+      "Little",
+      "Little",
+      "Big",
+      "Little",
+    ];
+
     // Generate the content list.
     List<TableRow> content = List.generate(fields.length, (index) {
       return TableRow(
@@ -93,12 +128,28 @@ class WavInfo extends StatelessWidget {
               fields[index],
               style: TextStyle(
                 fontWeight: FontWeight.bold,
+                fontSize: 12,
               ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(info[index]),
+            child: Text(
+              endian[index],
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              info[index],
+              style: TextStyle(
+                fontSize: 12,
+              ),
+            ),
           ),
         ],
       );
@@ -119,6 +170,7 @@ class WavInfo extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Table(
+              columnWidths: columnWidths,
               border: TableBorder.all(
                 color: Theme.of(context).dividerColor,
               ),
