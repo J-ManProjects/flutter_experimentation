@@ -62,66 +62,24 @@ class _FileExplorerState extends State<FileExplorer> {
         children: <Widget>[
 
           // Internal storage button.
-          SizedBox(
-            width: 180,
-            child: ElevatedButton(
-              onPressed: () {
-                storageButtonFunction(
-                  selectedRoot: allRoots[0],
-                  title: "Internal storage",
-                );
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Column(
-                  children: <Widget>[
-                    Icon(
-                      Icons.storage,
-                      size: 48,
-                    ),
-                    Text(
-                      "Internal storage",
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          storageButton(
+            iconData: Icons.storage,
+            title: "Internal storage",
+            rootIndex: 0,
           ),
 
           // External storage button.
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: SizedBox(
-              width: 180,
-              child: ElevatedButton(
-                onPressed: () {
-                  storageButtonFunction(
-                    selectedRoot: allRoots[1],
-                    title: "SD card",
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Column(
-                    children: <Widget>[
-                      Icon(
-                        Icons.sd_storage,
-                        size: 48,
-                      ),
-                      Text(
-                        "SD card",
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+          storageButton(
+            iconData: Icons.sd_storage,
+            title: "External storage",
+            rootIndex: 1,
+          ),
+
+          // App specific storage button.
+          storageButton(
+            iconData: Icons.folder,
+            title: "App storage",
+            rootIndex: 2,
           ),
 
         ],
@@ -146,6 +104,46 @@ class _FileExplorerState extends State<FileExplorer> {
         ),
         body: SafeArea(
           child: body,
+        ),
+      ),
+    );
+  }
+
+
+  // The complete layout and functionality for a storage location button.
+  Widget storageButton({
+    required IconData iconData,
+    required String title,
+    required int rootIndex,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: SizedBox(
+        width: 180,
+        child: ElevatedButton(
+          onPressed: () {
+            storageButtonFunction(
+              selectedRoot: allRoots[rootIndex],
+              title: title,
+            );
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              children: <Widget>[
+                Icon(
+                  iconData,
+                  size: 48,
+                ),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -184,6 +182,10 @@ class _FileExplorerState extends State<FileExplorer> {
       allRoots.add(dir.path.replaceAll(RegExp(appFolder), ""));
       print(allRoots.last);
     }
+
+    // Add the app path.
+    allRoots.add(directories[0].path);
+    print(allRoots.last);
   }
 
 
