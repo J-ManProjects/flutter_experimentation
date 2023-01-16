@@ -1,9 +1,11 @@
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:flutter_experimentation/data_classes/note.dart";
 import "package:flutter_experimentation/services/midi_sequences.dart";
 import "package:flutter_experimentation/services/my_theme.dart";
 import "package:flutter_experimentation/services/piano.dart";
 import "package:flutter_experimentation/services/roll.dart";
+import "package:flutter_experimentation/services/roll_v2.dart";
 import "package:flutter_midi/flutter_midi.dart";
 import "dart:async";
 
@@ -17,6 +19,7 @@ class PianoRoll extends StatefulWidget {
 
 class _PianoRollState extends State<PianoRoll> {
   late List<String> sequenceTitles;
+  late List<Note> notes;
   late Map sequences;
   late String selectedSequence;
   late FlutterMidi midi;
@@ -132,10 +135,9 @@ class _PianoRollState extends State<PianoRoll> {
     // The piano roll if playing, the play button otherwise.
     if (isPlaying) {
       if (addRoll) {
-        topWidget = Roll(
-          selectedPitch: selectedRollPitch,
-          milliseconds: selectedDuration,
+        topWidget = RollV2(
           rollFlex: rollFlex,
+          notes: notes,
         );
       }
     } else {
@@ -147,7 +149,7 @@ class _PianoRollState extends State<PianoRoll> {
             children: <Widget>[
               ElevatedButton(
                 onPressed: () {
-                  playMelody(sequence: sequences[selectedSequence]);
+                  playMelodyV2(sequence: sequences[selectedSequence]);
                 },
                 style: ElevatedButton.styleFrom(
                   shape: CircleBorder(),
@@ -235,8 +237,8 @@ class _PianoRollState extends State<PianoRoll> {
     List<Note> notes = sequenceToNotes(sequence: sequence);
 
     // Create the duration objects.
-    Duration midiDelay = Duration(milliseconds: 1200);
-    Duration pianoDelay = Duration(milliseconds: 1500);
+    Duration midiDelay = const Duration(milliseconds: 1200);
+    Duration pianoDelay = const Duration(milliseconds: 1500);
 
     // Swap to roll.
     setState(() {
@@ -296,17 +298,64 @@ class _PianoRollState extends State<PianoRoll> {
     });
   }
 
-}
 
+  // Plays the melody based on the given sequence.
+  void playMelodyV2({required List<int> sequence}) async {
 
-// The class for housing a note's pitch and duration.
-class Note {
+    // Convert to a sequence of notes.
+    notes = sequenceToNotes(sequence: sequence);
 
-  // The MIDI pitch.
-  int pitch;
+    // Create the duration objects.
+    Duration midiDelay = const Duration(milliseconds: 1200);
+    Duration pianoDelay = const Duration(milliseconds: 1500);
 
-  // The duration in milliseconds.
-  int duration;
+    // Swap to roll.
+    setState(() {
+      isPlaying = true;
+      addRoll = true;
+    });
 
-  Note({required this.pitch, required this.duration});
+    // Iterate through all notes.
+    for (var note in notes) {
+      var delay = Future.delayed(Duration(milliseconds: note.duration));
+
+      if (note.pitch != 0) {
+
+        // Set the midi playback.
+        Timer(midiDelay, () {
+          midi.playMidiNote(midi: note.pitch);
+          Timer(Duration(milliseconds: note.duration), () {
+            midi.stopMidiNote(midi: note.pitch);
+          });
+        });
+
+        // Set the piano pitch.
+        Timer(pianoDelay, () {
+          setState(() {
+            selectedPianoPitch = note.pitch;
+            addRoll = false;
+            piano = Piano(
+              selectedPitch: selectedPianoPitch,
+              pianoFlex: pianoFlex,
+            );
+          });
+        });
+
+      }
+
+      // Delay for note's duration before continuing to next note.
+      await delay;
+    }
+
+    // Swap back to play button final note.
+    await Future.delayed(Duration(milliseconds: notes.last.duration+2000), () {
+      setState(() {
+        selectedPianoPitch = 0;
+        addRoll = false;
+        isPlaying = false;
+        piano = Piano(pianoFlex: pianoFlex);
+      });
+    });
+  }
+
 }

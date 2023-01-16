@@ -1,37 +1,39 @@
 import "package:flutter/material.dart";
+import "package:flutter_experimentation/data_classes/note.dart";
 import "package:flutter_experimentation/services/notes.dart";
 
 
-class Roll extends StatefulWidget {
-  final int selectedPitch;
-  final int milliseconds;
+class RollV2 extends StatefulWidget {
+  final List<Note> notes;
   final int rollFlex;
-
-  const Roll({
-    this.selectedPitch = 0,
-    this.milliseconds = 0,
+  const RollV2({
+    required this.notes,
     this.rollFlex = 80,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<Roll> createState() => _RollState();
+  State<RollV2> createState() => _RollV2State();
 }
 
-class _RollState extends State<Roll> with TickerProviderStateMixin {
-  List<Widget> tileStack = [];
+class _RollV2State extends State<RollV2> with TickerProviderStateMixin {
+  late AnimationController controller;
+  late List<Note> notes;
+  late List<Widget> tileStack;
   late List<Widget> rolls;
-  late SlidingTile tile;
+  late Widget rollSequence;
+  late int rollFlex;
   late int lowestPitch;
   late int highestPitch;
   late int selectedPitch;
   late int milliseconds;
-  late double height;
+  late int totalTime;
   late bool heightCalculated;
   late double screenHeight;
+  late double totalHeight;
+  late double height;
   late double ratio;
   late double end;
-  late int rollFlex;
 
 
   @override
@@ -45,12 +47,17 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
     // Setup the flex.
     rollFlex = widget.rollFlex;
 
-    // Add the grey background.
-    tileStack.add(Container(
-      color: Colors.grey[900],
-    ));
+    // Setup the notes.
+    notes = widget.notes;
 
     super.initState();
+  }
+
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
 
@@ -62,71 +69,101 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
       heightCalculated = true;
       screenHeight = MediaQuery.of(context).size.height;
       ratio = screenHeight / 2057.14285714286;
+
+      // Add the grey background.
+      tileStack = [Container(
+        height: screenHeight,
+        color: Colors.grey[900],
+      )];
     }
 
-    // Setup the selected pitch.
-    selectedPitch = widget.selectedPitch;
+    // Generate the roll sequence.
+    totalHeight = 0;
+    totalTime = 0;
+    int index;
+    rollSequence = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(notes.length, (int i) {
+        index = notes.length - 1 - i;
 
-    // Setup the duration in milliseconds.
-    milliseconds = widget.milliseconds;
+        // Setup the selected pitch.
+        selectedPitch = notes[index].pitch;
 
-    // Setup the sliding tile height.
-    height = milliseconds * ratio;
+        // Setup the duration in milliseconds.
+        milliseconds = notes[index].duration;
+        totalTime += milliseconds;
 
-    // Align the roll animation.
-    rolls = alignRoll(selectedPitch: selectedPitch);
+        // Setup the sliding tile height.
+        height = milliseconds * ratio;
+        totalHeight += height;
+
+        // Align the roll animation.
+        rolls = alignRoll(
+          height: height,
+          selectedPitch: selectedPitch,
+        );
+
+        return Row(
+          children: rolls,
+        );
+
+
+      }, growable: false),
+    );
+
+    print("total seconds = ${totalTime / 1000}");
 
     // The vertical end point for the animation.
-    end = screenHeight / height;
+    end = screenHeight / totalHeight;
 
-    // Add to the stack.
-    if (rolls.isNotEmpty) {
+    // Create the controller.
+    controller = AnimationController(
+      duration: Duration(milliseconds: 2100+totalTime),
+      vsync: this,
+    );
 
-      // Create the controller.
-      var controller = AnimationController(
-        duration: Duration(milliseconds: 2000+milliseconds),
-        vsync: this,
-      );
+    // Remove from stack on completion.
+    controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        tileStack.removeLast();
+      }
+    });
 
-      // Dispose of controller on completion.
-      controller.addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          controller.dispose();
-          tileStack.removeAt(1);
-        }
-      });
+    // Add the slide transition to the tile stack.
+    tileStack.add(SlideTransition(
+      position: Tween<Offset>(
+        begin: Offset(0.0, -1.0),
+        end: Offset(0.0, end),
+      ).animate(controller),
+      child: rollSequence,
+    ));
 
-      // Define the sliding tile.
-      tile = SlidingTile(
-        controller: controller,
-        rolls: rolls,
-        end: end,
-      );
-
-      // Start the animation.
-      tile.controller.forward(from: -1);
-
-      // Add to the tile stack.
-      tileStack.add(tile.layout);
-    }
+    // Start the animation.
+    controller.forward(from: -1);
 
     // The actual layout of the roll.
     return Expanded(
       flex: rollFlex,
-      child: Stack(
-        children: tileStack,
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Stack(
+          children: tileStack,
+        ),
       ),
     );
   }
 
 
   // Align the roll to the selected pitch.
-  List<Widget> alignRoll({int selectedPitch = 0}) {
+  List<Widget> alignRoll({
+    required double height,
+    int selectedPitch = 0,
+  }) {
     List<Widget> rolls = [];
 
     // Return an empty list if selected pitch is out of range.
     if (selectedPitch < lowestPitch || selectedPitch > highestPitch) {
-      return rolls;
+      return [blankSpace(flex: 1, height: height)];
     }
 
     // Align for natural notes.
@@ -134,6 +171,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
       alignNaturalNotes(
         rolls: rolls,
         selectedPitch: selectedPitch,
+        height: height,
       );
     }
 
@@ -142,6 +180,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
       alignSharps(
         rolls: rolls,
         selectedPitch: selectedPitch,
+        height: height,
       );
     }
 
@@ -154,6 +193,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
   void alignNaturalNotes({
     required List<Widget> rolls,
     required int selectedPitch,
+    required double height,
   }) {
 
     // The initial flex.
@@ -171,9 +211,9 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
       // Increase the flex otherwise.
       if (pitch == selectedPitch) {
         if (flex > 0) {
-          rolls.add(blankSpace(flex: flex));
+          rolls.add(blankSpace(flex: flex, height: height));
         }
-        rolls.add(selectedRoll(isNatural: true));
+        rolls.add(selectedRoll(height: height, isNatural: true,));
         flex = 0;
       } else {
         flex++;
@@ -182,7 +222,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
 
     // Add final blank space.
     if (flex > 0) {
-      rolls.add(blankSpace(flex: flex));
+      rolls.add(blankSpace(flex: flex, height: height));
     }
   }
 
@@ -191,6 +231,7 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
   void alignSharps({
     required List<Widget> rolls,
     required int selectedPitch,
+    required double height,
   }) {
 
     // Calculate the necessary initial flex.
@@ -215,8 +256,8 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
       // Highlight selected pitch and add blank space beforehand.
       // Increase the flex otherwise.
       if (pitch == selectedPitch) {
-        rolls.add(blankSpace(flex: flex));
-        rolls.add(selectedRoll(isNatural: false));
+        rolls.add(blankSpace(flex: flex, height: height));
+        rolls.add(selectedRoll(height: height, isNatural: false));
         flex = 0;
       } else {
         flex += 2;
@@ -227,12 +268,15 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
     // Add the necessary final blank space.
     chroma = highestPitch % 12;
     flex += (chroma == 0 || chroma == 5) ? 3 : 1;
-    rolls.add(blankSpace(flex: flex));
+    rolls.add(blankSpace(flex: flex, height: height));
   }
 
 
   // Similar to a highlighted piano tile, but for the roll.
-  Widget selectedRoll({required bool isNatural}) {
+  Widget selectedRoll({
+    required double height,
+    required bool isNatural,
+  }) {
     return Expanded(
       flex: isNatural ? 1 : 2,
       child: Container(
@@ -250,38 +294,15 @@ class _RollState extends State<Roll> with TickerProviderStateMixin {
 
 
   // Add a blank space before and after the selected roll.
-  Widget blankSpace({required int flex}) {
+  Widget blankSpace({
+    required int flex,
+    required double height,
+  }) {
     return Expanded(
       flex: flex,
-      child: SizedBox(),
+      child: SizedBox(height: height),
     );
   }
-}
 
 
-
-// The sliding tile tween animation class.
-class SlidingTile {
-  AnimationController controller;
-  late Animation<Offset> offset;
-  late Widget layout;
-
-  SlidingTile({
-    required this.controller,
-    required List<Widget> rolls,
-    required double end,
-  }) {
-
-    // Create the offset.
-    offset = Tween<Offset>(
-      begin: Offset(0.0, -1.0),
-      end: Offset(0.0, end),
-    ).animate(controller);
-
-    // Create the tile widget.
-    layout = SlideTransition(
-      position: offset,
-      child: Row(children: rolls),
-    );
-  }
 }
