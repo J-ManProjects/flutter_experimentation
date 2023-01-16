@@ -77,10 +77,12 @@ class _RollV2State extends State<RollV2> with TickerProviderStateMixin {
       )];
     }
 
-    // Generate the roll sequence.
-    totalHeight = 0;
-    totalTime = 0;
+    // Initialise some variables.
     int index;
+    totalTime = 0;
+    totalHeight = 0;
+
+    // Generate the roll sequence.
     rollSequence = Column(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(notes.length, (int i) {
@@ -107,11 +109,8 @@ class _RollV2State extends State<RollV2> with TickerProviderStateMixin {
           children: rolls,
         );
 
-
       }, growable: false),
     );
-
-    print("total seconds = ${totalTime / 1000}");
 
     // The vertical end point for the animation.
     end = screenHeight / totalHeight;
@@ -132,8 +131,8 @@ class _RollV2State extends State<RollV2> with TickerProviderStateMixin {
     // Add the slide transition to the tile stack.
     tileStack.add(SlideTransition(
       position: Tween<Offset>(
-        begin: Offset(0.0, -1.0),
-        end: Offset(0.0, end),
+        begin: Offset(0, -1),
+        end: Offset(0, end),
       ).animate(controller),
       child: rollSequence,
     ));

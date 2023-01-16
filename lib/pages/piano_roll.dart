@@ -316,10 +316,22 @@ class _PianoRollState extends State<PianoRoll> {
     });
 
     // Iterate through all notes.
+    Future delay;
     for (var note in notes) {
-      var delay = Future.delayed(Duration(milliseconds: note.duration));
+      delay = Future.delayed(Duration(milliseconds: note.duration));
 
-      if (note.pitch != 0) {
+      // Reset piano if pitch is 0.
+      if (note.pitch == 0) {
+        Timer(pianoDelay, () {
+          setState(() {
+            addRoll = false;
+            piano = Piano(pianoFlex: pianoFlex);
+          });
+        });
+      }
+
+      // Play note otherwise.
+      else {
 
         // Set the midi playback.
         Timer(midiDelay, () {
